@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --forest-primary: #0B3D2E;
+  --ivory-primary: #FAF8F5;
+  --gold-primary: #C9A962;
+  --ink-primary: #121821;
+}
+
+@layer base {
+  * {
+    @apply border-forest-700/20;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-ivory-100 text-ink-800 font-body antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    @apply bg-gold-400/30 text-forest-700;
+  }
+}
+
+@layer components {
+  /* Elegant button styles */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-8 py-4
+           bg-forest-700 text-ivory-100 font-sans font-medium
+           rounded-none border border-forest-700
+           transition-all duration-300 ease-out
+           hover:bg-forest-800 hover:border-forest-800
+           focus:outline-none focus:ring-2 focus:ring-gold-400 focus:ring-offset-2 focus:ring-offset-ivory-100;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-8 py-4
+           bg-transparent text-forest-700 font-sans font-medium
+           rounded-none border border-forest-700
+           transition-all duration-300 ease-out
+           hover:bg-forest-700 hover:text-ivory-100
+           focus:outline-none focus:ring-2 focus:ring-gold-400 focus:ring-offset-2;
+  }
+
+  .btn-gold {
+    @apply inline-flex items-center justify-center px-8 py-4
+           bg-gold-400 text-forest-900 font-sans font-semibold
+           rounded-none border border-gold-400
+           transition-all duration-300 ease-out
+           hover:bg-gold-500 hover:border-gold-500
+           focus:outline-none focus:ring-2 focus:ring-forest-700 focus:ring-offset-2;
+  }
+
+  /* Luxurious card */
+  .card-luxury {
+    @apply bg-ivory-50 border border-forest-700/10
+           shadow-[0_4px_20px_rgba(11,61,46,0.08)]
+           transition-all duration-500 ease-out
+           hover:shadow-[0_8px_40px_rgba(11,61,46,0.12)]
+           hover:border-gold-400/30;
+  }
+
+  /* Ornate divider */
+  .divider-ornate {
+    @apply relative flex items-center justify-center py-8;
+  }
+
+  .divider-ornate::before,
+  .divider-ornate::after {
+    content: '';
+    @apply flex-1 h-px bg-gradient-to-r;
+  }
+
+  .divider-ornate::before {
+    @apply from-transparent via-gold-400/40 to-gold-400/60;
+  }
+
+  .divider-ornate::after {
+    @apply from-gold-400/60 via-gold-400/40 to-transparent;
+  }
+
+  /* Text gradient gold */
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-gold-500 via-gold-400 to-gold-500 bg-clip-text text-transparent;
+  }
+
+  /* Noise overlay */
+  .noise-overlay {
+    @apply pointer-events-none fixed inset-0 z-50 opacity-[0.015];
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  /* Elegant link underline */
+  .link-elegant {
+    @apply relative inline-block text-forest-700 font-medium;
+  }
+
+  .link-elegant::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-px bg-gold-400
+           transform origin-left scale-x-0 transition-transform duration-300;
+  }
+
+  .link-elegant:hover::after {
+    @apply scale-x-100;
+  }
+}
+
+@layer utilities {
+  /* Stagger animation delays */
+  .animation-delay-100 { animation-delay: 100ms; }
+  .animation-delay-200 { animation-delay: 200ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
+  .animation-delay-400 { animation-delay: 400ms; }
+  .animation-delay-500 { animation-delay: 500ms; }
+  .animation-delay-600 { animation-delay: 600ms; }
+  .animation-delay-700 { animation-delay: 700ms; }
+  .animation-delay-800 { animation-delay: 800ms; }
+
+  /* Decorative flourish */
+  .flourish {
+    @apply text-gold-400;
+  }
+
+  /* Subtle grain texture */
+  .grain {
+    position: relative;
+  }
+
+  .grain::before {
+    content: '';
+    @apply absolute inset-0 pointer-events-none opacity-[0.03];
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-ivory-200;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-forest-700/30 rounded-full;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-forest-700/50;
+}
