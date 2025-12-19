@@ -106,10 +106,10 @@ export default function LandingPage() {
         </div>
 
         <div className="relative max-w-7xl mx-auto px-6 lg:px-8 py-24 lg:py-32">
-          <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-            {/* Left: Franklin Video */}
+          <div className="grid lg:grid-cols-[1.2fr_1fr] gap-12 lg:gap-16 items-center">
+            {/* Left: Franklin Video - 20% wider */}
             <div className={`relative ${isVisible ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
-              <div className="relative w-full max-w-2xl mx-auto">
+              <div className="relative w-full max-w-3xl mx-auto">
                 {/* Ornate frame - hidden on mobile */}
                 <div className="hidden md:block absolute -inset-3 border-2 border-gold-400/30 rounded-sm pointer-events-none" />
                 <div className="hidden md:block absolute -inset-1 border border-forest-700/20 rounded-sm pointer-events-none" />
@@ -149,11 +149,11 @@ export default function LandingPage() {
               </h1>
 
               {/* Subheadline */}
-              <p className="font-body text-xl md:text-2xl text-forest-700/80 leading-relaxed max-w-xl">
-                A distinguished gentleman with centuries of wisdom in the art of wealth creation.
-                <span className="block mt-2 text-forest-700/60 text-lg">
-                  Sophisticated counsel on hedge funds, private equity, crypto, and beyond.
-                </span>
+              <p className="font-display italic text-2xl md:text-3xl text-forest-700/80 leading-relaxed max-w-xl">
+                Money talks
+              </p>
+              <p className="font-body text-lg md:text-xl text-forest-700/70 leading-relaxed max-w-xl">
+                Franklin is your personal wealth advisor and private banker. Grow your wealth, invest in sophisticated investment strategies, set up optimal tax strategies. Connect with Wall Street firms and brokers to close and syndicate deals, he can do it all.
               </p>
 
               {/* Quote */}

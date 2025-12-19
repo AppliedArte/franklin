@@ -29,6 +29,46 @@ class ChannelType(str, Enum):
     WEB = "web"
 
 
+class LeadStatus(str, Enum):
+    """Lead/signup funnel status."""
+
+    NEW = "new"                        # Just signed up via form
+    AVAILABILITY_ASKED = "availability_asked"  # WhatsApp sent asking for availability
+    AVAILABILITY_RECEIVED = "availability_received"  # User responded with times
+    CALL_SCHEDULED = "call_scheduled"  # Call booked
+    CALL_IN_PROGRESS = "call_in_progress"
+    CALL_COMPLETED = "call_completed"
+    CALL_FAILED = "call_failed"        # No answer, technical issue
+    CALL_NO_ANSWER = "call_no_answer"  # User didn't pick up
+    FOLLOWUP_SENT = "followup_sent"    # Post-call WhatsApp sent
+    ENGAGED = "engaged"                # Ongoing conversation
+    CONVERTED = "converted"            # Became active user
+
+
+class CallStatus(str, Enum):
+    """Voice call status."""
+
+    SCHEDULED = "scheduled"
+    INITIATED = "initiated"
+    RINGING = "ringing"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    NO_ANSWER = "no_answer"
+    BUSY = "busy"
+    CANCELLED = "cancelled"
+
+
+class CallOutcome(str, Enum):
+    """Outcome of a completed call."""
+
+    INTERESTED = "interested"          # Wants to continue
+    CALLBACK_REQUESTED = "callback_requested"  # Wants another call
+    NOT_INTERESTED = "not_interested"
+    NEEDS_TIME = "needs_time"          # Thinking about it
+    WRONG_NUMBER = "wrong_number"
+
+
 class MessageRole(str, Enum):
     """Message sender role."""
 
@@ -65,6 +105,34 @@ class User(Base):
     # Channel identifiers
     whatsapp_id: Mapped[Optional[str]] = mapped_column(String(100), unique=True, nullable=True)
 
+    # Demographics (from signup form)
+    gender: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # male, female, other, prefer_not_to_say
+    age: Mapped[Optional[int]] = mapped_column(nullable=True)
+    profession: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+
+    # Lead/Signup tracking
+    lead_status: Mapped[str] = mapped_column(String(50), default="new")  # LeadStatus enum
+    lead_source: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)  # typeform, tally, website
+    signed_up_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+
+    # Initial form data (before full profile is built via conversation)
+    areas_of_interest: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    # ["crypto", "real_estate", "private_equity", "hedge_funds", "tax_optimization", etc.]
+
+    financial_goals: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # Free text: "Build passive income", "Grow net worth", "Retire early", etc.
+
+    asset_classes_of_interest: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    # ["equities", "fixed_income", "alternatives", "crypto", "real_estate", "private_credit"]
+
+    how_can_franklin_help: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # Free text: What they're looking for from Franklin
+
+    # Scheduling
+    timezone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # e.g., "America/New_York"
+    availability_windows: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    # Structure: {"preferred_days": ["monday", "wednesday"], "preferred_times": ["morning", "evening"]}
+
     # Status
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     onboarding_completed: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -76,11 +144,15 @@ class User(Base):
     conversations: Mapped[list["Conversation"]] = relationship(
         "Conversation", back_populates="user", lazy="selectin"
     )
+    calls: Mapped[list["Call"]] = relationship(
+        "Call", back_populates="user", lazy="selectin"
+    )
 
     __table_args__ = (
         Index("ix_users_email", "email"),
         Index("ix_users_phone", "phone"),
         Index("ix_users_whatsapp_id", "whatsapp_id"),
+        Index("ix_users_lead_status", "lead_status"),
     )
 
 
@@ -288,4 +360,58 @@ class Referral(Base):
     __table_args__ = (
         Index("ix_referrals_user_id", "user_id"),
         Index("ix_referrals_status", "status"),
+    )
+
+
+class Call(Base):
+    """Track voice calls with users (Vapi)."""
+
+    __tablename__ = "calls"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="CASCADE")
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+
+    # Vapi integration
+    vapi_call_id: Mapped[Optional[str]] = mapped_column(String(100), unique=True, nullable=True)
+
+    # Scheduling
+    scheduled_for: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+
+    # Call status & timing
+    status: Mapped[str] = mapped_column(String(50), default="scheduled")  # CallStatus enum
+    initiated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    started_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    ended_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    duration_seconds: Mapped[Optional[int]] = mapped_column(nullable=True)
+
+    # Call content
+    transcript: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # AI-generated summary
+
+    # Outcome
+    outcome: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # CallOutcome enum
+    outcome_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # Profile data extracted from call
+    extracted_data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    # Structure: {"goals": "...", "net_worth_range": "...", "interests": [...], etc.}
+
+    # Retry tracking
+    attempt_number: Mapped[int] = mapped_column(default=1)
+    next_retry_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+
+    # Relationship
+    user: Mapped["User"] = relationship("User", back_populates="calls")
+
+    __table_args__ = (
+        Index("ix_calls_user_id", "user_id"),
+        Index("ix_calls_status", "status"),
+        Index("ix_calls_scheduled_for", "scheduled_for"),
+        Index("ix_calls_vapi_call_id", "vapi_call_id"),
     )
