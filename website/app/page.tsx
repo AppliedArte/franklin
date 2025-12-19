@@ -7,7 +7,6 @@ import {
   Mail,
   TrendingUp,
   Shield,
-  Sparkles,
   ArrowRight,
   ChevronDown,
   Building2,
@@ -131,30 +130,6 @@ export default function LandingPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-forest-700/20 via-transparent to-transparent pointer-events-none" />
                 </div>
 
-                {/* Floating accent cards - hidden on mobile */}
-                <div className="hidden md:block absolute -bottom-6 -left-6 bg-ivory-50 p-4 shadow-lg border border-forest-700/10 animate-float z-10">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-forest-700/10 flex items-center justify-center">
-                      <Shield className="w-5 h-5 text-forest-700" />
-                    </div>
-                    <div>
-                      <p className="font-sans text-xs text-forest-700/60 uppercase tracking-wide">Trusted by</p>
-                      <p className="font-display text-lg text-forest-700">HNW Investors</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="hidden md:block absolute -top-4 -right-4 bg-ivory-50 p-4 shadow-lg border border-forest-700/10 animate-float animation-delay-500 z-10">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gold-400/20 flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-gold-500" />
-                    </div>
-                    <div>
-                      <p className="font-sans text-xs text-forest-700/60 uppercase tracking-wide">Expertise</p>
-                      <p className="font-display text-lg text-forest-700">300+ Years</p>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
