@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Image from "next/image"
 import {
   MessageSquare,
   Phone,
@@ -77,10 +76,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <a href="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-full bg-forest-700 flex items-center justify-center">
-                <span className="text-gold-400 font-display text-xl font-bold">F</span>
-              </div>
+            <a href="/" className="group">
               <span className="font-display text-2xl text-forest-700 tracking-tight">
                 Franklin
               </span>
@@ -162,16 +158,18 @@ export default function LandingPage() {
                 <div className="absolute -inset-3 border-2 border-gold-400/30 rounded-sm pointer-events-none" />
                 <div className="absolute -inset-1 border border-forest-700/20 rounded-sm pointer-events-none" />
 
-                {/* Franklin GIF */}
+                {/* Franklin Video */}
                 <div className="relative aspect-[16/9] overflow-hidden rounded-sm shadow-2xl">
-                  <Image
-                    src="/franklin.gif"
-                    alt="Franklin - Your Personal Private Banker"
-                    fill
-                    className="object-cover"
-                    priority
-                    unoptimized
-                  />
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover"
+                  >
+                    <source src="/franklin.webm" type="video/webm" />
+                    <source src="/franklin.gif" type="image/gif" />
+                  </video>
                   {/* Subtle overlay for elegance */}
                   <div className="absolute inset-0 bg-gradient-to-t from-forest-700/20 via-transparent to-transparent pointer-events-none" />
                 </div>
@@ -584,10 +582,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-4 gap-12 mb-16">
             {/* Brand */}
             <div className="md:col-span-2">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-full bg-gold-400/20 flex items-center justify-center">
-                  <span className="text-gold-400 font-display text-xl font-bold">F</span>
-                </div>
+              <div className="mb-6">
                 <span className="font-display text-2xl text-ivory-100 tracking-tight">
                   Franklin
                 </span>
