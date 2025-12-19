@@ -90,8 +90,9 @@ export default function LandingPage() {
             </div>
 
             {/* CTA */}
-            <a href="#start" className="btn-primary text-sm">
-              Speak with Franklin
+            <a href="#start" className="btn-primary text-xs sm:text-sm">
+              <span className="hidden sm:inline">Speak with Franklin</span>
+              <span className="sm:hidden">Chat</span>
             </a>
           </div>
         </div>
@@ -107,18 +108,68 @@ export default function LandingPage() {
 
         <div className="relative max-w-7xl mx-auto px-6 lg:px-8 py-24 lg:py-32">
           <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-            {/* Left: Content */}
+            {/* Left: Franklin Video */}
+            <div className={`relative ${isVisible ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
+              <div className="relative w-full max-w-2xl mx-auto">
+                {/* Ornate frame - hidden on mobile */}
+                <div className="hidden md:block absolute -inset-3 border-2 border-gold-400/30 rounded-sm pointer-events-none" />
+                <div className="hidden md:block absolute -inset-1 border border-forest-700/20 rounded-sm pointer-events-none" />
+
+                {/* Franklin Video */}
+                <div className="relative aspect-[16/9] overflow-hidden rounded-sm shadow-2xl">
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover"
+                  >
+                    <source src="/franklin.webm" type="video/webm" />
+                    <source src="/franklin.gif" type="image/gif" />
+                  </video>
+                  {/* Subtle overlay for elegance */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-forest-700/20 via-transparent to-transparent pointer-events-none" />
+                </div>
+
+                {/* Floating accent cards - hidden on mobile */}
+                <div className="hidden md:block absolute -bottom-6 -left-6 bg-ivory-50 p-4 shadow-lg border border-forest-700/10 animate-float z-10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-forest-700/10 flex items-center justify-center">
+                      <Shield className="w-5 h-5 text-forest-700" />
+                    </div>
+                    <div>
+                      <p className="font-sans text-xs text-forest-700/60 uppercase tracking-wide">Trusted by</p>
+                      <p className="font-display text-lg text-forest-700">HNW Investors</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="hidden md:block absolute -top-4 -right-4 bg-ivory-50 p-4 shadow-lg border border-forest-700/10 animate-float animation-delay-500 z-10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gold-400/20 flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-gold-500" />
+                    </div>
+                    <div>
+                      <p className="font-sans text-xs text-forest-700/60 uppercase tracking-wide">Expertise</p>
+                      <p className="font-display text-lg text-forest-700">300+ Years</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Content */}
             <div className={`space-y-8 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
               {/* Eyebrow */}
               <div className="flex items-center gap-4">
                 <div className="h-px w-12 bg-gold-400" />
                 <span className="text-gold-500 font-sans text-sm tracking-[0.2em] uppercase">
-                  Your Personal Private Banker
+                  Your Private Banker
                 </span>
               </div>
 
               {/* Main headline */}
-              <h1 className="font-display text-5xl md:text-6xl lg:text-7xl text-forest-700 leading-[1.1] tracking-tight">
+              <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-forest-700 leading-[1.1] tracking-tight">
                 Meet <span className="italic text-gradient-gold">Franklin</span>
               </h1>
 
@@ -148,56 +199,6 @@ export default function LandingPage() {
                   <span>Discover His Expertise</span>
                   <ChevronDown className="ml-2 w-4 h-4 group-hover:translate-y-1 transition-transform" />
                 </a>
-              </div>
-            </div>
-
-            {/* Right: Franklin GIF */}
-            <div className={`relative ${isVisible ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
-              <div className="relative w-full max-w-2xl mx-auto">
-                {/* Ornate frame */}
-                <div className="absolute -inset-3 border-2 border-gold-400/30 rounded-sm pointer-events-none" />
-                <div className="absolute -inset-1 border border-forest-700/20 rounded-sm pointer-events-none" />
-
-                {/* Franklin Video */}
-                <div className="relative aspect-[16/9] overflow-hidden rounded-sm shadow-2xl">
-                  <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="absolute inset-0 w-full h-full object-cover"
-                  >
-                    <source src="/franklin.webm" type="video/webm" />
-                    <source src="/franklin.gif" type="image/gif" />
-                  </video>
-                  {/* Subtle overlay for elegance */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-forest-700/20 via-transparent to-transparent pointer-events-none" />
-                </div>
-
-                {/* Floating accent cards */}
-                <div className="absolute -bottom-6 -left-6 bg-ivory-50 p-4 shadow-lg border border-forest-700/10 animate-float z-10">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-forest-700/10 flex items-center justify-center">
-                      <Shield className="w-5 h-5 text-forest-700" />
-                    </div>
-                    <div>
-                      <p className="font-sans text-xs text-forest-700/60 uppercase tracking-wide">Trusted by</p>
-                      <p className="font-display text-lg text-forest-700">HNW Investors</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="absolute -top-4 -right-4 bg-ivory-50 p-4 shadow-lg border border-forest-700/10 animate-float animation-delay-500 z-10">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gold-400/20 flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-gold-500" />
-                    </div>
-                    <div>
-                      <p className="font-sans text-xs text-forest-700/60 uppercase tracking-wide">Expertise</p>
-                      <p className="font-display text-lg text-forest-700">300+ Years</p>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
