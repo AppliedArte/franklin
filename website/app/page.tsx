@@ -5,17 +5,8 @@ import {
   MessageSquare,
   Phone,
   Mail,
-  TrendingUp,
-  Shield,
   ArrowRight,
   ChevronDown,
-  Building2,
-  Coins,
-  LineChart,
-  Lock,
-  Globe,
-  Clock,
-  CheckCircle2,
   Quote
 } from "lucide-react"
 
@@ -478,75 +469,6 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ===== FEATURES/BENEFITS ===== */}
-      <section className="py-24 bg-forest-700 text-ivory-100">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: Lock,
-                title: "Private & Secure",
-                description: "Your conversations remain confidential. A gentleman never discloses his client's affairs."
-              },
-              {
-                icon: Clock,
-                title: "Always Available",
-                description: "Franklin keeps no particular hours. Seek counsel whenever the need arises."
-              },
-              {
-                icon: CheckCircle2,
-                title: "Honest Counsel",
-                description: "\"Say I don't know\" is a valid answer. Franklin offers wisdom, not false certainty."
-              }
-            ].map((feature, index) => (
-              <div key={index} className="text-center p-8">
-                <feature.icon className="w-10 h-10 text-gold-400 mx-auto mb-6" />
-                <h3 className="font-display text-2xl text-ivory-100 mb-4">{feature.title}</h3>
-                <p className="font-body text-ivory-100/60 leading-relaxed">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== FINAL CTA ===== */}
-      <section id="start" className="py-32 grain relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] rounded-full bg-gradient-radial from-gold-400/5 via-transparent to-transparent" />
-        </div>
-
-        <div className="relative max-w-3xl mx-auto px-6 lg:px-8 text-center">
-          <Flourish className="mx-auto text-gold-400/60 mb-8" />
-
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-forest-700 tracking-tight mb-8">
-            Begin Your Journey to <span className="italic text-gradient-gold">Prosperity</span>
-          </h2>
-
-          <p className="font-body text-xl text-forest-700/70 mb-12 max-w-2xl mx-auto leading-relaxed">
-            The path to wealth is best walked with wise counsel. Franklin awaits your inquiry,
-            ready to share centuries of accumulated wisdom.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="https://wa.me/your-number"
-              className="btn-gold group text-lg px-10 py-5"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <MessageSquare className="mr-3 w-5 h-5" />
-              <span>Message on WhatsApp</span>
-              <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </a>
-          </div>
-
-          <p className="mt-8 font-sans text-sm text-forest-700/50">
-            No registration required. Simply start a conversation.
-          </p>
         </div>
       </section>
 
