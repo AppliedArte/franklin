@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import {
   MessageSquare,
   Phone,
@@ -154,44 +155,29 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Right: Decorative Portrait Area */}
+            {/* Right: Franklin GIF */}
             <div className={`relative ${isVisible ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
-              <div className="relative aspect-[4/5] max-w-md mx-auto">
+              <div className="relative w-full max-w-2xl mx-auto">
                 {/* Ornate frame */}
-                <div className="absolute inset-0 border-2 border-gold-400/30 rounded-sm" />
-                <div className="absolute inset-4 border border-forest-700/20 rounded-sm" />
+                <div className="absolute -inset-3 border-2 border-gold-400/30 rounded-sm pointer-events-none" />
+                <div className="absolute -inset-1 border border-forest-700/20 rounded-sm pointer-events-none" />
 
-                {/* Portrait placeholder with elegant styling */}
-                <div className="absolute inset-8 bg-gradient-to-br from-forest-700 via-forest-700 to-forest-800 rounded-sm overflow-hidden">
-                  {/* Decorative pattern */}
-                  <div className="absolute inset-0 opacity-10">
-                    <div className="absolute inset-0" style={{
-                      backgroundImage: `repeating-linear-gradient(
-                        45deg,
-                        transparent,
-                        transparent 10px,
-                        rgba(201, 169, 98, 0.3) 10px,
-                        rgba(201, 169, 98, 0.3) 11px
-                      )`
-                    }} />
-                  </div>
-
-                  {/* Centered monogram */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="w-32 h-32 rounded-full border-2 border-gold-400/40 flex items-center justify-center mx-auto mb-6">
-                        <span className="font-display text-7xl text-gold-400 font-light">F</span>
-                      </div>
-                      <Flourish className="mx-auto text-gold-400/60" />
-                      <p className="mt-4 font-display text-ivory-100/80 text-xl tracking-wide">
-                        Est. 1706
-                      </p>
-                    </div>
-                  </div>
+                {/* Franklin GIF */}
+                <div className="relative aspect-[16/9] overflow-hidden rounded-sm shadow-2xl">
+                  <Image
+                    src="/franklin.gif"
+                    alt="Franklin - Your Personal Private Banker"
+                    fill
+                    className="object-cover"
+                    priority
+                    unoptimized
+                  />
+                  {/* Subtle overlay for elegance */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-forest-700/20 via-transparent to-transparent pointer-events-none" />
                 </div>
 
                 {/* Floating accent cards */}
-                <div className="absolute -bottom-6 -left-6 bg-ivory-50 p-4 shadow-lg border border-forest-700/10 animate-float">
+                <div className="absolute -bottom-6 -left-6 bg-ivory-50 p-4 shadow-lg border border-forest-700/10 animate-float z-10">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-forest-700/10 flex items-center justify-center">
                       <Shield className="w-5 h-5 text-forest-700" />
@@ -203,7 +189,7 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <div className="absolute -top-4 -right-4 bg-ivory-50 p-4 shadow-lg border border-forest-700/10 animate-float animation-delay-500">
+                <div className="absolute -top-4 -right-4 bg-ivory-50 p-4 shadow-lg border border-forest-700/10 animate-float animation-delay-500 z-10">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-gold-400/20 flex items-center justify-center">
                       <Sparkles className="w-5 h-5 text-gold-500" />
