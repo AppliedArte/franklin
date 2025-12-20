@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import Link from "next/link"
 import {
   Phone,
   ArrowRight,
@@ -183,19 +184,65 @@ function IPhoneMockup() {
   }
 
   return (
-    <div className="w-full bg-gradient-to-b from-[#e8e8e8] to-[#d8d8d8]">
-      {/* Chat Header */}
-      <div className="flex items-center gap-4 px-6 py-4 bg-silver-700 border-b border-silver-600">
-        <img src="/franklin.jpg" alt="Franklin" className="w-12 h-12 rounded-full object-cover shadow-md ring-2 ring-white/20" />
-        <div className="flex-1">
-          <h4 className="text-lg font-semibold text-white">Franklin</h4>
-          <p className="text-sm text-white/70">Your Private Banker</p>
-        </div>
-        <Phone className="w-6 h-6 text-white/70" />
-      </div>
+    <div className="relative w-full max-w-2xl mx-auto">
+      {/* Phone Device */}
+      <div className="relative">
+        {/* Outer frame with gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#2a2a2a] via-[#1a1a1a] to-[#0a0a0a] rounded-[3rem] shadow-2xl" />
 
-      {/* Messages Container - Onboarding Flow */}
-      <div className="min-h-[500px] px-6 py-8 max-w-4xl mx-auto">
+        {/* Side buttons */}
+        <div className="absolute -left-[3px] top-24 w-[4px] h-8 bg-[#2a2a2a] rounded-l-sm" />
+        <div className="absolute -left-[3px] top-36 w-[4px] h-14 bg-[#2a2a2a] rounded-l-sm" />
+        <div className="absolute -left-[3px] top-52 w-[4px] h-14 bg-[#2a2a2a] rounded-l-sm" />
+        <div className="absolute -right-[3px] top-32 w-[4px] h-20 bg-[#2a2a2a] rounded-r-sm" />
+
+        {/* Inner bezel */}
+        <div className="relative bg-[#1a1a1a] rounded-[3rem] p-3">
+          {/* Screen */}
+          <div className="relative bg-ivory-50 rounded-[2.25rem] overflow-hidden">
+            {/* Dynamic Island */}
+            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20">
+              <div className="w-28 h-8 bg-black rounded-full flex items-center justify-center">
+                <div className="w-3 h-3 rounded-full bg-[#1a1a1a] ring-1 ring-[#333]" />
+              </div>
+            </div>
+
+            {/* Status Bar */}
+            <div className="flex items-center justify-between px-8 pt-4 pb-2">
+              <span className="text-sm font-semibold text-silver-800">9:41</span>
+              <div className="flex items-center gap-1.5">
+                {/* Signal */}
+                <div className="flex items-end gap-[2px]">
+                  {[4, 6, 8, 10].map((h, i) => (
+                    <div key={i} className="w-[3px] bg-silver-800 rounded-sm" style={{ height: `${h}px` }} />
+                  ))}
+                </div>
+                {/* Wifi */}
+                <svg className="w-4 h-3 text-silver-800" viewBox="0 0 16 12" fill="currentColor">
+                  <path d="M8 9.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM8 6c-1.7 0-3.2.7-4.3 1.8l1.4 1.4c.8-.8 1.8-1.2 2.9-1.2s2.1.4 2.9 1.2l1.4-1.4C11.2 6.7 9.7 6 8 6zm0-4C5 2 2.4 3.2.6 5.2l1.4 1.4C3.5 5 5.6 4 8 4s4.5 1 6 2.6l1.4-1.4C13.6 3.2 11 2 8 2z"/>
+                </svg>
+                {/* Battery */}
+                <div className="flex items-center">
+                  <div className="w-6 h-3 border border-silver-800 rounded p-[2px]">
+                    <div className="w-full h-full bg-silver-800 rounded-sm" />
+                  </div>
+                  <div className="w-[2px] h-[5px] bg-silver-800 rounded-r-sm ml-[1px]" />
+                </div>
+              </div>
+            </div>
+
+            {/* Chat Header */}
+            <div className="flex items-center gap-3 px-5 py-3 bg-white/80 backdrop-blur-sm border-b border-black/5">
+              <img src="/franklin.jpg" alt="Franklin" className="w-11 h-11 rounded-full object-cover shadow-md" />
+              <div className="flex-1">
+                <h4 className="text-base font-semibold text-silver-800">Franklin</h4>
+                <p className="text-xs text-silver-600/70">Your Private Banker</p>
+              </div>
+              <Phone className="w-5 h-5 text-silver-700" />
+            </div>
+
+            {/* Messages Container - Onboarding Flow */}
+            <div className="min-h-[420px] max-h-[500px] overflow-y-auto bg-gradient-to-b from-[#f5f5f5] to-[#ebebeb] px-4 py-5">
               {/* Franklin's Avatar + Message */}
               <div className="flex gap-3 items-start">
                 <img src="/franklin.jpg" alt="Franklin" className="w-9 h-9 rounded-full object-cover flex-shrink-0 shadow-sm" />
@@ -382,7 +429,30 @@ function IPhoneMockup() {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Input Bar */}
+            <div className="bg-white px-4 py-3 border-t border-black/5">
+              <div className="flex items-center gap-3">
+                <div className="flex-1 bg-[#f0f0f0] rounded-full px-5 py-2.5 border border-black/5">
+                  <span className="text-sm text-silver-700/40">Message Franklin...</span>
+                </div>
+                <div className="w-10 h-10 bg-silver-700 rounded-full flex items-center justify-center shadow-sm">
+                  <ArrowRight className="w-5 h-5 text-white" />
+                </div>
+              </div>
+            </div>
+
+            {/* Home Indicator */}
+            <div className="flex justify-center py-2 bg-white">
+              <div className="w-32 h-1 bg-black/20 rounded-full" />
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Decorative shadow */}
+      <div className="absolute -z-10 inset-8 bg-silver-700/30 blur-3xl rounded-full" />
     </div>
   )
 }
@@ -518,13 +588,11 @@ export default function LandingPage() {
             {/* Links */}
             <div>
               <h4 className="font-sans font-semibold text-sm tracking-wide uppercase text-gold-400 mb-4">
-                Expertise
+                About
               </h4>
               <ul className="space-y-3 font-body text-ivory-100/60">
-                <li><a href="#" className="hover:text-gold-400 transition-colors">Alternatives</a></li>
-                <li><a href="#" className="hover:text-gold-400 transition-colors">Digital Assets</a></li>
-                <li><a href="#" className="hover:text-gold-400 transition-colors">Fixed Income</a></li>
-                <li><a href="#" className="hover:text-gold-400 transition-colors">Pre-IPO</a></li>
+                <li><Link href="/expertise" className="hover:text-gold-400 transition-colors">The Résumé</Link></li>
+                <li><Link href="/privacy-policy" className="hover:text-gold-400 transition-colors">Privacy Policy</Link></li>
               </ul>
             </div>
 
@@ -534,9 +602,9 @@ export default function LandingPage() {
                 Connect
               </h4>
               <ul className="space-y-3 font-body text-ivory-100/60">
-                <li><a href="#" className="hover:text-gold-400 transition-colors">WhatsApp</a></li>
-                <li><a href="#" className="hover:text-gold-400 transition-colors">Twitter</a></li>
-                <li><a href="#" className="hover:text-gold-400 transition-colors">Email</a></li>
+                <li><a href="https://wa.me/YOURWHATSAPPNUMBER" target="_blank" rel="noopener noreferrer" className="hover:text-gold-400 transition-colors">WhatsApp</a></li>
+                <li><a href="https://twitter.com/askfranklin" target="_blank" rel="noopener noreferrer" className="hover:text-gold-400 transition-colors">Twitter</a></li>
+                <li><a href="mailto:hello@askfranklin.io" className="hover:text-gold-400 transition-colors">Email</a></li>
               </ul>
             </div>
           </div>
@@ -546,9 +614,14 @@ export default function LandingPage() {
             <p className="font-sans text-sm text-ivory-100/40">
               &copy; {new Date().getFullYear()} Ask Franklin. All rights reserved.
             </p>
-            <p className="font-serif text-sm text-ivory-100/40 italic">
-              "An investment in knowledge pays the best interest."
-            </p>
+            <div className="flex items-center gap-6">
+              <Link href="/privacy-policy" className="font-sans text-sm text-ivory-100/40 hover:text-gold-400 transition-colors">
+                Privacy
+              </Link>
+              <p className="font-serif text-sm text-ivory-100/40 italic">
+                "An investment in knowledge pays the best interest."
+              </p>
+            </div>
           </div>
 
         </div>
