@@ -99,14 +99,6 @@ export default function LandingPage() {
 
             {/* Right: Content */}
             <div className={`space-y-8 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
-              {/* Eyebrow */}
-              <div className="flex items-center gap-4">
-                <div className="h-px w-12 bg-gold-400" />
-                <span className="text-gold-500 font-sans text-sm tracking-[0.2em] uppercase">
-                  Your Private Banker
-                </span>
-              </div>
-
               {/* Main headline */}
               <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-forest-700 leading-[1.1] tracking-tight">
                 Meet <span className="italic text-gradient-gold">Franklin</span>
