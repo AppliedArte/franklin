@@ -10,19 +10,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Rich forest green - old money, banking
-        forest: {
-          50: "#f0f5f3",
-          100: "#d9e6e1",
-          200: "#b5cec5",
-          300: "#89afa3",
-          400: "#618d7f",
-          500: "#4a7365",
-          600: "#3a5c51",
-          700: "#0B3D2E", // Primary - deep banker green
-          800: "#0a3528",
-          900: "#082a20",
-          950: "#041812",
+        // Silver/Slate - sophisticated, modern wealth
+        silver: {
+          50: "#f8f9fa",
+          100: "#f1f3f5",
+          200: "#e9ecef",
+          300: "#dee2e6",
+          400: "#ced4da",
+          500: "#adb5bd",
+          600: "#868e96",
+          700: "#495057", // Primary - sophisticated charcoal
+          800: "#343a40",
+          900: "#212529",
+          950: "#0d0f10",
         },
         // Warm cream/ivory - elegance
         ivory: {

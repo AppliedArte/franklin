@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 :root {
-  --forest-primary: #0B3D2E;
+  --silver-primary: #495057;
   --ivory-primary: #FAF8F5;
   --gold-primary: #C9A962;
   --ink-primary: #121821;
@@ -13,7 +13,7 @@
 
 @layer base {
   * {
-    @apply border-forest-700/20;
+    @apply border-silver-700/20;
   }
 
   html {
@@ -28,7 +28,7 @@
   }
 
   ::selection {
-    @apply bg-gold-400/30 text-forest-700;
+    @apply bg-gold-400/30 text-silver-700;
   }
 }
 
@@ -36,37 +36,37 @@
   /* Elegant button styles */
   .btn-primary {
     @apply inline-flex items-center justify-center px-8 py-4
-           bg-forest-700 text-ivory-100 font-sans font-medium
-           rounded-none border border-forest-700
+           bg-silver-700 text-ivory-100 font-sans font-medium
+           rounded-none border border-silver-700
            transition-all duration-300 ease-out
-           hover:bg-forest-800 hover:border-forest-800
+           hover:bg-silver-800 hover:border-silver-800
            focus:outline-none focus:ring-2 focus:ring-gold-400 focus:ring-offset-2 focus:ring-offset-ivory-100;
   }
 
   .btn-secondary {
     @apply inline-flex items-center justify-center px-8 py-4
-           bg-transparent text-forest-700 font-sans font-medium
-           rounded-none border border-forest-700
+           bg-transparent text-silver-700 font-sans font-medium
+           rounded-none border border-silver-700
            transition-all duration-300 ease-out
-           hover:bg-forest-700 hover:text-ivory-100
+           hover:bg-silver-700 hover:text-ivory-100
            focus:outline-none focus:ring-2 focus:ring-gold-400 focus:ring-offset-2;
   }
 
   .btn-gold {
     @apply inline-flex items-center justify-center px-8 py-4
-           bg-gold-400 text-forest-900 font-sans font-semibold
+           bg-gold-400 text-silver-900 font-sans font-semibold
            rounded-none border border-gold-400
            transition-all duration-300 ease-out
            hover:bg-gold-500 hover:border-gold-500
-           focus:outline-none focus:ring-2 focus:ring-forest-700 focus:ring-offset-2;
+           focus:outline-none focus:ring-2 focus:ring-silver-700 focus:ring-offset-2;
   }
 
   /* Luxurious card */
   .card-luxury {
-    @apply bg-ivory-50 border border-forest-700/10
-           shadow-[0_4px_20px_rgba(11,61,46,0.08)]
+    @apply bg-ivory-50 border border-silver-700/10
+           shadow-[0_4px_20px_rgba(73,80,87,0.08)]
            transition-all duration-500 ease-out
-           hover:shadow-[0_8px_40px_rgba(11,61,46,0.12)]
+           hover:shadow-[0_8px_40px_rgba(73,80,87,0.12)]
            hover:border-gold-400/30;
   }
 
@@ -102,7 +102,7 @@
 
   /* Elegant link underline */
   .link-elegant {
-    @apply relative inline-block text-forest-700 font-medium;
+    @apply relative inline-block text-silver-700 font-medium;
   }
 
   .link-elegant::after {
@@ -154,11 +154,11 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-forest-700/30 rounded-full;
+  @apply bg-silver-700/30 rounded-full;
   border: 3px solid transparent;
   background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-forest-700/50;
+  @apply bg-silver-700/50;
 }
