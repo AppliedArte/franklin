@@ -26,32 +26,6 @@ function Flourish({ className = "" }: { className?: string }) {
   )
 }
 
-// Animated counter for stats
-function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string }) {
-  const [count, setCount] = useState(0)
-
-  useEffect(() => {
-    const duration = 2000
-    const steps = 60
-    const increment = value / steps
-    let current = 0
-
-    const timer = setInterval(() => {
-      current += increment
-      if (current >= value) {
-        setCount(value)
-        clearInterval(timer)
-      } else {
-        setCount(Math.floor(current))
-      }
-    }, duration / steps)
-
-    return () => clearInterval(timer)
-  }, [value])
-
-  return <span>{count.toLocaleString()}{suffix}</span>
-}
-
 export default function LandingPage() {
   const [isVisible, setIsVisible] = useState(false)
 
@@ -297,46 +271,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ===== TRUST SECTION ===== */}
-      <section className="py-32 grain">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          {/* Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-24">
-            {[
-              { value: 318, suffix: "+", label: "Years of Wisdom" },
-              { value: 100, suffix: "M+", label: "His Legacy (USD)" },
-              { value: 24, suffix: "/7", label: "Availability" },
-              { value: 6, suffix: "", label: "Channels" }
-            ].map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="font-display text-5xl lg:text-6xl text-forest-700 mb-2">
-                  <AnimatedNumber value={stat.value} suffix={stat.suffix} />
-                </div>
-                <p className="font-sans text-sm text-forest-700/60 tracking-wide uppercase">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Testimonial */}
-          <div className="max-w-4xl mx-auto text-center">
-            <Quote className="w-12 h-12 text-gold-400/40 mx-auto mb-8" />
-            <blockquote className="font-serif text-2xl md:text-3xl text-forest-700 leading-relaxed mb-8 italic">
-              "Franklin explained the intricacies of basis trading in a manner most comprehensible.
-              His counsel on timing and temperament has been invaluable to my investment journey."
-            </blockquote>
-            <div className="flex items-center justify-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-forest-700/10 flex items-center justify-center">
-                <span className="font-sans text-forest-700 font-medium">JM</span>
-              </div>
-              <div className="text-left">
-                <p className="font-sans font-medium text-forest-700">Jonathan M.</p>
-                <p className="font-sans text-sm text-forest-700/60">Private Investor, London</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* ===== FOOTER ===== */}
       <footer className="py-16 bg-forest-700 text-ivory-100">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -390,14 +324,6 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {/* Disclaimer */}
-          <div className="mt-8 p-4 border border-ivory-100/10 bg-forest-800/30">
-            <p className="font-sans text-xs text-ivory-100/40 text-center leading-relaxed">
-              <strong className="text-ivory-100/60">Disclaimer:</strong> Franklin provides general educational information,
-              not personalised investment advice. Always consult a licensed financial advisor for recommendations
-              specific to your situation. Past performance does not guarantee future results.
-            </p>
-          </div>
         </div>
       </footer>
     </div>
