@@ -465,7 +465,7 @@ export default function LandingPage() {
                 Grow your wealth with the sophistication of a family office and the network of a top-tier investment bank.
               </p>
               <p className="font-body text-lg md:text-xl text-silver-700/60 leading-relaxed max-w-xl">
-                Reach the right people, get access to the right dealflow, and close deals with expert input.
+                Reach the right people, access dealflow, and navigate complex transactions with expert guidance.
               </p>
               {/* Quote */}
               <blockquote className="relative pl-6 border-l-2 border-gold-400/60 italic text-silver-700/70 font-serif text-lg">
