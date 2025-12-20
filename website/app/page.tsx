@@ -109,7 +109,7 @@ export default function LandingPage() {
                 Franklin is your AI private banker who manages your wealth with the sophistication of a family office and the network of a top-tier investment bank.
               </p>
               <p className="font-body text-lg md:text-xl text-forest-700/60 leading-relaxed max-w-xl">
-                Franklin introduces you to the right people, negotiates on your behalf, and orchestrates solutions across institutions.
+                Franklin works with a team of professionals to orchestrate solutions to grow your wealth. Reach the right people, get the right advice, and close deals with expert input.
               </p>
 
               {/* Quote */}
