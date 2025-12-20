@@ -184,9 +184,9 @@ function IPhoneMockup() {
   }
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto">
-      {/* Phone Device */}
-      <div className="relative">
+    <div className="relative w-full flex justify-center py-16">
+      {/* Phone Device - iPhone 15 Pro aspect ratio (9:19.5 = width:height) */}
+      <div className="relative w-[380px] h-[824px] flex-shrink-0">
         {/* Outer frame with gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#2a2a2a] via-[#1a1a1a] to-[#0a0a0a] rounded-[3rem] shadow-2xl" />
 
@@ -197,9 +197,9 @@ function IPhoneMockup() {
         <div className="absolute -right-[3px] top-32 w-[4px] h-20 bg-[#2a2a2a] rounded-r-sm" />
 
         {/* Inner bezel */}
-        <div className="relative bg-[#1a1a1a] rounded-[3rem] p-3">
+        <div className="relative h-full bg-[#1a1a1a] rounded-[3rem] p-3">
           {/* Screen */}
-          <div className="relative bg-ivory-50 rounded-[2.25rem] overflow-hidden">
+          <div className="relative h-full bg-ivory-50 rounded-[2.25rem] overflow-hidden flex flex-col">
             {/* Dynamic Island */}
             <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20">
               <div className="w-28 h-8 bg-black rounded-full flex items-center justify-center">
@@ -242,7 +242,7 @@ function IPhoneMockup() {
             </div>
 
             {/* Messages Container - Onboarding Flow */}
-            <div className="min-h-[420px] max-h-[500px] overflow-y-auto bg-gradient-to-b from-[#f5f5f5] to-[#ebebeb] px-4 py-5">
+            <div className="flex-1 overflow-y-auto bg-gradient-to-b from-[#f5f5f5] to-[#ebebeb] px-4 py-5">
               {/* Franklin's Avatar + Message */}
               <div className="flex gap-3 items-start">
                 <img src="/franklin.jpg" alt="Franklin" className="w-9 h-9 rounded-full object-cover flex-shrink-0 shadow-sm" />
@@ -381,23 +381,21 @@ function IPhoneMockup() {
                   <div className="flex-1 space-y-3">
                     <div className="bg-silver-600 px-4 py-4 rounded-2xl rounded-tl-sm shadow-sm">
                       <p className="text-[14px] text-white font-medium mb-2">
-                        Perfect, thanks {formData.name.split(' ')[0]}!
+                        Excellent, {formData.name.split(' ')[0]}!
                       </p>
                       <p className="text-[14px] text-white/90 leading-relaxed">
-                        I'll be in touch soon with relevant opportunities. In the meantime, feel free to message me on WhatsApp anytime.
+                        I'll give you a call shortly to learn more about your goals and how I can help. Keep your phone nearby!
                       </p>
                     </div>
-                    <a
-                      href="https://wa.me/YOURWHATSAPPNUMBER"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 bg-[#25D366] text-white px-4 py-2.5 rounded-xl text-[14px] font-medium hover:bg-[#20bd5a] transition-colors shadow-sm"
-                    >
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                      </svg>
-                      Message Me on WhatsApp
-                    </a>
+                    <div className="flex items-center gap-2 px-4 py-3 bg-ivory-100 rounded-xl border border-silver-200">
+                      <div className="w-10 h-10 rounded-full bg-gold-400/20 flex items-center justify-center">
+                        <Phone className="w-5 h-5 text-gold-600" />
+                      </div>
+                      <div>
+                        <p className="text-[13px] font-medium text-silver-700">Incoming call from Franklin</p>
+                        <p className="text-[12px] text-silver-500">Usually within 2 minutes</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}

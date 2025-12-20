@@ -42,7 +42,7 @@ class VoiceAdapter:
             },
             "voice": {
                 "provider": "11labs",
-                "voiceId": "pNInz6obpgDQGcFmaJgB",  # Adam - distinguished British male voice
+                "voiceId": settings.elevenlabs_voice_id,
             },
         }
 
@@ -56,7 +56,7 @@ class VoiceAdapter:
                     "Content-Type": "application/json",
                 },
                 json={
-                    "phoneNumberId": settings.vapi_phone_number_id if hasattr(settings, 'vapi_phone_number_id') else None,
+                    "phoneNumberId": settings.vapi_phone_number_id or None,
                     "customer": {
                         "number": phone_number,
                     },

@@ -51,6 +51,10 @@ class Settings(BaseSettings):
 
     # Vapi (Voice AI)
     vapi_api_key: str = ""
+    vapi_phone_number_id: str = ""
+
+    # ElevenLabs Voice
+    elevenlabs_voice_id: str = "pNInz6obpgDQGcFmaJgB"  # Default: Adam
 
     # Twitter/X API (Free tier - public content only)
     twitter_api_key: str = ""
