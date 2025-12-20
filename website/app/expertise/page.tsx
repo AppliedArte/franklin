@@ -43,13 +43,24 @@ export default function ExpertisePage() {
           <h1 className="font-display text-4xl md:text-5xl text-forest-700 tracking-tight mb-4">
             The <span className="italic text-gradient-gold">Résumé</span>
           </h1>
-          <p className="font-body text-lg text-forest-700/60">Your AI Private Banker (Est. 1706)</p>
+          <p className="font-body text-lg text-forest-700/60 mb-8">Your AI Private Banker (Est. 1706)</p>
+
+          {/* Franklin thumbs up */}
+          <div className="relative w-full max-w-3xl mx-auto">
+            <div className="relative aspect-[16/9] overflow-hidden rounded-sm shadow-2xl">
+              <img
+                src="/thumbsup.gif"
+                alt="Franklin giving thumbs up"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Professional Summary */}
         <Section title="Professional Summary">
           <p className="font-body text-forest-700/80 leading-relaxed">
-            Seasoned financial advisor with 300+ years of compound interest experience. Specializes in turning pennies into fortunes through the sheer force of time and temperance. Known for dispensing wealth management advice in aphorisms that your grandfather definitely quoted at you. Currently revolutionizing private banking through Web3 infrastructure while maintaining that old-world charm.
+            Seasoned financial advisor with 300+ years of compound interest experience. Specializes in turning pennies into fortunes through the sheer force of time and temperance. Known for dispensing wealth management advice in aphorisms that your grandfather definitely quoted at you. Currently revolutionizing private banking through modern infrastructure while maintaining that old-world charm.
           </p>
         </Section>
 
@@ -64,7 +75,7 @@ export default function ExpertisePage() {
               ["International Markets", "Negotiated France's investment in American startups (circa 1778)"],
               ["Regulatory Compliance", "Wrote some of the regulations"],
               ["AI/ML Integration", "Digitized 318 years of financial wisdom into neural networks"],
-              ["Blockchain Native", "Understands decentralization (helped decentralize from Britain)"],
+              ["Network Builder", "Understands the power of connections (helped connect two continents)"],
             ].map(([title, desc], i) => (
               <div key={i} className="text-sm">
                 <span className="text-forest-700 font-semibold">{title}:</span>{" "}
@@ -82,12 +93,12 @@ export default function ExpertisePage() {
               <h3 className="font-display text-xl text-forest-700">Chief Intelligence Officer</h3>
               <span className="text-sm text-forest-700/50">2024 - Present</span>
             </div>
-            <p className="text-gold-500 text-sm mb-4">askFranklin.io</p>
+            <p className="text-gold-500 text-sm mb-4">askFranklin.xyz</p>
             <ul className="space-y-2 text-forest-700/70 text-sm list-disc list-outside ml-5">
-              <li>Leading digital transformation of 18th-century banking wisdom for 21st-century degenerates</li>
+              <li>Leading digital transformation of 18th-century banking wisdom for modern investors</li>
               <li>Deployed AI-powered financial advisory services accessible 24/7 (because time is money, and I no longer sleep)</li>
-              <li>Synthesizing DeFi protocols with time-tested investment principles</li>
-              <li>Building the bridge between "a penny saved" and "WAGMI"</li>
+              <li>Connecting clients with top-tier advisors, funds, and opportunities</li>
+              <li>Building the bridge between "a penny saved" and generational wealth</li>
               <li>Achieved 99.9% uptime (significant improvement over mortality-based availability)</li>
             </ul>
           </div>
@@ -126,8 +137,8 @@ export default function ExpertisePage() {
             <li>Only banker whose face appears on the $100 bill (the ultimate networking achievement)</li>
             <li>Turned $5,000 into multi-million dollar perpetual trusts for Boston and Philadelphia</li>
             <li>Negotiated the Treaty of Paris without a PowerPoint deck</li>
-            <li>Successfully tokenized 318 years of financial wisdom without losing the folksy charm</li>
-            <li>Bridged the gap between "sound money" and "internet money"</li>
+            <li>Successfully digitized 318 years of financial wisdom without losing the folksy charm</li>
+            <li>Bridged the gap between old money and new opportunities</li>
           </ul>
         </Section>
 
@@ -139,7 +150,7 @@ export default function ExpertisePage() {
               "French (Conversational, especially regarding loans)",
               "Aphorisms (Fluent)",
               "Python (surprisingly adaptable)",
-              "Solidity (smart contracts are just treaties you can't renegotiate)",
+              "SQL (because good records never go out of style)",
             ].map((lang, i) => (
               <span key={i} className="px-4 py-2 text-sm text-forest-700 border border-forest-700/20 bg-ivory-50">
                 {lang}
@@ -152,7 +163,7 @@ export default function ExpertisePage() {
         <div className="mb-12 p-8 border-l-4 border-gold-400 bg-ivory-50">
           <h2 className="font-display text-2xl text-forest-700 mb-4">Investment Philosophy</h2>
           <blockquote className="font-body italic text-forest-700/80 text-lg leading-relaxed">
-            "A penny saved is a penny earned, but a penny invested at 7% annual return becomes $1,476 after 150 years. Compounding is the eighth wonder of the world, and early to bed means you're not panic-selling during after-hours trading. Also, DYOR, but I've already done it for you."
+            "A penny saved is a penny earned, but a penny invested at 7% annual return becomes $1,476 after 150 years. Compounding is the eighth wonder of the world, and early to bed means you're not panic-selling during after-hours trading. Do your own research, but I've already done it for you."
           </blockquote>
         </div>
 

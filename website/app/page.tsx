@@ -2,145 +2,149 @@
 
 import { useState, useEffect } from "react"
 import {
-  MessageSquare,
   Phone,
-  Mail,
   ArrowRight,
-  ChevronDown,
-  Quote
+  ChevronDown
 } from "lucide-react"
 
-// Chat Message Component
-function ChatMessage({
-  sender,
-  text,
-  isUser = false
+// Option Button Component
+function OptionButton({
+  label,
+  onClick,
+  variant = "default"
 }: {
-  sender?: string
-  text: string
-  isUser?: boolean
+  label: string
+  onClick?: () => void
+  variant?: "default" | "primary"
 }) {
-  if (isUser) {
-    return (
-      <div className="flex justify-end">
-        <div className="bg-forest-700 text-ivory-100 px-3.5 py-2.5 rounded-[18px] rounded-br-[4px] max-w-[80%] shadow-sm">
-          <p className="text-[13px] leading-[1.35]">{text}</p>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="flex gap-2 items-end">
-      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-forest-600 to-forest-800 flex-shrink-0 flex items-center justify-center shadow-sm">
-        <span className="font-display text-gold-400 text-[10px] font-bold">F</span>
-      </div>
-      <div className="bg-white px-3.5 py-2.5 rounded-[18px] rounded-bl-[4px] max-w-[80%] shadow-sm border border-forest-700/5">
-        <p className="text-[13px] leading-[1.35] text-forest-800">{text}</p>
-      </div>
-    </div>
+    <button
+      onClick={onClick}
+      className={`w-full text-left px-4 py-3 rounded-xl border transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
+        variant === "primary"
+          ? "bg-forest-700 text-ivory-100 border-forest-600 hover:bg-forest-600"
+          : "bg-white text-forest-800 border-forest-700/20 hover:border-forest-700/40 hover:bg-forest-50"
+      }`}
+    >
+      <span className="text-[14px] font-medium">{label}</span>
+    </button>
   )
 }
 
-// iPhone Mockup Component
+// iPhone Mockup Component - Full Width with Onboarding
 function IPhoneMockup() {
-  const messages = [
-    { text: "Good day! I am Franklin, your private banker. How may I assist you today?", isUser: false },
-    { text: "I'm looking to diversify into alternatives", isUser: true },
-    { text: "Excellent taste. I can connect you with our pre-IPO and private credit specialists. Shall I arrange an introduction?", isUser: false },
-    { text: "Yes please, that would be great", isUser: true },
-    { text: "Consider it done. I've notified our team - expect an email within the hour.", isUser: false },
-  ]
-
   return (
-    <div className="relative">
+    <div className="relative w-full max-w-md mx-auto">
       {/* Phone Device */}
-      <div className="relative w-[280px] sm:w-[300px]">
+      <div className="relative">
         {/* Outer frame with gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#2a2a2a] via-[#1a1a1a] to-[#0a0a0a] rounded-[50px] shadow-2xl" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#2a2a2a] via-[#1a1a1a] to-[#0a0a0a] rounded-[3rem] shadow-2xl" />
 
         {/* Side buttons */}
-        <div className="absolute -left-[2px] top-28 w-[3px] h-8 bg-[#2a2a2a] rounded-l-sm" />
-        <div className="absolute -left-[2px] top-40 w-[3px] h-12 bg-[#2a2a2a] rounded-l-sm" />
-        <div className="absolute -left-[2px] top-56 w-[3px] h-12 bg-[#2a2a2a] rounded-l-sm" />
-        <div className="absolute -right-[2px] top-36 w-[3px] h-16 bg-[#2a2a2a] rounded-r-sm" />
+        <div className="absolute -left-[3px] top-24 w-[4px] h-8 bg-[#2a2a2a] rounded-l-sm" />
+        <div className="absolute -left-[3px] top-36 w-[4px] h-14 bg-[#2a2a2a] rounded-l-sm" />
+        <div className="absolute -left-[3px] top-52 w-[4px] h-14 bg-[#2a2a2a] rounded-l-sm" />
+        <div className="absolute -right-[3px] top-32 w-[4px] h-20 bg-[#2a2a2a] rounded-r-sm" />
 
         {/* Inner bezel */}
-        <div className="relative bg-[#1a1a1a] rounded-[50px] p-[10px]">
+        <div className="relative bg-[#1a1a1a] rounded-[3rem] p-3">
           {/* Screen */}
-          <div className="relative bg-[#f8f8f8] rounded-[40px] overflow-hidden">
+          <div className="relative bg-ivory-50 rounded-[2.25rem] overflow-hidden">
             {/* Dynamic Island */}
             <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20">
-              <div className="w-[90px] h-[28px] bg-black rounded-full flex items-center justify-center gap-2">
-                <div className="w-[10px] h-[10px] rounded-full bg-[#1a1a1a] ring-1 ring-[#333]" />
+              <div className="w-28 h-8 bg-black rounded-full flex items-center justify-center">
+                <div className="w-3 h-3 rounded-full bg-[#1a1a1a] ring-1 ring-[#333]" />
               </div>
             </div>
 
             {/* Status Bar */}
-            <div className="flex items-center justify-between px-7 pt-3 pb-1">
-              <span className="text-[13px] font-semibold text-forest-800">9:41</span>
+            <div className="flex items-center justify-between px-8 pt-4 pb-2">
+              <span className="text-sm font-semibold text-forest-800">9:41</span>
               <div className="flex items-center gap-1.5">
                 {/* Signal */}
                 <div className="flex items-end gap-[2px]">
-                  {[40, 55, 70, 85].map((h, i) => (
-                    <div key={i} className="w-[3px] bg-forest-800 rounded-sm" style={{ height: `${h / 10}px` }} />
+                  {[4, 6, 8, 10].map((h, i) => (
+                    <div key={i} className="w-[3px] bg-forest-800 rounded-sm" style={{ height: `${h}px` }} />
                   ))}
                 </div>
                 {/* Wifi */}
-                <svg className="w-[15px] h-[11px] text-forest-800" viewBox="0 0 16 12" fill="currentColor">
+                <svg className="w-4 h-3 text-forest-800" viewBox="0 0 16 12" fill="currentColor">
                   <path d="M8 9.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM8 6c-1.7 0-3.2.7-4.3 1.8l1.4 1.4c.8-.8 1.8-1.2 2.9-1.2s2.1.4 2.9 1.2l1.4-1.4C11.2 6.7 9.7 6 8 6zm0-4C5 2 2.4 3.2.6 5.2l1.4 1.4C3.5 5 5.6 4 8 4s4.5 1 6 2.6l1.4-1.4C13.6 3.2 11 2 8 2z"/>
                 </svg>
                 {/* Battery */}
                 <div className="flex items-center">
-                  <div className="w-[22px] h-[11px] border border-forest-800 rounded-[3px] p-[1px]">
-                    <div className="w-full h-full bg-forest-800 rounded-[1px]" />
+                  <div className="w-6 h-3 border border-forest-800 rounded p-[2px]">
+                    <div className="w-full h-full bg-forest-800 rounded-sm" />
                   </div>
-                  <div className="w-[1px] h-[4px] bg-forest-800 rounded-r-sm ml-[1px]" />
+                  <div className="w-[2px] h-[5px] bg-forest-800 rounded-r-sm ml-[1px]" />
                 </div>
               </div>
             </div>
 
             {/* Chat Header */}
-            <div className="flex items-center gap-3 px-4 py-2.5 bg-white/80 backdrop-blur-sm border-b border-black/5">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-forest-600 to-forest-800 flex items-center justify-center shadow-sm">
-                <span className="font-display text-gold-400 font-bold text-sm">F</span>
+            <div className="flex items-center gap-3 px-5 py-3 bg-white/80 backdrop-blur-sm border-b border-black/5">
+              <div className="w-11 h-11 rounded-full bg-gradient-to-br from-forest-600 to-forest-800 flex items-center justify-center shadow-md">
+                <span className="font-display text-gold-400 font-bold text-lg">F</span>
               </div>
               <div className="flex-1">
-                <h4 className="text-[15px] font-semibold text-forest-800">Franklin</h4>
-                <p className="text-[11px] text-forest-600/70">Private Banker</p>
+                <h4 className="text-base font-semibold text-forest-800">Franklin</h4>
+                <p className="text-xs text-forest-600/70">Your Private Banker</p>
               </div>
               <Phone className="w-5 h-5 text-forest-700" />
             </div>
 
-            {/* Messages Container */}
-            <div className="h-[340px] sm:h-[360px] bg-gradient-to-b from-[#f0f0f0] to-[#e8e8e8] px-3 py-3 space-y-2.5 overflow-hidden">
-              {messages.map((msg, i) => (
-                <ChatMessage key={i} text={msg.text} isUser={msg.isUser} />
-              ))}
+            {/* Messages Container - Onboarding Flow */}
+            <div className="min-h-[420px] bg-gradient-to-b from-[#f5f5f5] to-[#ebebeb] px-4 py-5">
+              {/* Franklin's Avatar + Message */}
+              <div className="flex gap-3 items-start">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-forest-600 to-forest-800 flex-shrink-0 flex items-center justify-center shadow-sm">
+                  <span className="font-display text-gold-400 text-xs font-bold">F</span>
+                </div>
+                <div className="flex-1 space-y-4">
+                  {/* Message bubble */}
+                  <div className="bg-white px-4 py-4 rounded-2xl rounded-tl-sm shadow-sm border border-forest-700/5">
+                    <h3 className="font-display text-lg text-forest-800 mb-2">
+                      Hey, I'm Franklin, your AI private banker.
+                    </h3>
+                    <p className="text-[14px] text-forest-700/80 leading-relaxed">
+                      I help you grow your wealth by reaching the right people, getting the right advice, and closing deals with expert input.
+                    </p>
+                    <p className="text-[14px] text-forest-700/80 mt-3">
+                      How would you describe yourself?
+                    </p>
+                  </div>
+
+                  {/* Option Buttons */}
+                  <div className="space-y-2.5 pt-1">
+                    <OptionButton label="(A) I am an Investor" variant="primary" />
+                    <OptionButton label="(B) I am a Founder" />
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Input Bar */}
-            <div className="bg-white px-3 py-2 border-t border-black/5">
-              <div className="flex items-center gap-2">
-                <div className="flex-1 bg-[#f0f0f0] rounded-full px-4 py-2 border border-black/5">
-                  <span className="text-[13px] text-forest-700/40">Message</span>
+            <div className="bg-white px-4 py-3 border-t border-black/5">
+              <div className="flex items-center gap-3">
+                <div className="flex-1 bg-[#f0f0f0] rounded-full px-5 py-2.5 border border-black/5">
+                  <span className="text-sm text-forest-700/40">Message Franklin...</span>
                 </div>
-                <div className="w-8 h-8 bg-forest-700 rounded-full flex items-center justify-center">
-                  <ArrowRight className="w-4 h-4 text-white" />
+                <div className="w-10 h-10 bg-forest-700 rounded-full flex items-center justify-center shadow-sm">
+                  <ArrowRight className="w-5 h-5 text-white" />
                 </div>
               </div>
             </div>
 
             {/* Home Indicator */}
             <div className="flex justify-center py-2 bg-white">
-              <div className="w-28 h-1 bg-black/20 rounded-full" />
+              <div className="w-32 h-1 bg-black/20 rounded-full" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Decorative shadow */}
-      <div className="absolute -z-10 inset-4 bg-forest-700/20 blur-2xl rounded-full" />
+      <div className="absolute -z-10 inset-8 bg-forest-700/30 blur-3xl rounded-full" />
     </div>
   )
 }
@@ -184,11 +188,10 @@ export default function LandingPage() {
             {/* Nav Links */}
             <div className="hidden md:flex items-center gap-8">
               <a href="/expertise" className="link-elegant text-sm tracking-wide">Expertise</a>
-              <a href="#channels" className="link-elegant text-sm tracking-wide">Channels</a>
             </div>
 
             {/* CTA */}
-            <a href="#start" className="btn-primary text-xs sm:text-sm">
+            <a href="#chat" className="btn-primary text-xs sm:text-sm">
               <span className="hidden sm:inline">Speak with Franklin</span>
               <span className="sm:hidden">Chat</span>
             </a>
@@ -255,15 +258,11 @@ export default function LandingPage() {
                 </footer>
               </blockquote>
 
-              {/* CTAs */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <a href="#start" className="btn-gold group">
+              {/* CTA */}
+              <div className="pt-4">
+                <a href="#chat" className="btn-gold group">
                   <span>Start a Conversation</span>
                   <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </a>
-                <a href="#expertise" className="btn-secondary group">
-                  <span>Discover His Expertise</span>
-                  <ChevronDown className="ml-2 w-4 h-4 group-hover:translate-y-1 transition-transform" />
                 </a>
               </div>
             </div>
@@ -277,70 +276,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ===== CHANNELS SECTION ===== */}
-      <section id="channels" className="py-32 bg-ivory-200/50 grain">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left: Content */}
-            <div>
-              <Flourish className="text-gold-400/60 mb-6" />
-              <h2 className="font-display text-4xl md:text-5xl text-forest-700 tracking-tight mb-6">
-                Converse at Your <span className="italic text-gradient-gold">Convenience</span>
-              </h2>
-              <p className="font-body text-xl text-forest-700/70 mb-12 leading-relaxed">
-                Whether by letter, voice, or modern messaging, Franklin is at your service
-                through whichever channel suits your preference.
-              </p>
-
-              <div className="space-y-6">
-                {[
-                  {
-                    icon: MessageSquare,
-                    title: "WhatsApp",
-                    description: "Converse naturally, as you would with a trusted advisor. Available any time.",
-                    badge: "Most Popular"
-                  },
-                  {
-                    icon: Phone,
-                    title: "Voice Call",
-                    description: "Speak directly with Franklin. His dulcet tones bring comfort to complex matters.",
-                    badge: "Coming Soon"
-                  },
-                  {
-                    icon: Mail,
-                    title: "Email",
-                    description: "For those who prefer considered correspondence and detailed counsel.",
-                    badge: null
-                  }
-                ].map((channel, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start gap-5 p-6 card-luxury"
-                  >
-                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-forest-700/5 flex items-center justify-center">
-                      <channel.icon className="w-6 h-6 text-forest-700" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-display text-xl text-forest-700">{channel.title}</h3>
-                        {channel.badge && (
-                          <span className="px-2 py-0.5 text-xs font-sans tracking-wide text-gold-600 bg-gold-400/20 rounded-full">
-                            {channel.badge}
-                          </span>
-                        )}
-                      </div>
-                      <p className="font-body text-forest-700/60">{channel.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right: iPhone Visual */}
-            <div className="flex justify-center">
-              <IPhoneMockup />
-            </div>
-          </div>
+      {/* ===== CHAT SECTION ===== */}
+      <section id="chat" className="py-24 bg-ivory-200/50 grain">
+        <div className="max-w-2xl mx-auto px-6 lg:px-8">
+          <IPhoneMockup />
         </div>
       </section>
 
