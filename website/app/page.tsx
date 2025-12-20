@@ -113,11 +113,11 @@ export default function LandingPage() {
               </h1>
 
               {/* Subheadline */}
-              <p className="font-display italic text-2xl md:text-3xl text-forest-700/80 leading-relaxed max-w-xl">
-                Money talks
+              <p className="font-body text-lg md:text-xl text-forest-700/80 leading-relaxed max-w-xl">
+                Franklin is your AI private banker who manages your wealth with the sophistication of a family office and the network of a top-tier investment bank.
               </p>
-              <p className="font-body text-lg md:text-xl text-forest-700/70 leading-relaxed max-w-xl">
-                Franklin is your personal wealth advisor and private banker. Grow your wealth, invest in sophisticated investment strategies, set up optimal tax strategies. Connect with Wall Street firms and brokers to close and syndicate deals, he can do it all.
+              <p className="font-body text-lg md:text-xl text-forest-700/60 leading-relaxed max-w-xl">
+                Franklin introduces you to the right people, negotiates on your behalf, and orchestrates solutions across institutions.
               </p>
 
               {/* Quote */}
