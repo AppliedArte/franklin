@@ -363,6 +363,125 @@ class Referral(Base):
     )
 
 
+class DocumentType(str, Enum):
+    """Types of documents users can upload."""
+
+    PITCH_DECK = "pitch_deck"
+    FINANCIALS = "financials"
+    DEAL_MEMO = "deal_memo"
+    TERM_SHEET = "term_sheet"
+    PORTFOLIO = "portfolio"
+    TAX_DOC = "tax_doc"
+    OTHER = "other"
+
+
+class Document(Base):
+    """User-uploaded documents for RAG."""
+
+    __tablename__ = "documents"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="CASCADE")
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+
+    # Document metadata
+    filename: Mapped[str] = mapped_column(String(500))
+    doc_type: Mapped[str] = mapped_column(String(50), default="other")  # DocumentType
+    title: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # Storage
+    storage_url: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)  # S3/Supabase URL
+    mime_type: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    file_size_bytes: Mapped[Optional[int]] = mapped_column(nullable=True)
+
+    # Processing status
+    is_processed: Mapped[bool] = mapped_column(Boolean, default=False)
+    processing_error: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    chunk_count: Mapped[int] = mapped_column(default=0)
+
+    # Relationships
+    chunks: Mapped[list["DocumentChunk"]] = relationship(
+        "DocumentChunk", back_populates="document", lazy="selectin", cascade="all, delete-orphan"
+    )
+
+    __table_args__ = (
+        Index("ix_documents_user_id", "user_id"),
+        Index("ix_documents_doc_type", "doc_type"),
+    )
+
+
+class DocumentChunk(Base):
+    """Chunked and embedded document content for vector search."""
+
+    __tablename__ = "document_chunks"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    document_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("documents.id", ondelete="CASCADE")
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    # Chunk content
+    content: Mapped[str] = mapped_column(Text)
+    chunk_index: Mapped[int] = mapped_column(default=0)  # Order within document
+
+    # Metadata for context
+    page_number: Mapped[Optional[int]] = mapped_column(nullable=True)
+    section_title: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+
+    # Vector embedding (1536 for OpenAI, 1024 for Voyage)
+    embedding: Mapped[Optional[list]] = mapped_column(Vector(1536), nullable=True)
+
+    # Relationship
+    document: Mapped["Document"] = relationship("Document", back_populates="chunks")
+
+    __table_args__ = (
+        Index("ix_document_chunks_document_id", "document_id"),
+    )
+
+
+class UserFact(Base):
+    """Extracted facts from user conversations for RAG.
+
+    These are structured pieces of information Franklin learns about a user
+    during conversations, stored for quick retrieval.
+    """
+
+    __tablename__ = "user_facts"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="CASCADE")
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+
+    # Fact content
+    category: Mapped[str] = mapped_column(String(100))  # goals, preferences, holdings, concerns, etc.
+    fact: Mapped[str] = mapped_column(Text)  # The actual fact
+    source: Mapped[str] = mapped_column(String(50))  # conversation, document, form
+
+    # Context
+    conversation_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True)
+    confidence: Mapped[float] = mapped_column(Float, default=1.0)  # How confident we are
+
+    # Vector embedding for semantic search
+    embedding: Mapped[Optional[list]] = mapped_column(Vector(1536), nullable=True)
+
+    __table_args__ = (
+        Index("ix_user_facts_user_id", "user_id"),
+        Index("ix_user_facts_category", "category"),
+    )
+
+
 class Call(Base):
     """Track voice calls with users (Vapi)."""
 

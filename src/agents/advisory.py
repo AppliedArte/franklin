@@ -2,11 +2,15 @@
 
 Provides general wealth advice once the user profile is sufficiently built.
 Routes to specialist modules when appropriate.
+Uses RAG for context from user documents and facts.
 """
 
 from typing import Optional
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.agents.base import BaseAgent
+from src.rag.retrieval import RetrievalService
 
 
 class AdvisoryAgent(BaseAgent):
@@ -14,6 +18,7 @@ class AdvisoryAgent(BaseAgent):
 
     def __init__(self):
         super().__init__(temperature=0.6, max_tokens=2048)
+        self.retrieval_service = RetrievalService()
 
     @property
     def system_prompt(self) -> str:
@@ -136,6 +141,45 @@ When offering investment guidance, include something to the effect of:
 {profile_context}
 
 Use this profile information to personalize your advice."""
+
+        return await self.generate(messages, system_override=enhanced_prompt)
+
+    async def generate_with_rag(
+        self,
+        db: AsyncSession,
+        user_id: str,
+        messages: list[dict],
+        profile_context: str = "",
+    ) -> str:
+        """Generate response with RAG context from documents and user facts."""
+        # Get the latest user message for retrieval
+        user_query = ""
+        for msg in reversed(messages):
+            if msg.get("role") == "user":
+                user_query = msg.get("content", "")
+                break
+
+        # Retrieve relevant context
+        rag_context = await self.retrieval_service.retrieve_for_query(
+            db=db,
+            user_id=user_id,
+            query=user_query,
+            top_k_chunks=5,
+            top_k_facts=10,
+            include_recent_messages=0,  # We already have messages
+        )
+
+        # Build enhanced prompt with RAG context
+        rag_prompt_context = rag_context.to_prompt_context()
+
+        enhanced_prompt = f"""{self.system_prompt}
+
+## User Profile Context
+{profile_context}
+
+{rag_prompt_context}
+
+Use all available context to provide personalized, informed advice. Reference specific details from their documents or previous conversations when relevant."""
 
         return await self.generate(messages, system_override=enhanced_prompt)
 

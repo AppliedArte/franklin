@@ -17,6 +17,7 @@ from src.db.models import User, UserProfile, Conversation, Message
 from src.agents.profile_builder import ProfileBuilder
 from src.agents.advisory import AdvisoryAgent
 from src.utils.context import ContextAssembler
+from src.rag.fact_extractor import FactExtractor
 
 
 class ConversationOrchestrator:
@@ -27,6 +28,7 @@ class ConversationOrchestrator:
         self.context_assembler = ContextAssembler(db)
         self.profile_builder = ProfileBuilder()
         self.advisory_agent = AdvisoryAgent()
+        self.fact_extractor = FactExtractor()
 
     async def handle_message(
         self,
@@ -78,7 +80,10 @@ class ConversationOrchestrator:
         # 7. Update profile if new information was extracted
         await self._update_profile_from_conversation(user, message_content, response)
 
-        # 8. Commit changes
+        # 8. Extract and store facts for RAG (runs async, non-blocking)
+        await self._extract_facts(user.id, conversation.id, message_content, response)
+
+        # 9. Commit changes
         await self.db.commit()
 
         if return_metadata:
@@ -220,13 +225,21 @@ class ConversationOrchestrator:
         # Build messages for LLM
         messages = self._build_llm_messages(context, message)
 
+        # Build profile context string
+        profile_context = context.get("profile_summary", "")
+
         # Routing logic based on profile completeness and user intent
         if profile_score < 30:
             # Still building profile - use Profile Builder
             response = await self.profile_builder.generate(messages)
         else:
-            # Profile sufficient - use Advisory Agent
-            response = await self.advisory_agent.generate(messages)
+            # Profile sufficient - use Advisory Agent with RAG
+            response = await self.advisory_agent.generate_with_rag(
+                db=self.db,
+                user_id=user.id,
+                messages=messages,
+                profile_context=profile_context,
+            )
 
         return response
 
@@ -299,3 +312,28 @@ class ConversationOrchestrator:
                     score += weight
 
         return min(score, 100)
+
+    async def _extract_facts(
+        self,
+        user_id: str,
+        conversation_id: str,
+        user_message: str,
+        ai_response: str,
+    ) -> None:
+        """Extract facts from conversation and store for RAG."""
+        try:
+            facts = await self.fact_extractor.extract_and_store_facts(
+                db=self.db,
+                user_id=user_id,
+                user_message=user_message,
+                assistant_message=ai_response,
+                conversation_id=conversation_id,
+            )
+            if facts:
+                # Log extracted facts for debugging
+                import logging
+                logging.debug(f"Extracted {len(facts)} facts for user {user_id}: {facts}")
+        except Exception as e:
+            # Don't fail the conversation if fact extraction fails
+            import logging
+            logging.warning(f"Fact extraction failed for user {user_id}: {e}")

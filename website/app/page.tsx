@@ -107,6 +107,73 @@ function FormInput({
   )
 }
 
+// Country codes for phone selector
+const countryCodes = [
+  { code: '+1', country: 'US', flag: '🇺🇸' },
+  { code: '+1', country: 'CA', flag: '🇨🇦' },
+  { code: '+44', country: 'UK', flag: '🇬🇧' },
+  { code: '+49', country: 'DE', flag: '🇩🇪' },
+  { code: '+33', country: 'FR', flag: '🇫🇷' },
+  { code: '+41', country: 'CH', flag: '🇨🇭' },
+  { code: '+971', country: 'AE', flag: '🇦🇪' },
+  { code: '+65', country: 'SG', flag: '🇸🇬' },
+  { code: '+852', country: 'HK', flag: '🇭🇰' },
+  { code: '+81', country: 'JP', flag: '🇯🇵' },
+  { code: '+86', country: 'CN', flag: '🇨🇳' },
+  { code: '+91', country: 'IN', flag: '🇮🇳' },
+  { code: '+61', country: 'AU', flag: '🇦🇺' },
+  { code: '+972', country: 'IL', flag: '🇮🇱' },
+  { code: '+55', country: 'BR', flag: '🇧🇷' },
+  { code: '+52', country: 'MX', flag: '🇲🇽' },
+]
+
+// Phone Input with Country Selector
+function PhoneInput({
+  value,
+  countryCode,
+  onChange,
+  onCountryChange,
+  error = false
+}: {
+  value: string
+  countryCode: string
+  onChange: (value: string) => void
+  onCountryChange: (code: string) => void
+  error?: boolean
+}) {
+  return (
+    <div className="space-y-0.5">
+      <label className="text-[10px] font-medium text-white/70 uppercase tracking-wide">
+        Phone
+      </label>
+      <div className="flex gap-1">
+        <select
+          value={countryCode}
+          onChange={(e) => onCountryChange(e.target.value)}
+          className="w-[72px] px-1 py-1.5 text-[13px] bg-white border border-silver-300 rounded-md focus:outline-none focus:border-silver-500 focus:ring-1 focus:ring-silver-500/20 text-silver-800"
+        >
+          {countryCodes.map((c, i) => (
+            <option key={`${c.country}-${i}`} value={c.code}>
+              {c.flag} {c.code}
+            </option>
+          ))}
+        </select>
+        <input
+          type="tel"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="000 000 0000"
+          className={`flex-1 px-2.5 py-1.5 text-[13px] bg-white border rounded-md focus:outline-none transition-all text-silver-800 placeholder:text-silver-400 ${
+            error
+              ? "border-red-500 ring-2 ring-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.3)]"
+              : "border-silver-300 focus:border-silver-500 focus:ring-1 focus:ring-silver-500/20"
+          }`}
+        />
+      </div>
+    </div>
+  )
+}
+
 // iPhone Mockup Component - Full Width with Onboarding
 function IPhoneMockup() {
   const [selectedOption, setSelectedOption] = useState<'investor' | 'founder' | 'curious' | null>(null)
@@ -120,6 +187,7 @@ function IPhoneMockup() {
     fund_name: false,
     linkedin: false
   })
+  const [countryCode, setCountryCode] = useState('+1')
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -156,6 +224,7 @@ function IPhoneMockup() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
+          phone: `${countryCode}${formData.phone.replace(/\D/g, '')}`,
           user_type: selectedOption
         })
       })
@@ -184,9 +253,9 @@ function IPhoneMockup() {
   }
 
   return (
-    <div className="relative w-full flex justify-center py-16">
+    <div className="relative w-full py-16 flex justify-center">
       {/* Phone Device - iPhone 15 Pro aspect ratio (9:19.5 = width:height) */}
-      <div className="relative w-[380px] h-[824px] flex-shrink-0">
+      <div className="relative w-full max-w-[800px] aspect-[9/19.5]">
         {/* Outer frame with gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#2a2a2a] via-[#1a1a1a] to-[#0a0a0a] rounded-[3rem] shadow-2xl" />
 
@@ -304,12 +373,11 @@ function IPhoneMockup() {
                           onChange={updateField('name')}
                           error={fieldErrors.name}
                         />
-                        <FormInput
-                          label="Phone"
-                          placeholder="(000) 000-0000"
+                        <PhoneInput
                           value={formData.phone}
+                          countryCode={countryCode}
                           onChange={updateField('phone')}
-                          type="tel"
+                          onCountryChange={setCountryCode}
                           error={fieldErrors.phone}
                         />
                         <FormInput
