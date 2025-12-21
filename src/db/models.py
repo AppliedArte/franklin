@@ -278,7 +278,7 @@ class Message(Base):
 
     # Metadata
     channel: Mapped[str] = mapped_column(String(50))
-    metadata: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    msg_metadata: Mapped[Optional[dict]] = mapped_column("metadata", JSON, nullable=True)
 
     # Vector embedding for semantic search
     embedding: Mapped[Optional[list]] = mapped_column(Vector(1536), nullable=True)

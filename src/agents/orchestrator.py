@@ -205,7 +205,7 @@ class ConversationOrchestrator:
             role=role,
             content=content,
             channel=channel,
-            metadata=metadata,
+            msg_metadata=metadata,
         )
         self.db.add(message)
         await self.db.flush()
