@@ -2,20 +2,20 @@ import type { Metadata } from "next"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Franklin | Your Personal Private Banker",
-  description: "Meet Franklin, a distinguished wealth advisor who brings centuries of financial wisdom to modern investing. Sophisticated counsel on hedge funds, private equity, crypto, and alternative investments.",
+  title: "Franklin | Your AI Private Banker",
+  description: "Your AI Private Banker. Grow your wealth with the sophistication of a family office and the network of a top-tier investment bank.",
   keywords: ["private banker", "wealth advisor", "AI advisor", "hedge funds", "private equity", "alternative investments", "crypto", "DeFi"],
   openGraph: {
-    title: "Franklin | Your Personal Private Banker",
-    description: "Sophisticated wealth guidance from a distinguished gentleman. Hedge funds, private equity, crypto, and beyond.",
-    url: "https://askfranklin.io",
+    title: "Franklin | Your AI Private Banker",
+    description: "Your AI Private Banker. Grow your wealth with the sophistication of a family office and the network of a top-tier investment bank.",
+    url: "https://askfranklin.xyz",
     siteName: "Ask Franklin",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Franklin | Your Personal Private Banker",
-    description: "Sophisticated wealth guidance from a distinguished gentleman.",
+    title: "Franklin | Your AI Private Banker",
+    description: "Your AI Private Banker. Grow your wealth with the sophistication of a family office.",
   },
 }
 
