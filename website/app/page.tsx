@@ -381,7 +381,7 @@ function IPhoneMockup() {
                   {/* Option Buttons */}
                   {!selectedOption && (
                     <div className="space-y-2.5 pt-1">
-                      <OptionButton label="(A) I am an Investor" variant="primary" onClick={() => setSelectedOption('investor')} />
+                      <OptionButton label="(A) I am an Investor" onClick={() => setSelectedOption('investor')} />
                       <OptionButton label="(B) I am a Founder" onClick={() => setSelectedOption('founder')} />
                       <OptionButton label="(C) Other. Just curious" onClick={() => setSelectedOption('curious')} />
                     </div>
