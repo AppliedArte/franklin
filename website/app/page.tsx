@@ -87,13 +87,18 @@ function FormInput({
   optional?: boolean
   error?: boolean
 }) {
+  // Debug logging
+  if (error) {
+    console.log(`🔴 FormInput ERROR: ${label} has error=${error}, value="${value}"`)
+  }
+
   return (
     <div className="space-y-0.5">
-      <label className={`text-[10px] font-medium uppercase tracking-wide flex items-center gap-1 ${
-        error ? "text-red-500" : "text-white/70"
+      <label className={`text-[11px] font-bold uppercase tracking-wide flex items-center gap-1 ${
+        error ? "text-red-600" : "text-white/70"
       }`}>
         {label}
-        {error && <span className="text-red-500 font-bold">*</span>}
+        {error && <span className="text-red-600 font-bold text-lg">*</span>}
         {optional && <span className="text-white/50"> (opt.)</span>}
       </label>
       <input
@@ -101,13 +106,14 @@ function FormInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full px-3 py-2 text-[14px] border-2 rounded-lg focus:outline-none transition-all text-gray-900 font-medium placeholder:text-gray-400 ${
+        className={`w-full px-3 py-2 text-[14px] border-3 rounded-lg focus:outline-none transition-all text-gray-900 font-medium placeholder:text-gray-400 ${
           error
-            ? "border-red-500 bg-red-50 ring-2 ring-red-500/50"
+            ? "border-red-600 bg-red-100 ring-4 ring-red-500/60 shadow-lg shadow-red-500/30"
             : "border-gray-300 bg-white focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
         }`}
+        style={error ? { borderWidth: '3px', borderColor: '#dc2626' } : {}}
       />
-      {error && <p className="text-red-500 text-[10px] font-medium">Required</p>}
+      {error && <p className="text-red-600 text-[11px] font-bold mt-1">⚠️ This field is required</p>}
     </div>
   )
 }
@@ -146,21 +152,27 @@ function PhoneInput({
   onCountryChange: (code: string) => void
   error?: boolean
 }) {
+  // Debug logging
+  if (error) {
+    console.log(`🔴 PhoneInput ERROR: Phone has error=${error}, value="${value}"`)
+  }
+
   return (
     <div className="space-y-0.5">
-      <label className={`text-[10px] font-medium uppercase tracking-wide flex items-center gap-1 ${
-        error ? "text-red-500" : "text-white/70"
+      <label className={`text-[11px] font-bold uppercase tracking-wide flex items-center gap-1 ${
+        error ? "text-red-600" : "text-white/70"
       }`}>
         Phone
-        {error && <span className="text-red-500 font-bold">*</span>}
+        {error && <span className="text-red-600 font-bold text-lg">*</span>}
       </label>
       <div className="flex gap-1">
         <select
           value={countryCode}
           onChange={(e) => onCountryChange(e.target.value)}
           className={`w-[80px] px-2 py-2 text-[14px] border-2 rounded-lg focus:outline-none text-gray-900 font-medium ${
-            error ? "border-red-500 bg-red-50" : "border-gray-300 bg-white focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+            error ? "border-red-600 bg-red-100" : "border-gray-300 bg-white focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
           }`}
+          style={error ? { borderWidth: '3px', borderColor: '#dc2626' } : {}}
         >
           {countryCodes.map((c, i) => (
             <option key={`${c.country}-${i}`} value={c.code}>
@@ -175,12 +187,13 @@ function PhoneInput({
           placeholder="000 000 0000"
           className={`flex-1 px-3 py-2 text-[14px] border-2 rounded-lg focus:outline-none transition-all text-gray-900 font-medium placeholder:text-gray-400 ${
             error
-              ? "border-red-500 bg-red-50 ring-2 ring-red-500/50"
+              ? "border-red-600 bg-red-100 ring-4 ring-red-500/60 shadow-lg shadow-red-500/30"
               : "border-gray-300 bg-white focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
           }`}
+          style={error ? { borderWidth: '3px', borderColor: '#dc2626' } : {}}
         />
       </div>
-      {error && <p className="text-red-500 text-[10px] font-medium">Required</p>}
+      {error && <p className="text-red-600 text-[11px] font-bold mt-1">⚠️ This field is required</p>}
     </div>
   )
 }
@@ -208,7 +221,21 @@ function IPhoneMockup() {
     twitter: ''
   })
 
+  // Debug: Log whenever fieldErrors changes
+  useEffect(() => {
+    console.log('🔄 fieldErrors STATE CHANGED:', fieldErrors)
+    const errorsExist = Object.values(fieldErrors).some(e => e)
+    if (errorsExist) {
+      console.log('🔴 ERRORS EXIST IN STATE - These fields should be red:',
+        Object.entries(fieldErrors).filter(([k, v]) => v).map(([k]) => k))
+    }
+  }, [fieldErrors])
+
   const handleSubmit = async () => {
+    console.log('==========================================')
+    console.log('🚀 SUBMIT CLICKED')
+    console.log('📝 Form Data:', formData)
+
     // Check for empty required fields
     const errors = {
       name: !formData.name,
@@ -218,14 +245,23 @@ function IPhoneMockup() {
       linkedin: !formData.linkedin
     }
 
+    console.log('❌ Calculated Errors:', errors)
+
     const hasErrors = Object.values(errors).some(e => e)
+    console.log('🔴 Has Errors:', hasErrors)
+
+    console.log('📤 Setting fieldErrors state to:', errors)
     setFieldErrors(errors)
 
     if (hasErrors) {
+      console.log('⚠️ VALIDATION FAILED - Fields with errors:',
+        Object.entries(errors).filter(([k, v]) => v).map(([k]) => k))
       setHasError(true)
       setTimeout(() => setHasError(false), 2000)
       return
     }
+
+    console.log('✅ VALIDATION PASSED')
 
     setIsSubmitting(true)
     setHasError(false)
