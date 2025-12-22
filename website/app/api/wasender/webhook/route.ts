@@ -1,12 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import OpenAI from 'openai'
 
 const supabaseUrl = process.env.SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const webhookSecret = process.env.WASENDER_WEBHOOK_SECRET
 const wasenderDeviceId = process.env.WASENDER_DEVICE_ID!
-const geminiApiKey = process.env.GEMINI_API_KEY!
+const openrouterApiKey = process.env.OPENROUTER_API_KEY!
 
 const FRANKLIN_SYSTEM_PROMPT = `You are Franklin, an AI private banker with a warm, avuncular personality.
 
@@ -70,11 +70,11 @@ async function generateFranklinResponse(
     .limit(10)
 
   // Build conversation history for context
-  const history = (recentMessages || [])
+  const conversationHistory = (recentMessages || [])
     .reverse()
     .map((msg: any) => ({
-      role: msg.direction === 'inbound' ? 'user' : 'model',
-      parts: [{ text: msg.message_body }],
+      role: msg.direction === 'inbound' ? 'user' as const : 'assistant' as const,
+      content: msg.message_body,
     }))
 
   // Add context about the user if we know them
@@ -83,17 +83,21 @@ async function generateFranklinResponse(
     systemPrompt += `\n\nYou're talking to ${senderName}.`
   }
 
-  const genAI = new GoogleGenerativeAI(geminiApiKey)
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
-    systemInstruction: systemPrompt,
+  const client = new OpenAI({
+    apiKey: openrouterApiKey,
+    baseURL: 'https://openrouter.ai/api/v1',
   })
 
-  const chat = model.startChat({ history })
-  const result = await chat.sendMessage(incomingMessage)
-  const response = result.response
+  const response = await client.chat.completions.create({
+    model: 'mistralai/devstral-2512:free',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      ...conversationHistory,
+      { role: 'user', content: incomingMessage }
+    ],
+  })
 
-  return response.text() || "I'm here to help! Tell me more about what you're looking for."
+  return response.choices[0]?.message?.content || "I'm here to help! Tell me more about what you're looking for."
 }
 
 export async function POST(request: NextRequest) {
