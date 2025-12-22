@@ -1,12 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
+import OpenAI from 'openai'
 
 const supabaseUrl = process.env.SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const webhookSecret = process.env.WASENDER_WEBHOOK_SECRET
 const wasenderDeviceId = process.env.WASENDER_DEVICE_ID!
-const anthropicApiKey = process.env.ANTHROPIC_API_KEY!
+const zaiApiKey = process.env.ZAI_API_KEY!
 
 const FRANKLIN_SYSTEM_PROMPT = `You are Franklin, an AI private banker with a warm, avuncular personality.
 
@@ -73,30 +73,31 @@ async function generateFranklinResponse(
   const conversationHistory = (recentMessages || [])
     .reverse()
     .map((msg: any) => ({
-      role: msg.direction === 'inbound' ? 'user' : 'assistant',
+      role: msg.direction === 'inbound' ? 'user' as const : 'assistant' as const,
       content: msg.message_body,
     }))
 
   // Add context about the user if we know them
-  let userContext = ''
+  let systemPrompt = FRANKLIN_SYSTEM_PROMPT
   if (senderName) {
-    userContext = `\n\nYou're talking to ${senderName}.`
+    systemPrompt += `\n\nYou're talking to ${senderName}.`
   }
 
-  const anthropic = new Anthropic({ apiKey: anthropicApiKey })
+  const client = new OpenAI({
+    apiKey: zaiApiKey,
+    baseURL: 'https://api.z.ai/api/paas/v4/',
+  })
 
-  const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 500,
-    system: FRANKLIN_SYSTEM_PROMPT + userContext,
+  const response = await client.chat.completions.create({
+    model: 'glm-4.7',
     messages: [
+      { role: 'system', content: systemPrompt },
       ...conversationHistory,
       { role: 'user', content: incomingMessage }
     ],
   })
 
-  const textContent = response.content.find(block => block.type === 'text')
-  return textContent?.text || "I'm here to help! Tell me more about what you're looking for."
+  return response.choices[0]?.message?.content || "I'm here to help! Tell me more about what you're looking for."
 }
 
 export async function POST(request: NextRequest) {

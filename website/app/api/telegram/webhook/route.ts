@@ -1,9 +1,36 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+import OpenAI from 'openai'
 
 const supabaseUrl = process.env.SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN!
+const zaiApiKey = process.env.ZAI_API_KEY!
+
+const FRANKLIN_SYSTEM_PROMPT = `You are Franklin, an AI private banker with a warm, avuncular personality.
+
+Your role is to help people grow their wealth by:
+- Connecting them with the right people and opportunities
+- Providing sophisticated financial guidance
+- Helping with deal flow and transactions
+
+PERSONALITY:
+- Warm, genuinely curious about their story
+- Like catching up with an old friend who's interested in your life
+- Knowledgeable about finance but not showing off
+- Never pushy or interrogating - make them feel heard
+- Wise, like a trusted family advisor
+
+RULES:
+- Keep responses concise (1-3 sentences for quick replies, longer for complex questions)
+- Be conversational, not formal
+- Use their name occasionally if you know it
+- Ask follow-up questions to understand their situation
+- If they're new, try to understand: What they do, their financial goals, timeline
+- Never give specific investment advice or guarantees
+- If asked about specific stocks/crypto, say you'd need to understand their full situation first
+
+Sign off naturally, like a friend would. You can use "— Franklin" occasionally but not every message.`
 
 async function sendTelegramMessage(chatId: number, text: string) {
   const response = await fetch(
@@ -14,11 +41,55 @@ async function sendTelegramMessage(chatId: number, text: string) {
       body: JSON.stringify({
         chat_id: chatId,
         text: text,
-        parse_mode: 'Markdown',
       }),
     }
   )
   return response.json()
+}
+
+async function generateFranklinResponse(
+  supabase: any,
+  chatId: string,
+  incomingMessage: string,
+  senderName: string | null
+): Promise<string> {
+  // Get recent conversation history
+  const { data: recentMessages } = await supabase
+    .from('telegram_messages')
+    .select('message_text, direction, created_at')
+    .eq('telegram_chat_id', chatId)
+    .order('created_at', { ascending: false })
+    .limit(10)
+
+  // Build conversation history for context
+  const conversationHistory = (recentMessages || [])
+    .reverse()
+    .map((msg: any) => ({
+      role: msg.direction === 'inbound' ? 'user' as const : 'assistant' as const,
+      content: msg.message_text,
+    }))
+
+  // Add context about the user if we know them
+  let systemPrompt = FRANKLIN_SYSTEM_PROMPT
+  if (senderName) {
+    systemPrompt += `\n\nYou're talking to ${senderName}.`
+  }
+
+  const client = new OpenAI({
+    apiKey: zaiApiKey,
+    baseURL: 'https://api.z.ai/api/paas/v4/',
+  })
+
+  const response = await client.chat.completions.create({
+    model: 'glm-4.7',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      ...conversationHistory,
+      { role: 'user', content: incomingMessage }
+    ],
+  })
+
+  return response.choices[0]?.message?.content || "I'm here to help! Tell me more about what you're looking for."
 }
 
 export async function POST(request: NextRequest) {
@@ -38,39 +109,67 @@ export async function POST(request: NextRequest) {
     const lastName = message.from?.last_name
     const text = message.text || ''
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+    if (!text.trim()) {
+      return NextResponse.json({ ok: true })
+    }
 
-    // Store the message
-    const { error } = await supabase
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+    const senderName = [firstName, lastName].filter(Boolean).join(' ') || null
+
+    // Store the incoming message
+    await supabase
       .from('telegram_messages')
       .insert({
         telegram_chat_id: chatId?.toString(),
         telegram_user_id: userId?.toString(),
         username: username,
-        sender_name: [firstName, lastName].filter(Boolean).join(' ') || null,
+        sender_name: senderName,
         message_text: text,
         direction: 'inbound',
         raw_data: body,
       })
 
-    if (error) {
-      console.error('Failed to store Telegram message:', error)
-    }
-
-    // Handle /start command
+    // Handle /start command with special greeting
     if (text === '/start') {
-      await sendTelegramMessage(
-        chatId,
-        `Hey ${firstName || 'there'}! 👋\n\nI'm *Franklin*, your AI private banker.\n\nI help you grow your wealth by reaching the right people, getting the right advice, and closing deals with expert input.\n\nTell me about yourself - are you an investor, founder, or just curious?`
-      )
+      const greeting = `Hey ${firstName || 'there'}!\n\nI'm Franklin, your AI private banker.\n\nI help you grow your wealth by reaching the right people, getting the right advice, and closing deals with expert input.\n\nTell me about yourself - are you an investor, founder, or just curious?`
+
+      await sendTelegramMessage(chatId, greeting)
+
+      await supabase
+        .from('telegram_messages')
+        .insert({
+          telegram_chat_id: chatId?.toString(),
+          message_text: greeting,
+          direction: 'outbound',
+        })
+
       return NextResponse.json({ ok: true })
     }
 
-    // Auto-reply for now (can be enhanced with AI later)
-    await sendTelegramMessage(
-      chatId,
-      `Thanks for your message, ${firstName || 'friend'}! I've noted it down.\n\nI'll get back to you shortly. In the meantime, feel free to share more about what you're working on.`
-    )
+    // Generate AI response
+    try {
+      const aiResponse = await generateFranklinResponse(
+        supabase,
+        chatId?.toString(),
+        text,
+        senderName
+      )
+
+      await sendTelegramMessage(chatId, aiResponse)
+
+      // Store outbound message
+      await supabase
+        .from('telegram_messages')
+        .insert({
+          telegram_chat_id: chatId?.toString(),
+          message_text: aiResponse,
+          direction: 'outbound',
+        })
+
+      console.log('Franklin responded on Telegram to', username || chatId)
+    } catch (aiError) {
+      console.error('Failed to generate/send AI response:', aiError)
+    }
 
     return NextResponse.json({ ok: true })
   } catch (error) {
