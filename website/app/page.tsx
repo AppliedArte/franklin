@@ -101,10 +101,10 @@ function FormInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full px-2.5 py-1.5 text-[13px] border-2 rounded-md focus:outline-none transition-all text-silver-800 placeholder:text-silver-400 ${
+        className={`w-full px-3 py-2 text-[14px] border-2 rounded-lg focus:outline-none transition-all text-gray-900 font-medium placeholder:text-gray-400 ${
           error
             ? "border-red-500 bg-red-50 ring-2 ring-red-500/50"
-            : "border-silver-300 bg-white focus:border-silver-500 focus:ring-1 focus:ring-silver-500/20"
+            : "border-gray-300 bg-white focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
         }`}
       />
       {error && <p className="text-red-500 text-[10px] font-medium">Required</p>}
@@ -158,8 +158,8 @@ function PhoneInput({
         <select
           value={countryCode}
           onChange={(e) => onCountryChange(e.target.value)}
-          className={`w-[72px] px-1 py-1.5 text-[13px] border-2 rounded-md focus:outline-none text-silver-800 ${
-            error ? "border-red-500 bg-red-50" : "border-silver-300 bg-white focus:border-silver-500 focus:ring-1 focus:ring-silver-500/20"
+          className={`w-[80px] px-2 py-2 text-[14px] border-2 rounded-lg focus:outline-none text-gray-900 font-medium ${
+            error ? "border-red-500 bg-red-50" : "border-gray-300 bg-white focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
           }`}
         >
           {countryCodes.map((c, i) => (
@@ -173,10 +173,10 @@ function PhoneInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="000 000 0000"
-          className={`flex-1 px-2.5 py-1.5 text-[13px] border-2 rounded-md focus:outline-none transition-all text-silver-800 placeholder:text-silver-400 ${
+          className={`flex-1 px-3 py-2 text-[14px] border-2 rounded-lg focus:outline-none transition-all text-gray-900 font-medium placeholder:text-gray-400 ${
             error
               ? "border-red-500 bg-red-50 ring-2 ring-red-500/50"
-              : "border-silver-300 bg-white focus:border-silver-500 focus:ring-1 focus:ring-silver-500/20"
+              : "border-gray-300 bg-white focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
           }`}
         />
       </div>
