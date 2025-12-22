@@ -601,7 +601,7 @@ export default function LandingPage() {
 
             {/* Nav Links */}
             <div className="hidden md:flex items-center gap-8">
-              <a href="/expertise" className="link-elegant text-sm tracking-wide">Expertise</a>
+              <a href="/expertise" className="link-elegant text-sm tracking-wide">Resume</a>
             </div>
 
             {/* CTA */}

@@ -10,7 +10,7 @@ const wasenderApiKey = process.env.WASENDER_API_KEY
 const wasenderDeviceId = process.env.WASENDER_DEVICE_ID
 
 async function sendWhatsAppMessage(phone: string, name: string, userType: string) {
-  if (!wasenderApiKey || !wasenderDeviceId) {
+  if (!wasenderDeviceId) {
     console.log('WhatsApp not configured, skipping message')
     return null
   }
@@ -29,13 +29,12 @@ Looking forward to our conversation!
   const response = await fetch('https://api.wasenderapi.com/api/send-message', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${wasenderApiKey}`,
+      'Authorization': `Bearer ${wasenderDeviceId}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      device_id: wasenderDeviceId,
-      phone: phone.replace(/\+/g, ''),
-      message: message,
+      to: phone,
+      text: message,
     }),
   })
 
