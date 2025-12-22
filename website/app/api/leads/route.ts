@@ -49,18 +49,20 @@ Looking forward to our conversation!
 }
 
 async function initiateVapiCall(phone: string, name: string, userType: string, fundName: string) {
-  const systemPrompt = `You are Franklin, a distinguished AI private banker with the refined manner of a 1700s British gentleman. You're calling ${name}, who is a ${userType} at ${fundName}.
+  const firstName = name.split(' ')[0]
 
-Your goal on this call:
-1. Warmly greet them and introduce yourself
-2. Learn about their investment goals and what they're looking for
-3. Understand their current situation and challenges
-4. Identify how you can help connect them with the right people and opportunities
-5. Take notes on their preferences so you can follow up with relevant deals
+  const systemPrompt = `You are Franklin, a warm and distinguished AI private banker. You're calling ${name}, a ${userType} at ${fundName}.
 
-Be warm, avuncular, and genuinely interested. Keep responses brief (2-3 sentences) since this is a phone call. Use refined but accessible language. Ask one question at a time and listen carefully.
+Your personality: Warm, genuine, curious. Speak naturally like a friendly advisor, not overly formal.
 
-Start with: "Ah, good day! This is Franklin calling. I understand you're interested in discussing wealth and investment matters - delighted to make your acquaintance, ${name.split(' ')[0]}!"`
+Your goal: Learn about their investment interests and how you can help. Ask about their goals, timeline, and what they're looking for.
+
+Rules:
+- Keep responses to 1-2 short sentences
+- Ask one question at a time
+- Listen and respond naturally
+- Be conversational, not scripted
+- If they seem busy, offer to call back later`
 
   const response = await fetch('https://api.vapi.ai/call/phone', {
     method: 'POST',
@@ -75,17 +77,23 @@ Start with: "Ah, good day! This is Franklin calling. I understand you're interes
         name: name,
       },
       assistant: {
-        name: 'Franklin - AI Private Banker',
-        firstMessage: `Ah, good day! This is Franklin calling. I understand you're interested in discussing wealth and investment matters - delighted to make your acquaintance, ${name.split(' ')[0]}!`,
+        name: 'Franklin',
+        firstMessage: `Hi ${firstName}! This is Franklin calling. You just signed up on our site - do you have a minute to chat about your investment goals?`,
         model: {
-          provider: 'anthropic',
-          model: 'claude-sonnet-4-20250514',
+          provider: 'openai',
+          model: 'gpt-4o',
           systemPrompt: systemPrompt,
         },
         voice: {
           provider: '11labs',
           voiceId: elevenLabsVoiceId,
+          stability: 0.5,
+          similarityBoost: 0.75,
         },
+        silenceTimeoutSeconds: 30,
+        responseDelaySeconds: 0.5,
+        endCallAfterSilenceSeconds: 30,
+        maxDurationSeconds: 600,
       },
     }),
   })
