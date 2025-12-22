@@ -9,20 +9,22 @@ const elevenLabsVoiceId = process.env.ELEVENLABS_VOICE_ID || 'pNInz6obpgDQGcFmaJ
 const wasenderApiKey = process.env.WASENDER_API_KEY
 const wasenderDeviceId = process.env.WASENDER_DEVICE_ID
 
-async function sendWhatsAppMessage(phone: string, name: string, userType: string) {
+async function sendWhatsAppMessage(phone: string, name: string, userType: string, fundName: string) {
   if (!wasenderDeviceId) {
     console.log('WhatsApp not configured, skipping message')
     return null
   }
 
   const firstName = name.split(' ')[0]
-  const message = `Good day, ${firstName}! This is Franklin, your AI private banker.
+  const roleContext = userType === 'investor'
+    ? `As an investor at ${fundName}, I'd love to hear what kind of opportunities you're looking for.`
+    : `As a founder at ${fundName}, I'd love to understand what stage you're at and how I can help.`
 
-Thank you for your interest in growing your wealth. I'll be calling you shortly to learn more about your goals and how I can help.
+  const message = `Hey ${firstName}! Thanks for signing up.
 
-If now isn't a good time, simply reply with a time that works better for you.
+I'm Franklin, your AI private banker. ${roleContext}
 
-Looking forward to our conversation!
+What's on your mind? Feel free to message me anytime - I'm here to help you grow your wealth.
 
 — Franklin`
 
@@ -160,7 +162,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Send WhatsApp message immediately (don't block the response)
-    sendWhatsAppMessage(phone, name, user_type)
+    sendWhatsAppMessage(phone, name, user_type, fund_name)
       .then((result) => {
         console.log('WhatsApp message sent:', result)
       })
