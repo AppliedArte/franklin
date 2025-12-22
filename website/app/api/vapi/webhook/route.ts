@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
 }
 
 async function extractFactsFromCall(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   userId: string,
   transcript: string,
   summary: string
