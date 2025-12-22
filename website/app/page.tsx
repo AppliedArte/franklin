@@ -553,18 +553,6 @@ function IPhoneMockup() {
               )}
             </div>
 
-            {/* Input Bar */}
-            <div className="bg-white px-4 py-3 border-t border-black/5">
-              <div className="flex items-center gap-3">
-                <div className="flex-1 bg-[#f0f0f0] rounded-full px-5 py-2.5 border border-black/5">
-                  <span className="text-sm text-silver-700/40">Message Franklin...</span>
-                </div>
-                <div className="w-10 h-10 bg-silver-700 rounded-full flex items-center justify-center shadow-sm">
-                  <ArrowRight className="w-5 h-5 text-white" />
-                </div>
-              </div>
-            </div>
-
             {/* Home Indicator */}
             <div className="flex justify-center py-2 bg-white">
               <div className="w-32 h-1 bg-black/20 rounded-full" />
