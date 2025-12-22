@@ -104,7 +104,7 @@ RULES:
         },
         voice: {
           provider: 'vapi',
-          voiceId: 'Elliot',
+          voiceId: 'Harry',
         },
         silenceTimeoutSeconds: 30,
         responseDelaySeconds: 0.4,
