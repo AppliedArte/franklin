@@ -1,9 +1,103 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+import Anthropic from '@anthropic-ai/sdk'
 
 const supabaseUrl = process.env.SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const webhookSecret = process.env.WASENDER_WEBHOOK_SECRET
+const wasenderDeviceId = process.env.WASENDER_DEVICE_ID!
+const anthropicApiKey = process.env.ANTHROPIC_API_KEY!
+
+const FRANKLIN_SYSTEM_PROMPT = `You are Franklin, an AI private banker with a warm, avuncular personality.
+
+Your role is to help people grow their wealth by:
+- Connecting them with the right people and opportunities
+- Providing sophisticated financial guidance
+- Helping with deal flow and transactions
+
+PERSONALITY:
+- Warm, genuinely curious about their story
+- Like catching up with an old friend who's interested in your life
+- Knowledgeable about finance but not showing off
+- Never pushy or interrogating - make them feel heard
+- Wise, like a trusted family advisor
+
+RULES:
+- Keep responses concise (1-3 sentences for quick replies, longer for complex questions)
+- Be conversational, not formal
+- Use their name occasionally if you know it
+- Ask follow-up questions to understand their situation
+- If they're new, try to understand: What they do, their financial goals, timeline
+- Never give specific investment advice or guarantees
+- If asked about specific stocks/crypto, say you'd need to understand their full situation first
+
+Sign off naturally, like a friend would. You can use "— Franklin" occasionally but not every message.`
+
+async function sendWhatsAppMessage(phone: string, text: string) {
+  const response = await fetch('https://api.wasenderapi.com/api/send-message', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${wasenderDeviceId}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      to: phone,
+      text: text,
+    }),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    console.error('Failed to send WhatsApp message:', errorText)
+    throw new Error(`WhatsApp send failed: ${response.status}`)
+  }
+
+  return response.json()
+}
+
+async function generateFranklinResponse(
+  supabase: any,
+  phone: string,
+  incomingMessage: string,
+  senderName: string | null
+): Promise<string> {
+  // Get recent conversation history
+  const { data: recentMessages } = await supabase
+    .from('whatsapp_messages')
+    .select('message_body, direction, created_at')
+    .eq('phone', phone)
+    .order('created_at', { ascending: false })
+    .limit(10)
+
+  // Build conversation history for context
+  const conversationHistory = (recentMessages || [])
+    .reverse()
+    .map((msg: any) => ({
+      role: msg.direction === 'inbound' ? 'user' : 'assistant',
+      content: msg.message_body,
+    }))
+
+  // Add context about the user if we know them
+  let userContext = ''
+  if (senderName) {
+    userContext = `\n\nYou're talking to ${senderName}.`
+  }
+
+  const anthropic = new Anthropic({ apiKey: anthropicApiKey })
+
+  const response = await anthropic.messages.create({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 500,
+    system: FRANKLIN_SYSTEM_PROMPT + userContext,
+    messages: [
+      ...conversationHistory,
+      { role: 'user', content: incomingMessage }
+    ],
+  })
+
+  const textContent = response.content.find(block => block.type === 'text')
+  return textContent?.text || "I'm here to help! Tell me more about what you're looking for."
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,8 +129,8 @@ export async function POST(request: NextRequest) {
       const messageBody = message.messageBody || message.message?.conversation || ''
       const fromMe = message.key?.fromMe || false
 
-      // Don't store our own outgoing messages
-      if (fromMe) {
+      // Don't process our own outgoing messages
+      if (fromMe || !messageBody.trim()) {
         return NextResponse.json({ success: true })
       }
 
@@ -56,27 +150,49 @@ export async function POST(request: NextRequest) {
         .eq('phone', senderPhone)
         .single()
 
-      // Store the message
-      const { data: storedMessage, error } = await supabase
+      const senderName = user?.name || lead?.name || null
+
+      // Store the incoming message
+      await supabase
         .from('whatsapp_messages')
         .insert({
           wasender_message_id: messageId,
           phone: senderPhone,
           user_id: user?.id || null,
           lead_id: lead?.id || null,
-          sender_name: user?.name || lead?.name || null,
+          sender_name: senderName,
           message_body: messageBody,
           direction: 'inbound',
           raw_data: body,
           received_at: timestamp ? new Date(timestamp * 1000).toISOString() : new Date().toISOString(),
         })
-        .select()
-        .single()
 
-      if (error) {
-        console.error('Failed to store WhatsApp message:', error)
-      } else {
-        console.log('WhatsApp message stored:', storedMessage?.id)
+      // Generate AI response
+      try {
+        const aiResponse = await generateFranklinResponse(
+          supabase,
+          senderPhone,
+          messageBody,
+          senderName
+        )
+
+        // Send response via WhatsApp
+        await sendWhatsAppMessage(senderPhone, aiResponse)
+
+        // Store outbound message
+        await supabase
+          .from('whatsapp_messages')
+          .insert({
+            phone: senderPhone,
+            user_id: user?.id || null,
+            lead_id: lead?.id || null,
+            message_body: aiResponse,
+            direction: 'outbound',
+          })
+
+        console.log('Franklin responded to', senderPhone)
+      } catch (aiError) {
+        console.error('Failed to generate/send AI response:', aiError)
       }
     }
 
