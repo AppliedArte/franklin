@@ -605,17 +605,10 @@ export default function LandingPage() {
             </div>
 
             {/* CTA */}
-            <div className="flex items-center gap-3">
-              <a href="tel:+19844779472" className="flex items-center gap-2 px-4 py-2 bg-silver-700 text-ivory-100 rounded-lg text-xs sm:text-sm font-medium hover:bg-silver-600 transition-colors">
-                <Phone className="w-4 h-4" />
-                <span className="hidden sm:inline">Call Franklin</span>
-                <span className="sm:hidden">Call</span>
-              </a>
-              <a href="#chat" className="btn-gold text-xs sm:text-sm">
-                <span className="hidden sm:inline">Sign Up</span>
-                <span className="sm:hidden">Chat</span>
-              </a>
-            </div>
+            <a href="#chat" className="btn-gold text-xs sm:text-sm">
+              <span className="hidden sm:inline">Speak with Franklin</span>
+              <span className="sm:hidden">Chat</span>
+            </a>
           </div>
         </div>
       </nav>
