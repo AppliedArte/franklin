@@ -538,7 +538,7 @@ function IPhoneMockup() {
                       </p>
                     </div>
                     <a
-                      href="https://wa.me/YOURWHATSAPPNUMBER"
+                      href="https://wa.me/15112015524"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 bg-[#25D366] text-white px-4 py-2.5 rounded-xl text-[14px] font-medium hover:bg-[#20bd5a] transition-colors shadow-sm"
@@ -724,7 +724,7 @@ export default function LandingPage() {
                 Connect
               </h4>
               <ul className="space-y-3 font-body text-ivory-100/60">
-                <li><a href="https://wa.me/YOURWHATSAPPNUMBER" target="_blank" rel="noopener noreferrer" className="hover:text-gold-400 transition-colors">WhatsApp</a></li>
+                <li><a href="https://wa.me/15112015524" target="_blank" rel="noopener noreferrer" className="hover:text-gold-400 transition-colors">WhatsApp</a></li>
                 <li><a href="https://twitter.com/askfranklin" target="_blank" rel="noopener noreferrer" className="hover:text-gold-400 transition-colors">Twitter</a></li>
                 <li><a href="mailto:hello@askfranklin.io" className="hover:text-gold-400 transition-colors">Email</a></li>
               </ul>
