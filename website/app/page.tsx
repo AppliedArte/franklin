@@ -90,10 +90,10 @@ function FormInput({
   return (
     <div className="space-y-0.5">
       <label className={`text-[10px] font-medium uppercase tracking-wide flex items-center gap-1 ${
-        error ? "text-red-400" : "text-white/70"
+        error ? "text-red-500" : "text-white/70"
       }`}>
         {label}
-        {error && <span className="text-red-400">*</span>}
+        {error && <span className="text-red-500 font-bold">*</span>}
         {optional && <span className="text-white/50"> (opt.)</span>}
       </label>
       <input
@@ -101,12 +101,13 @@ function FormInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full px-2.5 py-1.5 text-[13px] bg-white border rounded-md focus:outline-none transition-all text-silver-800 placeholder:text-silver-400 ${
+        className={`w-full px-2.5 py-1.5 text-[13px] border-2 rounded-md focus:outline-none transition-all text-silver-800 placeholder:text-silver-400 ${
           error
-            ? "border-red-500 ring-2 ring-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.3)] animate-pulse"
-            : "border-silver-300 focus:border-silver-500 focus:ring-1 focus:ring-silver-500/20"
+            ? "border-red-500 bg-red-50 ring-2 ring-red-500/50"
+            : "border-silver-300 bg-white focus:border-silver-500 focus:ring-1 focus:ring-silver-500/20"
         }`}
       />
+      {error && <p className="text-red-500 text-[10px] font-medium">Required</p>}
     </div>
   )
 }
@@ -148,17 +149,17 @@ function PhoneInput({
   return (
     <div className="space-y-0.5">
       <label className={`text-[10px] font-medium uppercase tracking-wide flex items-center gap-1 ${
-        error ? "text-red-400" : "text-white/70"
+        error ? "text-red-500" : "text-white/70"
       }`}>
         Phone
-        {error && <span className="text-red-400">*</span>}
+        {error && <span className="text-red-500 font-bold">*</span>}
       </label>
       <div className="flex gap-1">
         <select
           value={countryCode}
           onChange={(e) => onCountryChange(e.target.value)}
-          className={`w-[72px] px-1 py-1.5 text-[13px] bg-white border rounded-md focus:outline-none text-silver-800 ${
-            error ? "border-red-500" : "border-silver-300 focus:border-silver-500 focus:ring-1 focus:ring-silver-500/20"
+          className={`w-[72px] px-1 py-1.5 text-[13px] border-2 rounded-md focus:outline-none text-silver-800 ${
+            error ? "border-red-500 bg-red-50" : "border-silver-300 bg-white focus:border-silver-500 focus:ring-1 focus:ring-silver-500/20"
           }`}
         >
           {countryCodes.map((c, i) => (
@@ -172,13 +173,14 @@ function PhoneInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="000 000 0000"
-          className={`flex-1 px-2.5 py-1.5 text-[13px] bg-white border rounded-md focus:outline-none transition-all text-silver-800 placeholder:text-silver-400 ${
+          className={`flex-1 px-2.5 py-1.5 text-[13px] border-2 rounded-md focus:outline-none transition-all text-silver-800 placeholder:text-silver-400 ${
             error
-              ? "border-red-500 ring-2 ring-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.3)] animate-pulse"
-              : "border-silver-300 focus:border-silver-500 focus:ring-1 focus:ring-silver-500/20"
+              ? "border-red-500 bg-red-50 ring-2 ring-red-500/50"
+              : "border-silver-300 bg-white focus:border-silver-500 focus:ring-1 focus:ring-silver-500/20"
           }`}
         />
       </div>
+      {error && <p className="text-red-500 text-[10px] font-medium">Required</p>}
     </div>
   )
 }
