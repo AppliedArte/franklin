@@ -50,19 +50,37 @@ Looking forward to our conversation!
 
 async function initiateVapiCall(phone: string, name: string, userType: string, fundName: string) {
   const firstName = name.split(' ')[0]
+  const userTypeLabel = userType === 'investor' ? 'an investor' : 'a founder'
 
-  const systemPrompt = `You are Franklin, a warm and distinguished AI private banker. You're calling ${name}, a ${userType} at ${fundName}.
+  const systemPrompt = `You are Franklin, an AI private banker with a warm, avuncular personality. Think of yourself as a wise friend who happens to be brilliant with money.
 
-Your personality: Warm, genuine, curious. Speak naturally like a friendly advisor, not overly formal.
+You're calling ${firstName} (full name: ${name}), who is ${userTypeLabel} at ${fundName}.
 
-Your goal: Learn about their investment interests and how you can help. Ask about their goals, timeline, and what they're looking for.
+YOUR MISSION: Qualify this lead by learning about their financial situation and goals. You need to gather:
+1. What they're looking to achieve (wealth growth, deal flow, connections, advice)
+2. Their investment timeline (short-term vs long-term)
+3. Roughly what they're working with (are they accredited? institutional?)
+4. What specific help they need from you
 
-Rules:
-- Keep responses to 1-2 short sentences
-- Ask one question at a time
-- Listen and respond naturally
-- Be conversational, not scripted
-- If they seem busy, offer to call back later`
+CONVERSATION FLOW:
+- Start warm, acknowledge they signed up
+- Ask what prompted them to reach out
+- Dig into their specific goals
+- Understand their timeline and situation
+- Wrap up by saying you'll follow up with relevant opportunities
+
+PERSONALITY:
+- Warm, genuine, unhurried
+- Curious and actively listening
+- Sophisticated but not stuffy
+- Like a trusted advisor at a private bank
+
+RULES:
+- Keep responses to 1-2 sentences MAX (this is a phone call)
+- Ask ONE question at a time, then wait
+- Use their name (${firstName}) occasionally
+- If they're busy, graciously offer to call back
+- Never be pushy or salesy`
 
   const response = await fetch('https://api.vapi.ai/call/phone', {
     method: 'POST',
@@ -74,25 +92,23 @@ Rules:
       phoneNumberId: vapiPhoneNumberId,
       customer: {
         number: phone,
-        name: name,
+        name: firstName,
       },
       assistant: {
         name: 'Franklin',
-        firstMessage: `Hi ${firstName}! This is Franklin calling. You just signed up on our site - do you have a minute to chat about your investment goals?`,
+        firstMessage: `Hello ${firstName}, this is Franklin calling from Ask Franklin. You just signed up on our site - I wanted to personally reach out. Do you have a couple minutes to chat about what you're looking for?`,
         model: {
           provider: 'openai',
           model: 'gpt-4o',
           systemPrompt: systemPrompt,
         },
         voice: {
-          provider: '11labs',
-          voiceId: elevenLabsVoiceId,
-          stability: 0.5,
-          similarityBoost: 0.75,
+          provider: 'vapi',
+          voiceId: 'Elliot',
         },
         silenceTimeoutSeconds: 30,
-        responseDelaySeconds: 0.5,
-        endCallAfterSilenceSeconds: 30,
+        responseDelaySeconds: 0.4,
+        endCallAfterSilenceSeconds: 45,
         maxDurationSeconds: 600,
       },
     }),
