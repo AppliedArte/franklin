@@ -108,7 +108,6 @@ RULES:
         },
         silenceTimeoutSeconds: 30,
         responseDelaySeconds: 0.4,
-        endCallAfterSilenceSeconds: 45,
         maxDurationSeconds: 600,
       },
     }),
