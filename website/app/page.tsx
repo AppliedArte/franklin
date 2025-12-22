@@ -89,8 +89,12 @@ function FormInput({
 }) {
   return (
     <div className="space-y-0.5">
-      <label className="text-[10px] font-medium text-white/70 uppercase tracking-wide">
-        {label}{optional && <span className="text-white/50"> (opt.)</span>}
+      <label className={`text-[10px] font-medium uppercase tracking-wide flex items-center gap-1 ${
+        error ? "text-red-400" : "text-white/70"
+      }`}>
+        {label}
+        {error && <span className="text-red-400">*</span>}
+        {optional && <span className="text-white/50"> (opt.)</span>}
       </label>
       <input
         type={type}
@@ -99,7 +103,7 @@ function FormInput({
         placeholder={placeholder}
         className={`w-full px-2.5 py-1.5 text-[13px] bg-white border rounded-md focus:outline-none transition-all text-silver-800 placeholder:text-silver-400 ${
           error
-            ? "border-red-500 ring-2 ring-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.3)]"
+            ? "border-red-500 ring-2 ring-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.3)] animate-pulse"
             : "border-silver-300 focus:border-silver-500 focus:ring-1 focus:ring-silver-500/20"
         }`}
       />
@@ -143,14 +147,19 @@ function PhoneInput({
 }) {
   return (
     <div className="space-y-0.5">
-      <label className="text-[10px] font-medium text-white/70 uppercase tracking-wide">
+      <label className={`text-[10px] font-medium uppercase tracking-wide flex items-center gap-1 ${
+        error ? "text-red-400" : "text-white/70"
+      }`}>
         Phone
+        {error && <span className="text-red-400">*</span>}
       </label>
       <div className="flex gap-1">
         <select
           value={countryCode}
           onChange={(e) => onCountryChange(e.target.value)}
-          className="w-[72px] px-1 py-1.5 text-[13px] bg-white border border-silver-300 rounded-md focus:outline-none focus:border-silver-500 focus:ring-1 focus:ring-silver-500/20 text-silver-800"
+          className={`w-[72px] px-1 py-1.5 text-[13px] bg-white border rounded-md focus:outline-none text-silver-800 ${
+            error ? "border-red-500" : "border-silver-300 focus:border-silver-500 focus:ring-1 focus:ring-silver-500/20"
+          }`}
         >
           {countryCodes.map((c, i) => (
             <option key={`${c.country}-${i}`} value={c.code}>
@@ -165,7 +174,7 @@ function PhoneInput({
           placeholder="000 000 0000"
           className={`flex-1 px-2.5 py-1.5 text-[13px] bg-white border rounded-md focus:outline-none transition-all text-silver-800 placeholder:text-silver-400 ${
             error
-              ? "border-red-500 ring-2 ring-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.3)]"
+              ? "border-red-500 ring-2 ring-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.3)] animate-pulse"
               : "border-silver-300 focus:border-silver-500 focus:ring-1 focus:ring-silver-500/20"
           }`}
         />
