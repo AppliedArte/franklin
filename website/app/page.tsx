@@ -203,7 +203,8 @@ function IPhoneMockup() {
   const [selectedOption, setSelectedOption] = useState<'investor' | 'founder' | 'curious' | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
-  const [hasError, setHasError] = useState(false)
+  const [formError, setFormError] = useState(false)
+  const [apiError, setApiError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState({
     name: false,
     phone: false,
@@ -256,15 +257,16 @@ function IPhoneMockup() {
     if (hasErrors) {
       console.log('⚠️ VALIDATION FAILED - Fields with errors:',
         Object.entries(errors).filter(([k, v]) => v).map(([k]) => k))
-      setHasError(true)
-      setTimeout(() => setHasError(false), 2000)
+      setFormError(true)
+      setTimeout(() => setFormError(false), 2000)
       return
     }
 
     console.log('✅ VALIDATION PASSED')
 
     setIsSubmitting(true)
-    setHasError(false)
+    setFormError(false)
+    setApiError(null)
     try {
       const response = await fetch('/api/leads', {
         method: 'POST',
@@ -279,13 +281,13 @@ function IPhoneMockup() {
       if (response.ok) {
         setIsSubmitted(true)
       } else {
-        setHasError(true)
-        setTimeout(() => setHasError(false), 2000)
+        const errorData = await response.json().catch(() => ({}))
+        console.error('API Error:', response.status, errorData)
+        setApiError(errorData.error || `Server error (${response.status})`)
       }
     } catch (error) {
-      console.error('Submit error:', error)
-      setHasError(true)
-      setTimeout(() => setHasError(false), 2000)
+      console.error('Network error:', error)
+      setApiError('Network error - please try again')
     } finally {
       setIsSubmitting(false)
     }
@@ -460,12 +462,19 @@ function IPhoneMockup() {
                         />
                       </div>
 
+                      {/* API Error Banner */}
+                      {apiError && (
+                        <div className="mt-2 p-2 bg-orange-100 border border-orange-400 rounded-lg">
+                          <p className="text-orange-800 text-[12px] font-medium">⚠️ {apiError}</p>
+                        </div>
+                      )}
+
                       {/* Submit Button */}
                       <button
                         onClick={handleSubmit}
                         disabled={isSubmitting}
                         className={`w-full mt-3 text-white py-2 rounded-lg font-medium text-[13px] transition-all flex items-center justify-center gap-2 ${
-                          hasError
+                          formError
                             ? "bg-red-500 hover:bg-red-600"
                             : "bg-[#264C39] hover:bg-[#1d3a2b]"
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
@@ -475,8 +484,8 @@ function IPhoneMockup() {
                             <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                             Submitting...
                           </>
-                        ) : hasError ? (
-                          "Error - Check fields"
+                        ) : formError ? (
+                          "Check required fields above"
                         ) : (
                           <>
                             Submit
