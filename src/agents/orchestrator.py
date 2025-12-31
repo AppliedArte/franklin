@@ -101,6 +101,8 @@ class ConversationOrchestrator:
             query = select(User).where(User.email == channel_user_id)
         elif channel == "web":
             query = select(User).where(User.id == channel_user_id)
+        elif channel == "telegram":
+            query = select(User).where(User.telegram_id == channel_user_id)
         else:
             # Phone for voice
             query = select(User).where(User.phone == channel_user_id)
@@ -123,6 +125,8 @@ class ConversationOrchestrator:
             user.email = channel_user_id
         elif channel == "voice":
             user.phone = channel_user_id
+        elif channel == "telegram":
+            user.telegram_id = channel_user_id
         # For web, the channel_user_id is the user ID
 
         # Create empty profile

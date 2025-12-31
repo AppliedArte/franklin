@@ -4,5 +4,6 @@ from src.adapters.whatsapp import WhatsAppAdapter
 from src.adapters.voice import VoiceAdapter
 from src.adapters.email import EmailAdapter
 from src.adapters.twitter import TwitterAdapter
+from src.adapters.telegram import TelegramAdapter
 
-__all__ = ["WhatsAppAdapter", "VoiceAdapter", "EmailAdapter", "TwitterAdapter"]
+__all__ = ["WhatsAppAdapter", "VoiceAdapter", "EmailAdapter", "TwitterAdapter", "TelegramAdapter"]

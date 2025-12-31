@@ -114,6 +114,56 @@ async def whatsapp_verify(request: Request):
     return {"status": "ok"}
 
 
+@router.post("/telegram")
+async def telegram_webhook(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Handle incoming Telegram messages.
+
+    Telegram sends updates as JSON with message/callback_query.
+    """
+    from src.adapters.telegram import TelegramAdapter
+
+    data = await request.json()
+    adapter = TelegramAdapter()
+    parsed = adapter.parse_webhook(data)
+
+    # Get chat_id and user info
+    chat_id = parsed.get("chat_id")
+    user_id = str(parsed.get("user_id", ""))
+    body = parsed.get("message_body", "")
+    is_callback = parsed.get("is_callback", False)
+    first_name = parsed.get("first_name", "")
+
+    if not chat_id or not body:
+        return {"ok": True}  # Telegram expects 200 OK even for ignored updates
+
+    # Answer callback query if applicable
+    if is_callback and parsed.get("callback_query_id"):
+        await adapter.answer_callback_query(parsed["callback_query_id"])
+
+    # Process through orchestrator
+    orchestrator = ConversationOrchestrator(db)
+    response = await orchestrator.handle_message(
+        channel="telegram",
+        channel_user_id=user_id,
+        message_content=body,
+        metadata={
+            "chat_id": chat_id,
+            "first_name": first_name,
+            "username": parsed.get("username", ""),
+            "message_type": parsed.get("message_type", "text"),
+        },
+    )
+
+    # Send response back via Telegram
+    await adapter.send_message(chat_id, response)
+
+    return {"ok": True}
+
+
 @router.post("/vapi")
 async def vapi_webhook(
     request: Request,

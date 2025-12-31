@@ -1,6 +1,6 @@
 # Ask Franklin - Landing Page
 
-Landing page for [askfranklin.io](https://askfranklin.io) - introducing Franklin, your personal private banker.
+Landing page for [askfranklin.xyz](https://askfranklin.xyz) - introducing Franklin, your personal private banker.
 
 ## Tech Stack
 

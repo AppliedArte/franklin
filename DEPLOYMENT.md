@@ -2,7 +2,7 @@
 
 ## Architecture
 
-- **Website** (Next.js): Vercel at askfranklin.io
+- **Website** (Next.js): Vercel at askfranklin.xyz
 - **Backend** (FastAPI): DigitalOcean Droplet at 157.245.224.32
 
 ## Droplet Deployment
@@ -63,14 +63,14 @@ TELEGRAM_BOT_TOKEN=<token>  # Get from @BotFather
 
 | Service | Webhook URL | Purpose |
 |---------|-------------|---------|
-| Vapi | https://askfranklin.io/api/vapi/webhook | Call transcripts |
-| Wasender | https://askfranklin.io/api/wasender/webhook | WhatsApp messages |
-| Telegram | https://askfranklin.io/api/telegram/webhook | Telegram messages |
+| Vapi | https://askfranklin.xyz/api/vapi/webhook | Call transcripts |
+| Wasender | https://askfranklin.xyz/api/wasender/webhook | WhatsApp messages |
+| Telegram | https://askfranklin.xyz/api/telegram/webhook | Telegram messages |
 
 ### Setting Telegram Webhook
 After getting bot token from @BotFather:
 ```bash
-curl "https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://askfranklin.io/api/telegram/webhook"
+curl "https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://askfranklin.xyz/api/telegram/webhook"
 ```
 
 ## Database Tables (Supabase)

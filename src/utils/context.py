@@ -48,8 +48,131 @@ class ContextAssembler:
     def _build_profile_context(self, profile: Optional[UserProfile]) -> str:
         """Build human-readable profile context for system prompt."""
         if not profile:
-            return "No profile information available yet. This is a new user."
+            return "No profile information available yet. This is a new fund manager."
 
+        sections = []
+
+        # Check if this is a fund manager
+        if profile.is_fund_manager:
+            sections.append(self._build_fund_manager_context(profile))
+        else:
+            # Original investor profile logic
+            sections.append(self._build_investor_context(profile))
+
+        # Profile completeness
+        sections.append(f"**Profile completeness: {profile.profile_score}%**")
+
+        if len(sections) <= 1:
+            return "Limited profile information. Still conducting due diligence."
+
+        return "\n\n".join(sections)
+
+    def _build_fund_manager_context(self, profile: UserProfile) -> str:
+        """Build context for fund manager profiles."""
+        sections = []
+
+        # Fund Basics
+        basics = []
+        if profile.fund_name:
+            basics.append(f"Fund: {profile.fund_name}")
+        if profile.fund_type:
+            basics.append(f"Type: {profile.fund_type}")
+        if profile.fund_stage:
+            basics.append(f"Stage: {profile.fund_stage}")
+        if profile.fund_vintage:
+            basics.append(f"Vintage: {profile.fund_vintage}")
+
+        if basics:
+            sections.append("**Fund Basics**\n" + "\n".join(f"- {b}" for b in basics))
+
+        # Investment Thesis
+        thesis = []
+        if profile.investment_thesis:
+            thesis.append(f"Thesis: {profile.investment_thesis}")
+        if profile.target_sectors:
+            thesis.append(f"Sectors: {', '.join(profile.target_sectors)}")
+        if profile.target_geography:
+            thesis.append(f"Geography: {', '.join(profile.target_geography)}")
+        if profile.target_stage:
+            thesis.append(f"Stage focus: {profile.target_stage}")
+
+        if thesis:
+            sections.append("**Investment Thesis**\n" + "\n".join(f"- {t}" for t in thesis))
+
+        # Economics
+        economics = []
+        if profile.cheque_size_min or profile.cheque_size_max:
+            min_size = f"${profile.cheque_size_min:,.0f}" if profile.cheque_size_min else "?"
+            max_size = f"${profile.cheque_size_max:,.0f}" if profile.cheque_size_max else "?"
+            economics.append(f"Cheque size: {min_size} - {max_size}")
+        if profile.target_ownership:
+            economics.append(f"Target ownership: {profile.target_ownership}")
+        if profile.fund_size_target:
+            economics.append(f"Target fund size: ${profile.fund_size_target:,.0f}")
+        if profile.fund_size_current:
+            economics.append(f"Current AUM: ${profile.fund_size_current:,.0f}")
+        if profile.management_fee:
+            economics.append(f"Management fee: {profile.management_fee}")
+        if profile.carry:
+            economics.append(f"Carry: {profile.carry}")
+
+        if economics:
+            sections.append("**Fund Economics**\n" + "\n".join(f"- {e}" for e in economics))
+
+        # Track Record
+        track = []
+        if profile.num_investments:
+            track.append(f"Investments made: {profile.num_investments}")
+        if profile.num_exits:
+            track.append(f"Exits: {profile.num_exits}")
+        if profile.notable_investments:
+            track.append(f"Notable deals: {', '.join(profile.notable_investments[:5])}")
+        if profile.realized_returns:
+            track.append(f"Returns: {profile.realized_returns}")
+        if profile.irr:
+            track.append(f"IRR: {profile.irr}")
+
+        if track:
+            sections.append("**Track Record**\n" + "\n".join(f"- {t}" for t in track))
+
+        # Team
+        team = []
+        if profile.team_size:
+            team.append(f"Team size: {profile.team_size}")
+        if profile.team_background:
+            team.append(f"Background: {profile.team_background[:200]}")
+        if profile.gp_commitment:
+            team.append(f"GP commitment: {profile.gp_commitment}")
+
+        if team:
+            sections.append("**Team**\n" + "\n".join(f"- {t}" for t in team))
+
+        # Fundraising
+        fundraising = []
+        if profile.current_lps:
+            fundraising.append(f"LP base: {profile.current_lps[:200]}")
+        if profile.fundraising_status:
+            fundraising.append(f"Status: {profile.fundraising_status}")
+        if profile.target_close_date:
+            fundraising.append(f"Target close: {profile.target_close_date}")
+
+        if fundraising:
+            sections.append("**Fundraising**\n" + "\n".join(f"- {f}" for f in fundraising))
+
+        # Differentiation
+        diff = []
+        if profile.competitive_edge:
+            diff.append(f"Edge: {profile.competitive_edge[:200]}")
+        if profile.value_add:
+            diff.append(f"Value-add: {profile.value_add[:200]}")
+
+        if diff:
+            sections.append("**Differentiation**\n" + "\n".join(f"- {d}" for d in diff))
+
+        return "\n\n".join(sections) if sections else "New fund manager - no DD completed yet."
+
+    def _build_investor_context(self, profile: UserProfile) -> str:
+        """Build context for individual investor profiles (original logic)."""
         sections = []
 
         # Financial snapshot
@@ -90,13 +213,7 @@ class ContextAssembler:
             debt_summary = self._summarize_debts(profile.debts)
             sections.append(f"**Debts/Obligations**\n{debt_summary}")
 
-        # Profile completeness
-        sections.append(f"**Profile completeness: {profile.profile_score}%**")
-
-        if not sections:
-            return "Limited profile information. Still learning about this user."
-
-        return "\n\n".join(sections)
+        return "\n\n".join(sections) if sections else ""
 
     def _summarize_investments(self, investments: dict) -> str:
         """Summarize investment data into readable format."""

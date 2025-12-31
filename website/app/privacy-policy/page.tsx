@@ -35,7 +35,7 @@ export default function PrivacyPolicyPage() {
               Franklin ("Ask Franklin," "we," "us," or "our") is your AI private banker, designed to help you grow your wealth by connecting you with the right people, deals, and opportunities. Your privacy is central to our operations, and we are committed to protecting your personal information.
             </p>
             <p>
-              This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our services, including our website at askfranklin.io and related communications via WhatsApp, email, or other channels.
+              This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our services, including our website at askfranklin.xyz and related communications via WhatsApp, email, or other channels.
             </p>
           </Section>
 
@@ -139,7 +139,7 @@ export default function PrivacyPolicyPage() {
               <li><strong>Object:</strong> Object to automated decision-making</li>
             </ul>
             <p>
-              To exercise these rights, contact us at privacy@askfranklin.io. We commit to responding within one month.
+              To exercise these rights, contact us at privacy@askfranklin.xyz. We commit to responding within one month.
             </p>
           </Section>
 
@@ -150,7 +150,7 @@ export default function PrivacyPolicyPage() {
               <li>Clicking the unsubscribe link in any email</li>
               <li>Replying "STOP" to any SMS message</li>
               <li>Messaging Franklin directly to opt out</li>
-              <li>Contacting us at privacy@askfranklin.io</li>
+              <li>Contacting us at privacy@askfranklin.xyz</li>
             </ul>
           </Section>
 
@@ -165,8 +165,8 @@ export default function PrivacyPolicyPage() {
           <Section title="Contact Us">
             <p>For privacy-related inquiries:</p>
             <ul>
-              <li><strong>Email:</strong> privacy@askfranklin.io</li>
-              <li><strong>Website:</strong> askfranklin.io</li>
+              <li><strong>Email:</strong> privacy@askfranklin.xyz</li>
+              <li><strong>Website:</strong> askfranklin.xyz</li>
             </ul>
           </Section>
         </div>

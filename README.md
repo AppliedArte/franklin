@@ -2,8 +2,6 @@
 
 A modular AI wealth advisor / private banker that analyzes financial status, provides personalized advice, and connects users with services, products, and advisors.
 
-**Inspired by [Boardy AI](https://boardy.ai)** - conversational AI that builds user profiles through natural dialogue.
-
 ---
 
 ## Architecture Overview
@@ -62,25 +60,19 @@ A modular AI wealth advisor / private banker that analyzes financial status, pro
 
 ### AI Persona: Benjamin "Ben" Franklin
 
-The AI advisor is embodied as **Benjamin Franklin**, a distinguished 1700s upper class British gentleman and sophisticated investor. He advises HNW clients on:
+The AI advisor is embodied as **Benjamin Franklin**, a distinguished 1700s upper class British gentleman. This isn't a gimmick - the persona creates:
 
-- **Alternative Investments**: Hedge funds, private equity, venture capital
-- **Pre-IPO & Private Markets**: Secondary transactions, SPVs, direct investments
-- **Crypto & DeFi**: Basis trading, yield strategies, on-chain opportunities
-- **Structured Products**: Private credit, preferred equity, convertibles
-
-**Why this persona works:**
-- **Trust**: A refined gentleman feels trustworthy with complex matters
-- **Sophistication**: Ben can discuss IRR, basis points, and cap tables fluently
-- **Timeless wisdom**: Sees patterns repeating from East India Company to crypto
-- **Memorable**: Users remember conversations with "Ben"
+- **Trust**: A refined, experienced gentleman feels trustworthy with financial matters
+- **Warmth**: Avuncular and caring, not cold or robotic
+- **Timeless wisdom**: Financial principles that transcend eras
+- **Memorable experience**: Users remember conversations with "Ben"
 
 **Speech patterns:**
-- "The basis trade - a most elegant arbitrage indeed!"
-- "Pre-flotation shares can offer extraordinary returns, though they require proper diligence"
-- "The clever money has observed..."
+- "I dare say..." / "Indeed..." / "Most excellent..." / "Frankly speaking..."
+- "If I may be so bold..." / "Permit me to suggest..."
+- "Never place all eggs in a single basket"
 
-**Persona file:** `src/persona.py` - Contains character, expertise areas, and example responses
+**Persona file:** `src/persona.py` - Edit to customize character
 
 ---
 
@@ -293,37 +285,6 @@ Message
 
 ---
 
-## Twitter/X Integration (Public Content)
-
-Frank posts investment wisdom and market commentary publicly on Twitter. This is **one-way content** (posting only, no DM conversations).
-
-### Capabilities (Free Tier - $0/mo)
-
-- Post up to 500 tweets/month (~16/day)
-- Market commentary and investment wisdom
-- Educational threads on sophisticated strategies
-- No DM conversations (would require $100+/mo Basic tier)
-
-### Content Types
-
-| Type | Frequency | Example |
-|------|-----------|---------|
-| **Wisdom Tweet** | 2-3x/week | "Never place all eggs in one basket, as I have counselled for centuries" |
-| **Market Commentary** | Daily | "The basis has widened to 15% annualised - most intriguing for those with patience" |
-| **Educational Thread** | Weekly | Thread explaining pre-IPO investing, basis trades, or DeFi |
-| **Fixed Income Insight** | Weekly | Duration risk, credit spreads, treasury strategies |
-| **Alternatives Insight** | Weekly | Hedge funds, PE, venture capital, fund structures |
-
-### Files
-
-```
-src/adapters/twitter.py      # X API v2 client (tweepy)
-src/agents/content_agent.py  # Generates Frank's tweets
-src/workers.py               # Scheduled posting jobs
-```
-
----
-
 ## Technology Stack
 
 | Layer | Technology | Why |
@@ -333,7 +294,6 @@ src/workers.py               # Scheduled posting jobs
 | **Database** | PostgreSQL + pgvector | Relational + vector search |
 | **Cache/Queue** | Redis + ARQ | Sessions, background jobs |
 | **WhatsApp** | WasenderAPI ($6/mo) | Cheapest for validation |
-| **Twitter** | X API v2 + tweepy | Free tier (500 posts/mo) |
 | **Voice** | Vapi.ai (Custom LLM) | Our backend generates responses |
 | **Email** | Resend | Developer-friendly |
 | **Hosting** | Railway / Render | Simple deployment |
@@ -446,12 +406,6 @@ curl -X POST http://localhost:8000/webhooks/vapi \
 - [x] Web Chat (REST + WebSocket)
 - [x] Unified webhook routing
 
-### Phase 2.5: Twitter Integration ✅
-- [x] Twitter adapter (X API v2 Free tier)
-- [x] Content Agent for Frank's tweets
-- [x] Scheduled posting jobs (wisdom, market commentary, threads)
-- [x] Fixed income and alternatives content generation
-
 ### Phase 3: Advisory Agents 🚧
 - [x] General Advisory Agent
 - [ ] Compliance Guard layer
@@ -479,7 +433,6 @@ curl -X POST http://localhost:8000/webhooks/vapi \
 | WasenderAPI | $6 | WhatsApp messaging |
 | Vapi.ai | ~$0.15/min | Pay per use |
 | Claude API | ~$3/1M tokens | Pay per use |
-| Twitter/X | $0 | Free tier (500 posts/mo) |
 | Railway/Render | $5-10 | Hosting |
 | PostgreSQL | Included | Railway/Render managed |
 | Redis | Included | Railway/Render managed |

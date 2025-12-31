@@ -27,6 +27,7 @@ class ChannelType(str, Enum):
     VOICE = "voice"
     EMAIL = "email"
     WEB = "web"
+    TELEGRAM = "telegram"
 
 
 class LeadStatus(str, Enum):
@@ -104,6 +105,7 @@ class User(Base):
 
     # Channel identifiers
     whatsapp_id: Mapped[Optional[str]] = mapped_column(String(100), unique=True, nullable=True)
+    telegram_id: Mapped[Optional[str]] = mapped_column(String(100), unique=True, nullable=True)
 
     # Demographics (from signup form)
     gender: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # male, female, other, prefer_not_to_say
@@ -152,6 +154,7 @@ class User(Base):
         Index("ix_users_email", "email"),
         Index("ix_users_phone", "phone"),
         Index("ix_users_whatsapp_id", "whatsapp_id"),
+        Index("ix_users_telegram_id", "telegram_id"),
         Index("ix_users_lead_status", "lead_status"),
     )
 
@@ -216,6 +219,53 @@ class UserProfile(Base):
     # Access & Network
     fund_relationships: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Existing fund/GP relationships
     deal_flow_sources: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Where they source deals
+
+    # ==========================================================================
+    # FUND MANAGER DUE DILIGENCE (if user is a fund manager/GP)
+    # ==========================================================================
+    is_fund_manager: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
+
+    # Fund Basics
+    fund_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    fund_type: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)  # VC, PE, hedge, crypto, RE, etc.
+    fund_stage: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)  # emerging, established, institutional
+    fund_vintage: Mapped[Optional[int]] = mapped_column(nullable=True)  # Year fund started
+
+    # Investment Thesis
+    investment_thesis: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Core thesis/strategy
+    target_sectors: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # ["fintech", "AI", "healthcare"]
+    target_geography: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # ["US", "Europe", "SEA"]
+    target_stage: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)  # pre-seed, seed, Series A, growth
+
+    # Economics
+    cheque_size_min: Mapped[Optional[float]] = mapped_column(Float, nullable=True)  # Min investment size
+    cheque_size_max: Mapped[Optional[float]] = mapped_column(Float, nullable=True)  # Max investment size
+    target_ownership: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)  # e.g., "10-20%"
+    fund_size_target: Mapped[Optional[float]] = mapped_column(Float, nullable=True)  # Target AUM
+    fund_size_current: Mapped[Optional[float]] = mapped_column(Float, nullable=True)  # Current AUM
+    management_fee: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # e.g., "2%"
+    carry: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # e.g., "20%"
+
+    # Track Record
+    num_investments: Mapped[Optional[int]] = mapped_column(nullable=True)  # Total investments made
+    num_exits: Mapped[Optional[int]] = mapped_column(nullable=True)  # Successful exits
+    notable_investments: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Portfolio companies
+    realized_returns: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)  # e.g., "3.2x MOIC"
+    irr: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # e.g., "28% net IRR"
+
+    # Team & Operations
+    team_size: Mapped[Optional[int]] = mapped_column(nullable=True)
+    team_background: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Key team experience
+    gp_commitment: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)  # GP skin in the game
+
+    # LP Base & Fundraising
+    current_lps: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Types of LPs (family offices, endowments, etc.)
+    fundraising_status: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)  # raising, closed, evergreen
+    target_close_date: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+
+    # Differentiators
+    competitive_edge: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # What makes them unique
+    value_add: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # How they help portfolio companies
 
     # Profile Completeness (0-100)
     profile_score: Mapped[int] = mapped_column(default=0)

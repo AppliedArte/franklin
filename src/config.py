@@ -64,6 +64,10 @@ class Settings(BaseSettings):
     twitter_access_secret: str = ""
     twitter_bearer_token: str = ""
 
+    # Telegram Bot
+    telegram_bot_token: str = ""
+    telegram_webhook_secret: str = ""  # Optional secret for webhook verification
+
     @property
     def is_production(self) -> bool:
         return self.app_env == "production"

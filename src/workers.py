@@ -35,6 +35,31 @@ async def initiate_voice_call(ctx, phone_number: str, assistant_config: dict = N
     return result
 
 
+async def send_telegram_message(ctx, chat_id: str | int, message: str, parse_mode: str = "HTML"):
+    """Background task to send Telegram message."""
+    from src.adapters.telegram import TelegramAdapter
+
+    adapter = TelegramAdapter()
+    result = await adapter.send_message(chat_id, message, parse_mode)
+    return result
+
+
+async def telegram_followup_scheduler(ctx):
+    """
+    Scheduled task: Send follow-up messages to fund managers via Telegram.
+
+    Checks for:
+    - Incomplete DD profiles (>3 days inactive)
+    - Users who haven't responded (>7 days)
+    - New signups who never messaged
+
+    Schedule: Daily at 10am
+    """
+    from src.scheduler.telegram_followup import run_followup_scheduler
+
+    await run_followup_scheduler()
+
+
 async def update_profile_embeddings(ctx, user_id: str):
     """Background task to update user profile embeddings for vector search."""
     # TODO: Implement embedding generation for profile data
@@ -168,10 +193,13 @@ class WorkerSettings:
         send_whatsapp_message,
         send_email,
         initiate_voice_call,
+        send_telegram_message,
         # Profile & Conversation
         update_profile_embeddings,
         process_referral_followup,
         generate_conversation_summary,
+        # Telegram Follow-up (scheduled)
+        telegram_followup_scheduler,
         # Twitter Content (scheduled)
         post_wisdom_tweet,
         post_market_commentary,
@@ -185,10 +213,14 @@ class WorkerSettings:
 
     redis_settings = RedisSettings.from_dsn(settings.redis_url)
 
-    # Cron jobs for Twitter posting
+    # Cron jobs for scheduled tasks
     # Note: Actual scheduling requires ARQ cron jobs setup
     # Example cron jobs (configure in production):
     # cron_jobs = [
+    #     # Telegram follow-up - daily at 10am
+    #     cron(telegram_followup_scheduler, hour=10, minute=0),
+    #
+    #     # Twitter posting
     #     cron(post_wisdom_tweet, hour=14, minute=0, weekday={1, 3, 5}),  # Mon/Wed/Fri 2pm
     #     cron(post_market_commentary, hour=16, minute=30, weekday={0, 1, 2, 3, 4}),  # Weekdays 4:30pm
     #     cron(post_educational_thread, hour=18, minute=0, weekday={6}),  # Sunday 6pm
