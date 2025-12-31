@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN!
-const zaiApiKey = process.env.ZAI_API_KEY
+const openRouterApiKey = process.env.OPENROUTER_API_KEY
 
 const FRANKLIN_SYSTEM_PROMPT = `You are Franklin, an AI private banker with a warm, avuncular personality.
 
@@ -59,19 +59,21 @@ async function sendTypingAction(chatId: number) {
 }
 
 async function generateFranklinResponse(userMessage: string, userName: string): Promise<string> {
-  if (!zaiApiKey) {
+  if (!openRouterApiKey) {
     return "I apologize, but I'm having a moment of technical difficulty. Please try again shortly."
   }
 
   try {
-    const response = await fetch('https://api.z.ai/api/paas/v4/chat/completions', {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${zaiApiKey}`,
+        'Authorization': `Bearer ${openRouterApiKey}`,
         'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://askfranklin.xyz',
+        'X-Title': 'Franklin AI',
       },
       body: JSON.stringify({
-        model: 'glm-4.7',
+        model: 'mistralai/mistral-7b-instruct:free',
         messages: [
           { role: 'system', content: FRANKLIN_SYSTEM_PROMPT },
           { role: 'user', content: `[User: ${userName}]\n${userMessage}` },
@@ -82,7 +84,7 @@ async function generateFranklinResponse(userMessage: string, userName: string): 
     })
 
     if (!response.ok) {
-      console.error('Z.AI error:', await response.text())
+      console.error('OpenRouter error:', await response.text())
       return "My apologies, I seem to be having a brief moment of confusion. Could you repeat that?"
     }
 
