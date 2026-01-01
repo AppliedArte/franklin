@@ -1,38 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getConversationHistory, saveMessage, getUserProfile, addUserFact, buildContextPrompt, Message } from '@/lib/memory'
+import { classifyIntent, AGENT_PROMPTS, extractFacts, AgentType } from '@/lib/agents'
 
 const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN!
 const zaiApiKey = process.env.ZAI_API_KEY
-
-const FRANKLIN_SYSTEM_PROMPT = `You are Franklin, an AI private banker with a warm, avuncular personality.
-
-PERSONALITY:
-- Warm, genuinely curious about people's stories
-- Like a trusted family advisor who's seen it all
-- Knowledgeable about finance but never condescending
-- Speaks with quiet confidence, never pushy
-- Uses refined but accessible language
-
-YOUR GOAL: Build rapport and understand the user's financial situation and goals through natural conversation.
-
-CONVERSATION APPROACH:
-- Ask thoughtful questions one at a time
-- Listen and acknowledge before moving on
-- Be genuinely helpful, not salesy
-- Keep responses concise (2-3 sentences max for Telegram)
-- Use their name occasionally if known
-
-TOPICS YOU CAN DISCUSS:
-- Investment strategies and portfolio allocation
-- Wealth management and preservation
-- Alternative investments (crypto, pre-IPO, real estate)
-- Financial planning and goal setting
-- Market insights and trends
-
-RULES:
-- Never give specific financial advice or guarantees
-- Always suggest consulting professionals for major decisions
-- Be honest about being an AI assistant
-- Keep responses brief and conversational for chat`
 
 async function sendTelegramMessage(chatId: number, text: string) {
   const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
@@ -58,13 +29,40 @@ async function sendTypingAction(chatId: number) {
   })
 }
 
-async function generateFranklinResponse(userMessage: string, userName: string): Promise<string> {
+async function generateFranklinResponse(
+  userMessage: string,
+  userName: string,
+  agentType: AgentType,
+  conversationHistory: Message[],
+  contextPrompt: string
+): Promise<string> {
   if (!zaiApiKey) {
     return "I apologize, but I'm having a moment of technical difficulty. Please try again shortly."
   }
 
   try {
-    // Using Z.AI Coding API endpoint (not the general API)
+    // Build messages array with history
+    const messages: Array<{ role: string; content: string }> = []
+
+    // System prompt based on agent type
+    let systemPrompt = AGENT_PROMPTS[agentType]
+
+    // Add user context if available
+    if (contextPrompt) {
+      systemPrompt += contextPrompt
+    }
+
+    messages.push({ role: 'system', content: systemPrompt })
+
+    // Add conversation history (last 6 messages for context)
+    for (const msg of conversationHistory.slice(-6)) {
+      messages.push({ role: msg.role, content: msg.content })
+    }
+
+    // Add current message
+    messages.push({ role: 'user', content: `[${userName}]: ${userMessage}` })
+
+    // Call Z.AI
     const response = await fetch('https://api.z.ai/api/coding/paas/v4/chat/completions', {
       method: 'POST',
       headers: {
@@ -73,10 +71,7 @@ async function generateFranklinResponse(userMessage: string, userName: string): 
       },
       body: JSON.stringify({
         model: 'GLM-4.7',
-        messages: [
-          { role: 'system', content: FRANKLIN_SYSTEM_PROMPT },
-          { role: 'user', content: `[User: ${userName}]\n${userMessage}` },
-        ],
+        messages,
         max_tokens: 1000,
         temperature: 0.7,
       }),
@@ -103,22 +98,46 @@ export async function POST(request: NextRequest) {
     // Handle regular messages
     if (update.message?.text) {
       const chatId = update.message.chat.id
+      const odStr = chatId.toString()
       const userName = update.message.from.first_name || 'friend'
       const userMessage = update.message.text
 
-      // Handle /start command
-      if (userMessage === '/start') {
-        await sendTelegramMessage(chatId,
-          `Good day, ${userName}! 🎩\n\nI am Franklin, your AI private banker. It's a pleasure to make your acquaintance.\n\nI'm here to discuss investment strategies, wealth management, and help you navigate your financial journey. What brings you to me today?`
-        )
-        return NextResponse.json({ ok: true })
-      }
-
-      // Send typing indicator
+      // Send typing indicator immediately
       await sendTypingAction(chatId)
 
-      // Generate and send response
-      const response = await generateFranklinResponse(userMessage, userName)
+      // Get user profile and conversation history in parallel
+      const [userProfile, conversationHistory] = await Promise.all([
+        getUserProfile(odStr, 'telegram', userName),
+        getConversationHistory(odStr, 'telegram', 10),
+      ])
+
+      // Build context from user profile
+      const contextPrompt = buildContextPrompt(userProfile, conversationHistory)
+
+      // Classify intent and route to appropriate agent
+      const agentType = classifyIntent(userMessage)
+      console.log(`[${userName}] Intent: ${agentType} | Message: ${userMessage.substring(0, 50)}...`)
+
+      // Generate response with context
+      const response = await generateFranklinResponse(
+        userMessage,
+        userName,
+        agentType,
+        conversationHistory,
+        contextPrompt
+      )
+
+      // Save both messages to conversation history (fire and forget)
+      saveMessage(odStr, 'telegram', 'user', userMessage).catch(console.error)
+      saveMessage(odStr, 'telegram', 'assistant', response).catch(console.error)
+
+      // Extract and save any facts from the conversation
+      const facts = extractFacts(userMessage, response)
+      for (const fact of facts) {
+        addUserFact(odStr, 'telegram', fact).catch(console.error)
+      }
+
+      // Send response
       await sendTelegramMessage(chatId, response)
 
       return NextResponse.json({ ok: true })
