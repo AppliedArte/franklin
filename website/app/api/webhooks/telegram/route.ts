@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getConversationHistory, saveMessage, getUserProfile, addUserFact, buildContextPrompt, Message } from '@/lib/memory'
-import { classifyIntent, AGENT_PROMPTS, extractFacts, AgentType } from '@/lib/agents'
+import { getConversationHistory, saveMessage, getUserProfile, addUserFact, buildContextPrompt, Message } from '@/src/memory'
+import { classifyIntent, AGENT_PROMPTS, extractFacts, AgentType } from '@/src/agents'
 
 const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN!
 const zaiApiKey = process.env.ZAI_API_KEY
