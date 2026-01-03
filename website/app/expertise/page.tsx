@@ -64,9 +64,8 @@ export default function ExpertisePage() {
           </p>
         </Section>
 
-        {/* Core Competencies */}
         <Section title="Core Competencies">
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4 text-sm">
             {[
               ["Portfolio Diversification", "Never kept all eggs in one basket (invented the basket)"],
               ["Risk Management", "Survived multiple currency collapses by literally printing the currency"],
@@ -77,7 +76,7 @@ export default function ExpertisePage() {
               ["AI/ML Integration", "Digitized 318 years of financial wisdom into neural networks"],
               ["Network Builder", "Understands the power of connections (helped connect two continents)"],
             ].map(([title, desc], i) => (
-              <div key={i} className="text-sm">
+              <div key={i}>
                 <span className="text-silver-700 font-semibold">{title}:</span>{" "}
                 <span className="text-silver-700/60">{desc}</span>
               </div>

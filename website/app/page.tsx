@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import {
-  Phone,
-  ArrowRight,
-  ChevronDown
-} from "lucide-react"
+import { Phone, ArrowRight, ChevronDown } from "lucide-react"
+
+const TelegramIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+  </svg>
+)
 
 // Video Player Component with autoplay fix
 function VideoPlayer() {
@@ -87,11 +89,6 @@ function FormInput({
   optional?: boolean
   error?: boolean
 }) {
-  // Debug logging
-  if (error) {
-    console.log(`🔴 FormInput ERROR: ${label} has error=${error}, value="${value}"`)
-  }
-
   return (
     <div className="space-y-0.5">
       <label className={`text-[11px] font-bold uppercase tracking-wide flex items-center gap-1 ${
@@ -111,7 +108,6 @@ function FormInput({
             ? "border-red-600 bg-red-100 ring-4 ring-red-500/60 shadow-lg shadow-red-500/30"
             : "border-gray-300 bg-white focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
         }`}
-        style={error ? { borderWidth: '3px', borderColor: '#dc2626' } : {}}
       />
       {error && <p className="text-red-600 text-[11px] font-bold mt-1">⚠️ This field is required</p>}
     </div>
@@ -152,11 +148,6 @@ function PhoneInput({
   onCountryChange: (code: string) => void
   error?: boolean
 }) {
-  // Debug logging
-  if (error) {
-    console.log(`🔴 PhoneInput ERROR: Phone has error=${error}, value="${value}"`)
-  }
-
   return (
     <div className="space-y-0.5">
       <label className={`text-[11px] font-bold uppercase tracking-wide flex items-center gap-1 ${
@@ -169,10 +160,9 @@ function PhoneInput({
         <select
           value={countryCode}
           onChange={(e) => onCountryChange(e.target.value)}
-          className={`w-[80px] px-2 py-2 text-[14px] border-2 rounded-lg focus:outline-none text-gray-900 font-medium ${
+          className={`w-[80px] px-2 py-2 text-[14px] border-3 rounded-lg focus:outline-none text-gray-900 font-medium ${
             error ? "border-red-600 bg-red-100" : "border-gray-300 bg-white focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
           }`}
-          style={error ? { borderWidth: '3px', borderColor: '#dc2626' } : {}}
         >
           {countryCodes.map((c, i) => (
             <option key={`${c.country}-${i}`} value={c.code}>
@@ -185,12 +175,11 @@ function PhoneInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="000 000 0000"
-          className={`flex-1 px-3 py-2 text-[14px] border-2 rounded-lg focus:outline-none transition-all text-gray-900 font-medium placeholder:text-gray-400 ${
+          className={`flex-1 px-3 py-2 text-[14px] border-3 rounded-lg focus:outline-none transition-all text-gray-900 font-medium placeholder:text-gray-400 ${
             error
               ? "border-red-600 bg-red-100 ring-4 ring-red-500/60 shadow-lg shadow-red-500/30"
               : "border-gray-300 bg-white focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
           }`}
-          style={error ? { borderWidth: '3px', borderColor: '#dc2626' } : {}}
         />
       </div>
       {error && <p className="text-red-600 text-[11px] font-bold mt-1">⚠️ This field is required</p>}
@@ -223,22 +212,7 @@ function IPhoneMockup() {
     telegram: ''
   })
 
-  // Debug: Log whenever fieldErrors changes
-  useEffect(() => {
-    console.log('🔄 fieldErrors STATE CHANGED:', fieldErrors)
-    const errorsExist = Object.values(fieldErrors).some(e => e)
-    if (errorsExist) {
-      console.log('🔴 ERRORS EXIST IN STATE - These fields should be red:',
-        Object.entries(fieldErrors).filter(([k, v]) => v).map(([k]) => k))
-    }
-  }, [fieldErrors])
-
   const handleSubmit = async () => {
-    console.log('==========================================')
-    console.log('🚀 SUBMIT CLICKED')
-    console.log('📝 Form Data:', formData)
-
-    // Check for empty required fields
     const errors = {
       name: !formData.name,
       phone: !formData.phone,
@@ -247,23 +221,13 @@ function IPhoneMockup() {
       linkedin: !formData.linkedin
     }
 
-    console.log('❌ Calculated Errors:', errors)
-
-    const hasErrors = Object.values(errors).some(e => e)
-    console.log('🔴 Has Errors:', hasErrors)
-
-    console.log('📤 Setting fieldErrors state to:', errors)
     setFieldErrors(errors)
 
-    if (hasErrors) {
-      console.log('⚠️ VALIDATION FAILED - Fields with errors:',
-        Object.entries(errors).filter(([k, v]) => v).map(([k]) => k))
+    if (Object.values(errors).some(e => e)) {
       setFormError(true)
       setTimeout(() => setFormError(false), 2000)
       return
     }
-
-    console.log('✅ VALIDATION PASSED')
 
     setIsSubmitting(true)
     setFormError(false)
@@ -283,11 +247,9 @@ function IPhoneMockup() {
         setIsSubmitted(true)
       } else {
         const errorData = await response.json().catch(() => ({}))
-        console.error('API Error:', response.status, errorData)
         setApiError(errorData.error || `Server error (${response.status})`)
       }
-    } catch (error) {
-      console.error('Network error:', error)
+    } catch {
       setApiError('Network error - please try again')
     } finally {
       setIsSubmitting(false)
@@ -296,7 +258,6 @@ function IPhoneMockup() {
 
   const updateField = (field: string) => (value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    // Clear error for this field when user types
     if (fieldErrors[field as keyof typeof fieldErrors]) {
       setFieldErrors(prev => ({ ...prev, [field]: false }))
     }
@@ -369,10 +330,10 @@ function IPhoneMockup() {
                   {/* Message bubble */}
                   <div className="bg-silver-600 px-4 py-4 rounded-2xl rounded-tl-sm shadow-sm">
                     <h3 className="font-display text-lg text-white mb-2">
-                      Hey, I'm Franklin, your AI private banker.
+                      Hey, I'm Franklin—your AI private banker.
                     </h3>
                     <p className="text-[14px] text-white/90 leading-relaxed">
-                      I help you grow your wealth by reaching the right people, getting the right advice, and closing deals with expert input.
+                      Connect your accounts, define your goals, and I'll find opportunities, make introductions, and execute—autonomously.
                     </p>
                     <p className="text-[14px] text-white/90 mt-3">
                       How would you describe yourself?
@@ -388,14 +349,15 @@ function IPhoneMockup() {
                     </div>
                   )}
 
-                  {/* User's selected response */}
                   {selectedOption && (
                     <div className="flex justify-end">
                       <div className="bg-[#264C39] text-white px-4 py-2 rounded-2xl rounded-tr-sm shadow-sm max-w-[80%]">
                         <p className="text-[14px]">
-                          {selectedOption === 'investor' && "I am an Investor"}
-                          {selectedOption === 'founder' && "I am a Founder"}
-                          {selectedOption === 'curious' && "Just curious"}
+                          {{
+                            investor: "I am an Investor",
+                            founder: "I am a Founder",
+                            curious: "Just curious"
+                          }[selectedOption]}
                         </p>
                       </div>
                     </div>
@@ -517,8 +479,7 @@ function IPhoneMockup() {
                       <p className="text-[14px] text-white/90 leading-relaxed">
                         {formData.telegram
                           ? "I'll message you on Telegram shortly to learn more about your fund and investment thesis."
-                          : "I've sent you an email with a link to schedule a call. Check your inbox!"
-                        }
+                          : "I've sent you an email with a link to schedule a call. Check your inbox!"}
                       </p>
                     </div>
                     <a
@@ -527,10 +488,8 @@ function IPhoneMockup() {
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 px-4 py-3 bg-[#0088cc]/10 rounded-xl border border-[#0088cc]/20 hover:bg-[#0088cc]/20 transition-colors"
                     >
-                      <div className="w-10 h-10 rounded-full bg-[#0088cc] flex items-center justify-center">
-                        <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-                        </svg>
+                      <div className="w-10 h-10 rounded-full bg-[#0088cc] flex items-center justify-center text-white">
+                        <TelegramIcon />
                       </div>
                       <div>
                         <p className="text-[13px] font-medium text-[#0088cc]">Message Franklin on Telegram</p>
@@ -560,9 +519,7 @@ function IPhoneMockup() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 bg-[#0088cc] text-white px-4 py-2.5 rounded-xl text-[14px] font-medium hover:bg-[#006699] transition-colors shadow-sm"
                     >
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-                      </svg>
+                      <TelegramIcon />
                       Message Me on Telegram
                     </a>
                   </div>
@@ -607,6 +564,7 @@ export default function LandingPage() {
             {/* Nav Links */}
             <div className="hidden md:flex items-center gap-8">
               <a href="/expertise" className="link-elegant text-sm tracking-wide">Resume</a>
+              <a href="/variations" className="link-elegant text-sm tracking-wide">Themes</a>
             </div>
 
             {/* CTA */}
@@ -657,19 +615,27 @@ export default function LandingPage() {
                 Meet <span className="italic text-gradient-gold">Franklin</span>
               </h1>
 
-              {/* Subheadline */}
+              {/* Subheadline - Tech Forward */}
               <p className="font-body text-lg md:text-xl text-silver-700/80 leading-relaxed max-w-xl">
-                Grow your wealth with the sophistication of a family office and the network of a top-tier investment bank.
+                AI that moves money, not just monitors it. From insights to action—autonomously.
               </p>
-              <p className="font-body text-lg md:text-xl text-silver-700/60 leading-relaxed max-w-xl">
-                Reach the right people, access dealflow, and navigate complex transactions with expert guidance.
-              </p>
-              {/* Quote */}
-              <blockquote className="relative pl-6 border-l-2 border-gold-400/60 italic text-silver-700/70 font-serif text-lg">
-                "An investment in knowledge pays the best interest."
-                <footer className="mt-2 not-italic text-sm text-gold-500 font-sans">
-                  — Benjamin Franklin
-                </footer>
+
+              <div className="space-y-3 py-2">
+                {[
+                  "Family office access. No family office required.",
+                  "Real-time portfolio intelligence across every asset, every chain.",
+                  "One agent. Every account. Zero friction."
+                ].map((prop, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <span className="text-gold-500 mt-1">◆</span>
+                    <p className="font-body text-silver-700/70">{prop}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Differentiator */}
+              <blockquote className="relative pl-6 border-l-2 border-gold-400/60 text-silver-700/70 font-body text-base leading-relaxed">
+                Other tools give you dashboards. Franklin gives you leverage—deals, experts, and execution in one autonomous system.
               </blockquote>
 
               {/* CTA */}
@@ -707,8 +673,7 @@ export default function LandingPage() {
                 </span>
               </div>
               <p className="font-body text-ivory-100/60 max-w-sm leading-relaxed">
-                Your personal private banker, offering sophisticated wealth guidance
-                through the wisdom of centuries past and the technology of today.
+                A modular AI agent built for wealth. The banker that never sleeps, never forgets, never upsells.
               </p>
             </div>
 

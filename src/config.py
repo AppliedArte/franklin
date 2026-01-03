@@ -68,6 +68,22 @@ class Settings(BaseSettings):
     telegram_bot_token: str = ""
     telegram_webhook_secret: str = ""  # Optional secret for webhook verification
 
+    # Amadeus (Travel API)
+    amadeus_client_id: str = ""
+    amadeus_client_secret: str = ""
+
+    # Google Calendar
+    google_calendar_credentials: str = ""  # Path to service account JSON
+
+    # Plaid (Banking)
+    plaid_client_id: str = ""
+    plaid_secret: str = ""
+    plaid_env: str = "sandbox"  # sandbox, development, production
+
+    # User Settings
+    default_approval_threshold: float = 100.0  # Auto-approve under this amount
+    enable_proactive: bool = True
+
     @property
     def is_production(self) -> bool:
         return self.app_env == "production"
