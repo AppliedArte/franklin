@@ -57,9 +57,7 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-gold-300 to-gold-500 flex items-center justify-center shadow-xl mb-6">
-              <span className="text-ivory-100 font-display font-bold text-3xl">F</span>
-            </div>
+            <img src="/franklin.jpg" alt="Franklin" className="w-20 h-20 mx-auto rounded-full object-cover shadow-xl mb-6" />
             <h1 className="font-display text-3xl text-silver-800 mb-2">Welcome to Franklin</h1>
             <p className="text-silver-600 font-body">
               Sign in to access unlimited conversations with your AI private banker.

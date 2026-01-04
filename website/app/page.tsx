@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { Phone, ArrowRight, ChevronDown } from "lucide-react"
+import { Phone, ArrowRight, ChevronDown, Link2, Target, Zap } from "lucide-react"
 
 const TelegramIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -563,15 +563,20 @@ export default function LandingPage() {
 
             {/* Nav Links */}
             <div className="flex items-center gap-4 md:gap-8">
-              <a href="/expertise" className="hidden md:block link-elegant text-sm tracking-wide">How It Works</a>
-              <a href="/chat" className="link-elegant text-sm tracking-wide">Try Franklin</a>
+              <a href="#how-it-works" className="hidden md:block link-elegant text-sm tracking-wide">How It Works</a>
+              <Link href="/chat" className="link-elegant text-sm tracking-wide">Try Franklin</Link>
             </div>
 
-            {/* CTA */}
-            <a href="#chat" className="btn-gold text-xs sm:text-sm">
-              <span className="hidden sm:inline">Speak with Franklin</span>
-              <span className="sm:hidden">Chat</span>
-            </a>
+            {/* Auth + CTA */}
+            <div className="flex items-center gap-3 md:gap-4">
+              <Link href="/login" className="link-elegant text-sm tracking-wide">
+                Sign In
+              </Link>
+              <a href="#chat" className="btn-gold text-xs sm:text-sm">
+                <span className="hidden sm:inline">Get Started</span>
+                <span className="sm:hidden">Start</span>
+              </a>
+            </div>
           </div>
         </div>
       </nav>
@@ -656,6 +661,89 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ===== HOW IT WORKS ===== */}
+      <section id="how-it-works" className="py-24 bg-ivory-100 grain">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            <p className="font-sans text-sm tracking-widest uppercase text-gold-500 mb-4">
+              Simple. Powerful. Autonomous.
+            </p>
+            <h2 className="font-display text-4xl md:text-5xl text-silver-700 tracking-tight">
+              How Franklin Works
+            </h2>
+          </div>
+
+          {/* Steps */}
+          <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+            {/* Step 1 */}
+            <div className="relative group">
+              <div className="absolute -inset-4 bg-gradient-to-br from-gold-400/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-silver-700 flex items-center justify-center shadow-lg">
+                    <Link2 className="w-6 h-6 text-gold-400" />
+                  </div>
+                  <span className="font-display text-6xl text-silver-200">01</span>
+                </div>
+                <h3 className="font-display text-2xl text-silver-700">
+                  Connect Your World
+                </h3>
+                <p className="font-body text-silver-600 leading-relaxed">
+                  Link your calendar, bank accounts, brokerage, and crypto wallets. Franklin securely integrates with your financial ecosystem—one connection, complete visibility.
+                </p>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="relative group">
+              <div className="absolute -inset-4 bg-gradient-to-br from-gold-400/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-silver-700 flex items-center justify-center shadow-lg">
+                    <Target className="w-6 h-6 text-gold-400" />
+                  </div>
+                  <span className="font-display text-6xl text-silver-200">02</span>
+                </div>
+                <h3 className="font-display text-2xl text-silver-700">
+                  Define Your Ambitions
+                </h3>
+                <p className="font-body text-silver-600 leading-relaxed">
+                  Tell Franklin what you're building toward—retirement, a home, generational wealth. Your goals become his mandate. Your risk tolerance, his guardrails.
+                </p>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="relative group">
+              <div className="absolute -inset-4 bg-gradient-to-br from-gold-400/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-silver-700 flex items-center justify-center shadow-lg">
+                    <Zap className="w-6 h-6 text-gold-400" />
+                  </div>
+                  <span className="font-display text-6xl text-silver-200">03</span>
+                </div>
+                <h3 className="font-display text-2xl text-silver-700">
+                  Watch Franklin Execute
+                </h3>
+                <p className="font-body text-silver-600 leading-relaxed">
+                  Sit back. Franklin monitors markets, spots opportunities, makes introductions, and executes—24/7, autonomously. You approve the big moves. He handles the rest.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="text-center mt-16">
+            <a href="#chat" className="btn-gold group inline-flex">
+              <span>Get Started</span>
+              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* ===== CHAT SECTION ===== */}
       <section id="chat" className="bg-ivory-200/50 grain">
         <IPhoneMockup />
@@ -683,7 +771,7 @@ export default function LandingPage() {
                 About
               </h4>
               <ul className="space-y-3 font-body text-ivory-100/60">
-                <li><Link href="/expertise" className="hover:text-gold-400 transition-colors">The Résumé</Link></li>
+                <li><a href="#how-it-works" className="hover:text-gold-400 transition-colors">How It Works</a></li>
                 <li><Link href="/privacy-policy" className="hover:text-gold-400 transition-colors">Privacy Policy</Link></li>
               </ul>
             </div>

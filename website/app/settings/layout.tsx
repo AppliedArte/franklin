@@ -54,9 +54,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
 
             <div className="mt-8 p-4 bg-ivory-50 border border-silver-200 rounded-xl">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center">
-                  <span className="text-ivory-100 font-display font-bold">F</span>
-                </div>
+                <img src="/franklin.jpg" alt="Franklin" className="w-10 h-10 rounded-full object-cover" />
                 <div>
                   <p className="font-display text-silver-800">Franklin</p>
                   <p className="text-xs text-silver-500 font-sans">AI Private Banker</p>

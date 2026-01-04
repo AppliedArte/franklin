@@ -63,14 +63,14 @@ async function generateFranklinResponse(
     messages.push({ role: 'user', content: `[${userName}]: ${userMessage}` })
 
     // Call Z.AI
-    const response = await fetch('https://api.z.ai/api/coding/paas/v4/chat/completions', {
+    const response = await fetch('https://api.z.ai/api/paas/v4/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${zaiApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'GLM-4.7',
+        model: 'glm-4.5-flash',
         messages,
         max_tokens: 1000,
         temperature: 0.7,

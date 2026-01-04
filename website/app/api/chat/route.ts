@@ -19,14 +19,14 @@ export async function POST(req: Request) {
   ]
 
   // Call Z.AI with streaming
-  const response = await fetch('https://api.z.ai/api/coding/paas/v4/chat/completions', {
+  const response = await fetch('https://api.z.ai/api/paas/v4/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${process.env.Z_AI_API_KEY}`,
+      'Authorization': `Bearer ${process.env.ZAI_API_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'GLM-4.7',
+      model: 'glm-4.5-flash',
       messages: apiMessages,
       max_tokens: 1000,
       temperature: 0.7,

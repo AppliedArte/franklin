@@ -11,7 +11,7 @@ const DEMO_MESSAGE_LIMIT = 5
 
 export default function ChatPage() {
   const [user, setUser] = useState<{ id: string; email: string } | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [hasMounted, setHasMounted] = useState(false)
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
   const [messageCount, setMessageCount] = useState(0)
   const [input, setInput] = useState('')
@@ -26,20 +26,19 @@ export default function ChatPage() {
   const isChatLoading = status === 'streaming' || status === 'submitted'
 
   useEffect(() => {
-    const supabase = createClient()
-
-    supabase.auth.getUser().then((result: { data: { user: { id: string; email?: string } | null } }) => {
-      if (result.data?.user) {
-        setUser({ id: result.data.user.id, email: result.data.user.email || '' })
-      }
-      setIsLoading(false)
-    })
-
-    // Load demo message count from localStorage
+    // Load demo message count from localStorage first
     const savedCount = localStorage.getItem('franklin_demo_count')
     if (savedCount) {
       setMessageCount(parseInt(savedCount, 10))
     }
+
+    const supabase = createClient()
+    supabase.auth.getUser().then((result: { data: { user: { id: string; email?: string } | null } }) => {
+      if (result.data?.user) {
+        setUser({ id: result.data.user.id, email: result.data.user.email || '' })
+      }
+      setHasMounted(true)
+    })
   }, [])
 
   useEffect(() => {
@@ -85,7 +84,7 @@ export default function ChatPage() {
     await sendMessage({ text: suggestion })
   }
 
-  if (isLoading) {
+  if (!hasMounted) {
     return (
       <div className="min-h-screen bg-ivory-100 flex items-center justify-center">
         <div className="animate-pulse text-silver-600 font-serif text-xl">Loading...</div>
@@ -117,9 +116,7 @@ export default function ChatPage() {
           </Link>
 
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center shadow-lg">
-              <span className="text-ivory-100 font-display font-bold text-lg">F</span>
-            </div>
+            <img src="/franklin.jpg" alt="Franklin" className="w-10 h-10 rounded-full object-cover shadow-lg" />
             <div>
               <h1 className="font-display text-lg text-silver-800">Franklin</h1>
               <p className="text-xs text-silver-500 font-sans">AI Private Banker</p>
@@ -160,9 +157,7 @@ export default function ChatPage() {
         <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
           {messages.length === 0 && (
             <div className="text-center py-16 space-y-6">
-              <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-gold-300 to-gold-500 flex items-center justify-center shadow-xl">
-                <span className="text-ivory-100 font-display font-bold text-3xl">F</span>
-              </div>
+              <img src="/franklin.jpg" alt="Franklin" className="w-20 h-20 mx-auto rounded-full object-cover shadow-xl" />
               <div className="space-y-2">
                 <h2 className="font-display text-2xl text-silver-800">Hello, I'm Franklin</h2>
                 <p className="text-silver-600 font-body max-w-md mx-auto">
@@ -206,9 +201,7 @@ export default function ChatPage() {
               >
                 {message.role === 'assistant' && (
                   <div className="flex items-center gap-2 mb-2 pb-2 border-b border-silver-200/50">
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center">
-                      <span className="text-ivory-100 font-display font-bold text-xs">F</span>
-                    </div>
+                    <img src="/franklin.jpg" alt="Franklin" className="w-6 h-6 rounded-full object-cover" />
                     <span className="text-xs text-silver-500 font-sans">Franklin</span>
                   </div>
                 )}
@@ -223,9 +216,7 @@ export default function ChatPage() {
             <div className="flex justify-start">
               <div className="bg-ivory-50 border border-silver-200 rounded-2xl px-5 py-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center">
-                    <span className="text-ivory-100 font-display font-bold text-xs">F</span>
-                  </div>
+                  <img src="/franklin.jpg" alt="Franklin" className="w-6 h-6 rounded-full object-cover" />
                   <div className="flex gap-1">
                     <div className="w-2 h-2 rounded-full bg-silver-400 animate-pulse"></div>
                     <div className="w-2 h-2 rounded-full bg-silver-400 animate-pulse animation-delay-200"></div>
