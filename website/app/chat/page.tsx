@@ -28,9 +28,9 @@ export default function ChatPage() {
   useEffect(() => {
     const supabase = createClient()
 
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
-        setUser({ id: user.id, email: user.email || '' })
+    supabase.auth.getUser().then((result: { data: { user: { id: string; email?: string } | null } }) => {
+      if (result.data?.user) {
+        setUser({ id: result.data.user.id, email: result.data.user.email || '' })
       }
       setIsLoading(false)
     })
