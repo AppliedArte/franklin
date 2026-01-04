@@ -1,9 +1,20 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+let supabaseInstance: SupabaseClient | null = null
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
+function getSupabase(): SupabaseClient {
+  if (!supabaseInstance) {
+    const supabaseUrl = process.env.SUPABASE_URL
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error('Missing Supabase environment variables')
+    }
+
+    supabaseInstance = createClient(supabaseUrl, supabaseServiceKey)
+  }
+  return supabaseInstance
+}
 
 export interface Message {
   role: 'user' | 'assistant' | 'system'
@@ -25,7 +36,7 @@ export async function getConversationHistory(
   channel: string,
   limit: number = 10
 ): Promise<Message[]> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('franklin_messages')
     .select('role, content, created_at')
     .eq('user_id', userId)
@@ -53,7 +64,7 @@ export async function saveMessage(
   role: 'user' | 'assistant',
   content: string
 ): Promise<void> {
-  const { error } = await supabase.from('conversations').insert({
+  const { error } = await getSupabase().from('conversations').insert({
     user_id: userId,
     channel,
     role,
@@ -67,7 +78,7 @@ export async function saveMessage(
 
 // Get or create user profile
 export async function getUserProfile(userId: string, channel: string, userName?: string): Promise<UserContext> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('franklin_profiles')
     .select('*')
     .eq('channel_user_id', userId)
@@ -86,7 +97,7 @@ export async function getUserProfile(userId: string, channel: string, userName?:
 
   // Create new profile
   if (userName) {
-    await supabase.from('user_profiles').insert({
+    await getSupabase().from('user_profiles').insert({
       channel_user_id: userId,
       channel,
       name: userName,
@@ -110,7 +121,7 @@ export async function updateUserPreferences(
   channel: string,
   preferences: Record<string, any>
 ): Promise<void> {
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('franklin_profiles')
     .update({ preferences, updated_at: new Date().toISOString() })
     .eq('channel_user_id', userId)
@@ -127,7 +138,7 @@ export async function addUserFact(
   channel: string,
   fact: string
 ): Promise<void> {
-  const { data } = await supabase
+  const { data } = await getSupabase()
     .from('franklin_profiles')
     .select('facts')
     .eq('channel_user_id', userId)
@@ -137,7 +148,7 @@ export async function addUserFact(
   const facts = data?.facts || []
   if (!facts.includes(fact)) {
     facts.push(fact)
-    await supabase
+    await getSupabase()
       .from('franklin_profiles')
       .update({ facts, updated_at: new Date().toISOString() })
       .eq('channel_user_id', userId)
