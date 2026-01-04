@@ -532,6 +532,87 @@ class UserFact(Base):
     )
 
 
+class OAuthProvider(str, Enum):
+    """Supported OAuth providers."""
+
+    GOOGLE = "google"
+    PLAID = "plaid"
+    PRIVACY = "privacy"  # Privacy.com virtual cards
+
+
+class PaymentMethodType(str, Enum):
+    """Types of payment methods."""
+
+    VIRTUAL_CARD = "virtual_card"  # Privacy.com, Lithic, etc.
+    DEBIT_CARD = "debit_card"
+    CREDIT_CARD = "credit_card"
+    BANK_ACCOUNT = "bank_account"
+
+
+class PurchaseStatus(str, Enum):
+    """Status of a purchase."""
+
+    PENDING = "pending"  # Created, waiting for execution
+    APPROVED = "approved"  # User approved (if needed)
+    PROCESSING = "processing"  # Being executed
+    COMPLETED = "completed"  # Successfully completed
+    FAILED = "failed"  # Failed to complete
+    CANCELLED = "cancelled"  # Cancelled by user
+    REFUNDED = "refunded"  # Refunded after completion
+
+
+class PurchaseCategory(str, Enum):
+    """Categories for spending rules."""
+
+    FLIGHTS = "flights"
+    HOTELS = "hotels"
+    TRANSPORT = "transport"
+    RESTAURANTS = "restaurants"
+    SUBSCRIPTIONS = "subscriptions"
+    SHOPPING = "shopping"
+    ENTERTAINMENT = "entertainment"
+    UTILITIES = "utilities"
+    GENERAL = "general"
+
+
+class UserOAuthCredential(Base):
+    """Store encrypted OAuth tokens for third-party services."""
+
+    __tablename__ = "user_oauth_credentials"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="CASCADE")
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+
+    # Provider info
+    provider: Mapped[str] = mapped_column(String(50))  # google, plaid, etc.
+
+    # Encrypted tokens (use Fernet encryption)
+    access_token_encrypted: Mapped[str] = mapped_column(Text)
+    refresh_token_encrypted: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # Token metadata
+    token_expiry: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    scopes: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+
+    # Status
+    is_valid: Mapped[bool] = mapped_column(Boolean, default=True)
+    last_refreshed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    __table_args__ = (
+        Index("ix_user_oauth_credentials_user_id", "user_id"),
+        Index("ix_user_oauth_credentials_provider", "provider"),
+        # Unique constraint: one credential per user per provider
+        Index("uq_user_oauth_user_provider", "user_id", "provider", unique=True),
+    )
+
+
 class Call(Base):
     """Track voice calls with users (Vapi)."""
 
@@ -583,4 +664,174 @@ class Call(Base):
         Index("ix_calls_status", "status"),
         Index("ix_calls_scheduled_for", "scheduled_for"),
         Index("ix_calls_vapi_call_id", "vapi_call_id"),
+    )
+
+
+# =============================================================================
+# AUTONOMOUS PAYMENTS MODULE
+# =============================================================================
+
+
+class SpendingRule(Base):
+    """User-defined spending rules for autonomous purchases.
+
+    These rules determine what Franklin can auto-approve vs. what needs
+    explicit user confirmation.
+    """
+
+    __tablename__ = "spending_rules"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="CASCADE")
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+
+    # Category this rule applies to
+    category: Mapped[str] = mapped_column(String(50))  # PurchaseCategory or "all"
+
+    # Spending limits
+    max_per_transaction: Mapped[float] = mapped_column(Float, default=500.0)
+    max_daily: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    max_weekly: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    max_monthly: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+
+    # Auto-approval thresholds
+    auto_approve_under: Mapped[float] = mapped_column(Float, default=100.0)  # Auto-approve under this
+    notify_only_under: Mapped[float] = mapped_column(Float, default=500.0)  # Just notify, don't ask
+
+    # Category-specific preferences (JSON)
+    preferences: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    # For flights: {"class": "economy", "max_stops": 1, "preferred_airlines": ["Emirates"]}
+    # For hotels: {"min_stars": 4, "preferred_chains": ["Marriott"]}
+
+    # Merchant controls
+    allowed_merchants: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Whitelist
+    blocked_merchants: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)  # Blacklist
+
+    # Status
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+    __table_args__ = (
+        Index("ix_spending_rules_user_id", "user_id"),
+        Index("ix_spending_rules_category", "category"),
+        Index("uq_spending_rules_user_category", "user_id", "category", unique=True),
+    )
+
+
+class PaymentMethod(Base):
+    """User payment methods (virtual cards, linked accounts).
+
+    Virtual cards are the recommended approach - they have spending limits
+    built in as a failsafe.
+    """
+
+    __tablename__ = "payment_methods"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="CASCADE")
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+
+    # Method details
+    method_type: Mapped[str] = mapped_column(String(50))  # PaymentMethodType
+    provider: Mapped[str] = mapped_column(String(50))  # privacy, lithic, stripe, etc.
+    nickname: Mapped[str] = mapped_column(String(100))  # User-friendly name
+
+    # Card details (encrypted)
+    card_number_encrypted: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    expiry_encrypted: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    cvv_encrypted: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # For API-based providers (Privacy.com, Lithic)
+    external_card_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+
+    # Billing address (for card transactions)
+    billing_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    billing_address: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+
+    # Card limits (from provider)
+    spending_limit: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    spending_limit_period: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # daily, monthly, total
+
+    # Usage tracking
+    amount_spent: Mapped[float] = mapped_column(Float, default=0.0)
+    last_used_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+
+    # Status
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_default: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    __table_args__ = (
+        Index("ix_payment_methods_user_id", "user_id"),
+        Index("ix_payment_methods_provider", "provider"),
+    )
+
+
+class Purchase(Base):
+    """Record of purchases made by Franklin on behalf of user."""
+
+    __tablename__ = "purchases"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id", ondelete="CASCADE")
+    )
+    payment_method_id: Mapped[Optional[str]] = mapped_column(
+        String(36), ForeignKey("payment_methods.id", ondelete="SET NULL"), nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+
+    # Purchase details
+    category: Mapped[str] = mapped_column(String(50))  # PurchaseCategory
+    merchant: Mapped[str] = mapped_column(String(255))
+    description: Mapped[str] = mapped_column(Text)
+
+    # Amount
+    amount: Mapped[float] = mapped_column(Float)
+    currency: Mapped[str] = mapped_column(String(10), default="USD")
+
+    # Status tracking
+    status: Mapped[str] = mapped_column(String(50), default="pending")  # PurchaseStatus
+
+    # Approval tracking
+    approval_required: Mapped[bool] = mapped_column(Boolean, default=False)
+    approved_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    approval_method: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # auto, whatsapp, telegram, etc.
+
+    # Execution details
+    executed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    external_transaction_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    confirmation_number: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+
+    # Error tracking
+    error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    retry_count: Mapped[int] = mapped_column(default=0)
+
+    # What was purchased (category-specific data)
+    purchase_data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    # For flights: {"airline": "Emirates", "flight_number": "EK123", "departure": "...", "arrival": "..."}
+    # For hotels: {"hotel": "Marriott Dubai", "check_in": "...", "check_out": "...", "room_type": "..."}
+
+    # User's original request that led to this purchase
+    original_request: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # Linked conversation message
+    conversation_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True)
+
+    __table_args__ = (
+        Index("ix_purchases_user_id", "user_id"),
+        Index("ix_purchases_status", "status"),
+        Index("ix_purchases_category", "category"),
+        Index("ix_purchases_created_at", "created_at"),
     )

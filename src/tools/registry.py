@@ -26,11 +26,17 @@ def register_all_tools() -> None:
     from src.tools.travel import TravelTool
     from src.tools.calendar import CalendarTool
     from src.tools.email import EmailTool
+    from src.tools.gmail import GmailTool
     from src.tools.finance import FinanceTool
     from src.tools.research import ResearchTool
+    from src.tools.flight_booking_chrome import FlightBookingChromeTool
+    from src.tools.payments import PaymentsTool
 
     registry.register(TravelTool())
     registry.register(CalendarTool())
-    registry.register(EmailTool())
+    registry.register(EmailTool())  # Sending emails via Resend
+    registry.register(GmailTool())  # Reading/managing Gmail
     registry.register(FinanceTool())
     registry.register(ResearchTool())
+    registry.register(FlightBookingChromeTool())
+    registry.register(PaymentsTool())

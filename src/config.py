@@ -72,17 +72,38 @@ class Settings(BaseSettings):
     amadeus_client_id: str = ""
     amadeus_client_secret: str = ""
 
-    # Google Calendar
-    google_calendar_credentials: str = ""  # Path to service account JSON
+    # Kiwi Tequila (Flight Search API) - Free for startups at tequila.kiwi.com
+    kiwi_api_key: str = ""
+
+    # Google OAuth (Calendar, etc.)
+    google_oauth_client_id: str = ""
+    google_oauth_client_secret: str = ""
+    google_oauth_redirect_uri: str = "http://localhost:8000/oauth/google/callback"
+
+    # Encryption key for OAuth tokens (Fernet key, generate with: Fernet.generate_key())
+    oauth_encryption_key: str = ""
 
     # Plaid (Banking)
     plaid_client_id: str = ""
     plaid_secret: str = ""
     plaid_env: str = "sandbox"  # sandbox, development, production
 
+    # Privacy.com (Virtual Cards)
+    privacy_api_key: str = ""
+    privacy_sandbox: bool = True  # Use sandbox for testing
+
+    # Lithic (Alternative virtual card provider)
+    lithic_api_key: str = ""
+    lithic_sandbox: bool = True
+
     # User Settings
     default_approval_threshold: float = 100.0  # Auto-approve under this amount
     enable_proactive: bool = True
+
+    # Autonomous Spending Defaults
+    default_max_per_transaction: float = 500.0
+    default_daily_limit: float = 2000.0
+    default_monthly_limit: float = 10000.0
 
     @property
     def is_production(self) -> bool:

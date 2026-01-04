@@ -162,6 +162,14 @@ aiwealth/
 │   │   ├── database.py         # Async PostgreSQL + SQLAlchemy
 │   │   └── models.py           # User, UserProfile, Conversation, Message, etc.
 │   │
+│   ├── tools/                  # Autonomous action tools
+│   │   ├── base.py             # Tool base class + registry
+│   │   ├── payments.py         # Autonomous spending
+│   │   ├── travel.py           # Flight search & booking
+│   │   ├── calendar.py         # Google Calendar
+│   │   ├── email.py            # Email composition
+│   │   └── finance.py          # Banking & tax
+│   │
 │   └── utils/
 │       └── context.py          # Context assembly for LLM calls
 │
@@ -170,6 +178,184 @@ aiwealth/
 ├── docker-compose.yml
 ├── .env.example
 └── .gitignore
+```
+
+---
+
+## Autonomous Spending (Payments Module)
+
+Franklin can spend money on your behalf within pre-defined rules. No constant approval needed.
+
+### How It Works
+
+```
+You: "Book me a flight to Dubai next Friday"
+
+Franklin:
+1. Searches flights (TravelTool)
+2. Checks spending rules for 'flights' category
+3. Amount under auto_approve_under? → Executes immediately
+4. Amount under notify_only_under? → Executes + notifies you
+5. Amount above? → Asks for approval first
+6. Uses stored payment method to complete booking
+7. Sends confirmation
+```
+
+### Spending Rules
+
+Set once, Franklin follows them:
+
+```python
+# Example rules
+{
+    "flights": {
+        "auto_approve_under": 500,      # Just do it
+        "notify_only_under": 2000,      # Do it, tell me after
+        "max_per_transaction": 3000,    # Hard limit
+        "preferences": {"class": "economy", "max_stops": 1}
+    },
+    "subscriptions": {
+        "auto_approve_under": 50,
+        "max_monthly": 500
+    }
+}
+```
+
+### Payment Methods
+
+| Provider | Type | Best For |
+|----------|------|----------|
+| **Privacy.com** | Virtual cards | Consumer use, spending limits built-in |
+| **Lithic** | Card issuing API | Full programmatic control |
+| **Manual** | Stored encrypted | Any card, you manage limits |
+
+### Setup
+
+1. **Add virtual card** (Privacy.com recommended):
+   ```bash
+   # Add to .env
+   PRIVACY_API_KEY=your_key
+   ```
+
+2. **Set spending rules** via conversation:
+   ```
+   "For flights, auto-approve under $500, max $2000 per booking"
+   ```
+
+3. **Add payment method**:
+   ```
+   "Add my Privacy card ending in 4242 for travel purchases"
+   ```
+
+### Database Models
+
+```
+SpendingRule
+├── category (flights, hotels, subscriptions, etc.)
+├── auto_approve_under, notify_only_under
+├── max_per_transaction, max_daily, max_monthly
+└── preferences (JSON)
+
+PaymentMethod
+├── provider (privacy, lithic, manual)
+├── card_number_encrypted, expiry_encrypted, cvv_encrypted
+├── spending_limit (provider-level failsafe)
+└── is_default
+
+Purchase
+├── category, merchant, amount, status
+├── approval_required, approved_at
+├── purchase_data (flight details, hotel info, etc.)
+└── confirmation_number
+```
+
+---
+
+## Gmail Integration
+
+Franklin can read, analyze, and manage Gmail with AI-powered importance scoring and spam detection.
+
+### Features
+
+| Feature | Description |
+|---------|-------------|
+| **Inbox Analysis** | AI-powered importance scoring and spam detection |
+| **Smart Highlights** | Identify important emails that need attention |
+| **Spam Detection** | Find emails that should be moved to junk |
+| **Full Actions** | Archive, trash, label, mark read/unread |
+
+### Setup
+
+1. Enable Gmail API in Google Cloud Console
+2. User connects via: `GET /oauth/google/gmail/authorize?user_id=<id>`
+
+### Example
+
+```
+You: "Check my emails for anything important"
+
+Franklin: "I've analyzed 85 emails from the past month:
+          - 12 require your attention
+          - 8 appear to be spam
+
+          Most urgent:
+          1. John Smith: Q1 Portfolio Review Request
+          2. Bank of America: Wire Transfer Confirmation
+
+          Shall I move the spam to junk?"
+```
+
+**Full documentation:** [docs/gmail-module.md](docs/gmail-module.md)
+
+---
+
+## Flight Search (Kiwi Tequila API)
+
+Franklin can search and book flights using the **Kiwi Tequila API** - free for startups with instant signup.
+
+### Setup
+
+1. Register at [tequila.kiwi.com](https://tequila.kiwi.com)
+2. Create application → Get API key
+3. Add to `.env`:
+   ```bash
+   KIWI_API_KEY=your_api_key
+   ```
+
+### Features
+
+| Feature | Description |
+|---------|-------------|
+| 750+ airlines | Global coverage |
+| Virtual interlining | Mix airlines on one ticket |
+| Direct booking links | Deep links to complete purchase |
+| Real-time prices | Live inventory from carriers |
+
+### Example Flow
+
+```
+You: "Find me flights to Tokyo next month"
+
+Franklin:
+1. Calls Kiwi Tequila API
+2. Returns sorted options with prices
+3. You pick one → Franklin opens booking link
+4. Or: Franklin books autonomously (if spending rules allow)
+```
+
+### API Response
+
+```python
+{
+    "airline": "United Airlines",
+    "flight_numbers": "UA837",
+    "route": "SFO → NRT",
+    "duration": "13h 15m",
+    "stops": "Direct",
+    "price": "$1,249.00",
+    "baggage": "Included",
+    "booking_url": "https://..."
+}
 ```
 
 ---
@@ -328,6 +514,13 @@ VAPI_API_KEY=your-vapi-key
 # Email (Resend)
 RESEND_API_KEY=your-resend-key
 EMAIL_FROM=advisor@yourdomain.com
+
+# Payments (Virtual Cards)
+PRIVACY_API_KEY=your-privacy-key          # Privacy.com virtual cards
+OAUTH_ENCRYPTION_KEY=your-fernet-key      # For encrypting card details
+
+# Travel (Kiwi Tequila API) - Free at tequila.kiwi.com
+KIWI_API_KEY=your-kiwi-key
 ```
 
 ---
@@ -412,13 +605,23 @@ curl -X POST http://localhost:8000/webhooks/vapi \
 - [ ] Risk Analyzer
 - [ ] Profile enrichment automation
 
-### Phase 4: Specialist Modules
-- [ ] Specialist module interface
-- [ ] Product/Service catalog
-- [ ] Routing logic
-- [ ] Human advisor handoff
+### Phase 4: Autonomous Tools ✅
+- [x] Tool registry & base classes
+- [x] Travel tool (Kiwi Tequila API - free for startups)
+- [x] Calendar tool (Google Calendar)
+- [x] Email tool (Resend)
+- [x] Finance tool (Plaid banking)
+- [x] **Payments tool (autonomous spending)**
 
-### Phase 5: Matching Engine
+### Phase 5: Autonomous Spending ✅
+- [x] Spending rules system
+- [x] Payment method storage (encrypted)
+- [x] Privacy.com virtual card adapter
+- [x] Purchase execution & tracking
+- [x] Auto-approve / notify / confirm thresholds
+- [x] Spending limits (per-transaction, daily, monthly)
+
+### Phase 6: Matching Engine
 - [x] Matching engine skeleton
 - [ ] Partner catalog system
 - [ ] Introduction workflow

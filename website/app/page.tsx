@@ -330,7 +330,7 @@ function IPhoneMockup() {
                   {/* Message bubble */}
                   <div className="bg-silver-600 px-4 py-4 rounded-2xl rounded-tl-sm shadow-sm">
                     <h3 className="font-display text-lg text-white mb-2">
-                      Hey, I'm Franklin—your AI private banker.
+                      Hey, I'm Franklin—a modular AI agent built for wealth.
                     </h3>
                     <p className="text-[14px] text-white/90 leading-relaxed">
                       Connect your accounts, define your goals, and I'll find opportunities, make introductions, and execute—autonomously.
@@ -563,8 +563,8 @@ export default function LandingPage() {
 
             {/* Nav Links */}
             <div className="hidden md:flex items-center gap-8">
-              <a href="/expertise" className="link-elegant text-sm tracking-wide">Resume</a>
-              <a href="/variations" className="link-elegant text-sm tracking-wide">Themes</a>
+              <a href="/expertise" className="link-elegant text-sm tracking-wide">How It Works</a>
+              <a href="/chat" className="link-elegant text-sm tracking-wide">Try Franklin</a>
             </div>
 
             {/* CTA */}

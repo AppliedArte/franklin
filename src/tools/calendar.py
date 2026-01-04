@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from decimal import Decimal
 from typing import Optional
 from uuid import UUID
 
@@ -126,56 +125,73 @@ class CalendarTool(Tool):
 
     async def execute(self, action: str, params: dict, user_id: UUID) -> ToolResult:
         """Execute a calendar action."""
-        if action == "list_events":
-            return await self._list_events(params, user_id)
-        elif action == "find_free_time":
-            return await self._find_free_time(params, user_id)
-        elif action == "create_event":
-            return await self._create_event(params, user_id)
-        elif action == "update_event":
-            return await self._update_event(params, user_id)
-        elif action == "delete_event":
-            return await self._delete_event(params, user_id)
-        else:
+        actions = {
+            "list_events": self._list_events,
+            "find_free_time": self._find_free_time,
+            "create_event": self._create_event,
+            "update_event": self._update_event,
+            "delete_event": self._delete_event,
+        }
+        handler = actions.get(action)
+        if not handler:
             return ToolResult(success=False, error=f"Unknown action: {action}")
+        return await handler(params, user_id)
+
+    async def _get_calendar_service(self, user_id: UUID):
+        """Get Google Calendar service for user, or None if not connected."""
+        try:
+            from src.services.google_calendar import GoogleCalendarService
+            service = GoogleCalendarService(str(user_id))
+            if await service.is_connected():
+                return service
+        except Exception:
+            pass
+        return None
 
     async def _list_events(self, params: dict, user_id: UUID) -> ToolResult:
         """List calendar events."""
-        # TODO: Integrate with Google Calendar API
-        # For now, return mock data
-
         start_date = datetime.strptime(params["start_date"], "%Y-%m-%d")
+        end_date = datetime.strptime(params["end_date"], "%Y-%m-%d") if params.get("end_date") else None
+        calendar_id = params.get("calendar_id", "primary")
+        max_results = params.get("max_results", 10)
+
+        service = await self._get_calendar_service(user_id)
+        if service:
+            try:
+                events = await service.list_events(
+                    start_date=start_date,
+                    end_date=end_date,
+                    calendar_id=calendar_id,
+                    max_results=max_results,
+                )
+                return ToolResult(
+                    success=True,
+                    data=[e.to_dict() for e in events],
+                    summary=f"Found {len(events)} events",
+                    options=[{"label": e.summary_text(), "value": e.id} for e in events],
+                    metadata={"source": "google_calendar"},
+                )
+            except Exception as e:
+                return ToolResult(success=False, error=f"Google Calendar error: {str(e)}")
+
         mock_events = [
-            CalendarEvent(
-                id="evt1",
-                title="Team Standup",
-                start=start_date.replace(hour=9, minute=0),
-                end=start_date.replace(hour=9, minute=30),
-                location="Zoom",
-            ),
-            CalendarEvent(
-                id="evt2",
-                title="Quarterly Review",
-                start=start_date.replace(hour=14, minute=0),
-                end=start_date.replace(hour=15, minute=30),
-                location="Conference Room A",
-                attendees=["boss@company.com", "team@company.com"],
-            ),
-            CalendarEvent(
-                id="evt3",
-                title="Flight to Tokyo",
-                start=(start_date + timedelta(days=7)).replace(hour=10, minute=30),
-                end=(start_date + timedelta(days=7)).replace(hour=14, minute=45),
-                description="UA837 SFO→NRT",
-            ),
+            CalendarEvent("evt1", "Team Standup", start_date.replace(hour=9, minute=0),
+                         start_date.replace(hour=9, minute=30), location="Zoom"),
+            CalendarEvent("evt2", "Quarterly Review", start_date.replace(hour=14, minute=0),
+                         start_date.replace(hour=15, minute=30), location="Conference Room A",
+                         attendees=["boss@company.com", "team@company.com"]),
+            CalendarEvent("evt3", "Flight to Tokyo",
+                         (start_date + timedelta(days=7)).replace(hour=10, minute=30),
+                         (start_date + timedelta(days=7)).replace(hour=14, minute=45),
+                         description="UA837 SFO→NRT"),
         ]
 
         return ToolResult(
             success=True,
             data=[e.to_dict() for e in mock_events],
-            summary=f"Found {len(mock_events)} events",
+            summary=f"Found {len(mock_events)} events (connect Google Calendar for real data)",
             options=[{"label": e.summary(), "value": e.id} for e in mock_events],
-            metadata={"mock": True},
+            metadata={"mock": True, "connect_url": "/oauth/google/authorize"},
         )
 
     async def _find_free_time(self, params: dict, user_id: UUID) -> ToolResult:
@@ -185,17 +201,34 @@ class CalendarTool(Tool):
         duration = params["duration_minutes"]
         working_hours = params.get("working_hours_only", True)
 
-        # Mock free slots
+        service = await self._get_calendar_service(user_id)
+        if service:
+            try:
+                free_slots = await service.find_free_time(
+                    start_date=start_date,
+                    end_date=end_date,
+                    duration_minutes=duration,
+                    working_hours_only=working_hours,
+                )
+                return ToolResult(
+                    success=True,
+                    data=free_slots[:10],
+                    summary=f"Found {len(free_slots)} available time slots",
+                    options=free_slots[:10],
+                    metadata={"source": "google_calendar"},
+                )
+            except Exception as e:
+                return ToolResult(success=False, error=f"Google Calendar error: {str(e)}")
+
         free_slots = []
         current = start_date.replace(hour=9, minute=0)
 
         while current < end_date:
-            if current.weekday() < 5:  # Weekdays only
-                # Add a few slots per day
+            if current.weekday() < 5:
                 for hour in [10, 14, 16]:
                     slot_start = current.replace(hour=hour, minute=0)
                     slot_end = slot_start + timedelta(minutes=duration)
-                    if slot_end.hour <= 18:  # Within working hours
+                    if slot_end.hour <= 18:
                         free_slots.append({
                             "start": slot_start.isoformat(),
                             "end": slot_end.isoformat(),
@@ -205,44 +238,109 @@ class CalendarTool(Tool):
 
         return ToolResult(
             success=True,
-            data=free_slots[:10],  # Limit to 10 slots
-            summary=f"Found {len(free_slots)} available time slots",
+            data=free_slots[:10],
+            summary=f"Found {len(free_slots)} available time slots (connect Google Calendar for real data)",
             options=free_slots[:10],
-            metadata={"mock": True},
+            metadata={"mock": True, "connect_url": "/oauth/google/authorize"},
         )
 
     async def _create_event(self, params: dict, user_id: UUID) -> ToolResult:
         """Create a calendar event."""
-        # TODO: Integrate with Google Calendar API
-        event = CalendarEvent(
-            id=f"new_{datetime.utcnow().timestamp()}",
-            title=params["title"],
-            start=datetime.fromisoformat(params["start"]),
-            end=datetime.fromisoformat(params["end"]),
-            location=params.get("location"),
-            description=params.get("description"),
-            attendees=params.get("attendees", []),
-        )
+        title = params["title"]
+        start = datetime.fromisoformat(params["start"])
+        end = datetime.fromisoformat(params["end"])
+        location = params.get("location")
+        description = params.get("description")
+        attendees = params.get("attendees", [])
+        send_notifications = params.get("send_notifications", True)
 
+        service = await self._get_calendar_service(user_id)
+        if service:
+            try:
+                event = await service.create_event(
+                    title=title,
+                    start=start,
+                    end=end,
+                    description=description,
+                    location=location,
+                    attendees=attendees,
+                    send_notifications=send_notifications,
+                )
+                return ToolResult(
+                    success=True,
+                    data=event.to_dict(),
+                    summary=f"Created event: {event.title}",
+                    metadata={"source": "google_calendar", "html_link": event.html_link},
+                )
+            except Exception as e:
+                return ToolResult(success=False, error=f"Google Calendar error: {str(e)}")
+
+        event = CalendarEvent(f"new_{datetime.utcnow().timestamp()}", title, start, end,
+                            location, description, attendees)
         return ToolResult(
             success=True,
             data=event.to_dict(),
-            summary=f"Created event: {event.title}",
-            metadata={"mock": True, "approval_was_given": True},
+            summary=f"Created event: {event.title} (mock - connect Google Calendar to save)",
+            metadata={"mock": True, "connect_url": "/oauth/google/authorize"},
         )
 
     async def _update_event(self, params: dict, user_id: UUID) -> ToolResult:
         """Update a calendar event."""
+        event_id = params["event_id"]
+        title = params.get("title")
+        start = datetime.fromisoformat(params["start"]) if params.get("start") else None
+        end = datetime.fromisoformat(params["end"]) if params.get("end") else None
+        location = params.get("location")
+        description = params.get("description")
+
+        service = await self._get_calendar_service(user_id)
+        if service:
+            try:
+                event = await service.update_event(
+                    event_id=event_id,
+                    title=title,
+                    start=start,
+                    end=end,
+                    location=location,
+                    description=description,
+                )
+                return ToolResult(
+                    success=True,
+                    data=event.to_dict(),
+                    summary=f"Updated event: {event.title}",
+                    metadata={"source": "google_calendar"},
+                )
+            except Exception as e:
+                return ToolResult(success=False, error=f"Google Calendar error: {str(e)}")
+
         return ToolResult(
             success=True,
-            summary=f"Updated event {params['event_id']}",
-            metadata={"mock": True},
+            summary=f"Updated event {event_id} (mock - connect Google Calendar to save)",
+            metadata={"mock": True, "connect_url": "/oauth/google/authorize"},
         )
 
     async def _delete_event(self, params: dict, user_id: UUID) -> ToolResult:
         """Delete a calendar event."""
+        event_id = params["event_id"]
+        notify_attendees = params.get("notify_attendees", True)
+
+        service = await self._get_calendar_service(user_id)
+        if service:
+            try:
+                await service.delete_event(
+                    event_id=event_id,
+                    send_notifications=notify_attendees,
+                )
+                return ToolResult(
+                    success=True,
+                    summary=f"Deleted event {event_id}",
+                    metadata={"source": "google_calendar"},
+                )
+            except Exception as e:
+                return ToolResult(success=False, error=f"Google Calendar error: {str(e)}")
+
         return ToolResult(
             success=True,
-            summary=f"Deleted event {params['event_id']}",
-            metadata={"mock": True},
+            summary=f"Deleted event {event_id} (mock - connect Google Calendar to save)",
+            metadata={"mock": True, "connect_url": "/oauth/google/authorize"},
         )

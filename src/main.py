@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.config import get_settings
 from src.db.database import init_db
-from src.api import health, webhooks, chat
+from src.api import health, webhooks, chat, oauth
 
 settings = get_settings()
 
@@ -42,6 +42,7 @@ app.add_middleware(
 app.include_router(health.router, tags=["Health"])
 app.include_router(webhooks.router, prefix="/webhooks", tags=["Webhooks"])
 app.include_router(chat.router, prefix="/chat", tags=["Chat"])
+app.include_router(oauth.router, prefix="/oauth", tags=["OAuth"])
 
 
 @app.get("/")
