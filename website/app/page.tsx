@@ -562,8 +562,8 @@ export default function LandingPage() {
             </a>
 
             {/* Nav Links */}
-            <div className="hidden md:flex items-center gap-8">
-              <a href="/expertise" className="link-elegant text-sm tracking-wide">How It Works</a>
+            <div className="flex items-center gap-4 md:gap-8">
+              <a href="/expertise" className="hidden md:block link-elegant text-sm tracking-wide">How It Works</a>
               <a href="/chat" className="link-elegant text-sm tracking-wide">Try Franklin</a>
             </div>
 
@@ -694,6 +694,7 @@ export default function LandingPage() {
                 Connect
               </h4>
               <ul className="space-y-3 font-body text-ivory-100/60">
+                <li><Link href="/chat" className="hover:text-gold-400 transition-colors">Chat with Franklin</Link></li>
                 <li><a href="https://t.me/askfranklin_bot" target="_blank" rel="noopener noreferrer" className="hover:text-gold-400 transition-colors">Telegram</a></li>
                 <li><a href="https://twitter.com/askfranklin" target="_blank" rel="noopener noreferrer" className="hover:text-gold-400 transition-colors">Twitter</a></li>
                 <li><a href="mailto:hello@askfranklin.xyz" className="hover:text-gold-400 transition-colors">Email</a></li>
