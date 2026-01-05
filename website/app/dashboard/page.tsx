@@ -11,6 +11,21 @@ import { Send, Settings, Wallet, Calendar, ArrowRight } from 'lucide-react'
 const getMessageContent = (message: { parts?: Array<{ type: string; text?: string }> }) =>
   (message.parts || []).filter((p): p is { type: 'text'; text: string } => p.type === 'text').map(p => p.text).join('')
 
+// Parse message to separate reasoning (thinking) from response
+const parseMessage = (text: string) => {
+  const thinkingRegex = /⟨thinking⟩([\s\S]*?)⟨\/thinking⟩/g
+  let thinking = ''
+  let response = text
+
+  const matches = text.matchAll(thinkingRegex)
+  for (const match of matches) {
+    thinking += match[1]
+    response = response.replace(match[0], '')
+  }
+
+  return { thinking: thinking.trim(), response: response.trim() }
+}
+
 const SUGGESTIONS = ['How should I start investing?', 'Help me create a budget', 'What are ETFs?']
 
 const QUICK_ACTIONS = [
@@ -116,21 +131,29 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {messages.map((m) => (
-                <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                    m.role === 'user' ? 'bg-silver-700 text-ivory-100' : 'bg-white border border-silver-200 text-silver-800'
-                  }`}>
-                    {m.role === 'assistant' && (
-                      <div className="flex items-center gap-2 mb-2 pb-2 border-b border-silver-100">
-                        <img src="/franklin.jpg" alt="Franklin" className="w-5 h-5 rounded-full" />
-                        <span className="text-xs text-silver-500 font-sans">Franklin</span>
-                      </div>
-                    )}
-                    <p className="font-body text-sm leading-relaxed whitespace-pre-wrap">{getMessageContent(m)}</p>
+              {messages.map((m) => {
+                const content = getMessageContent(m)
+                const { thinking, response } = m.role === 'assistant' ? parseMessage(content) : { thinking: '', response: content }
+
+                return (
+                  <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                      m.role === 'user' ? 'bg-silver-700 text-ivory-100' : 'bg-white border border-silver-200 text-silver-800'
+                    }`}>
+                      {m.role === 'assistant' && (
+                        <div className="flex items-center gap-2 mb-2 pb-2 border-b border-silver-100">
+                          <img src="/franklin.jpg" alt="Franklin" className="w-5 h-5 rounded-full" />
+                          <span className="text-xs text-silver-500 font-sans">Franklin</span>
+                        </div>
+                      )}
+                      {thinking && (
+                        <p className="text-xs text-silver-400 italic mb-2 font-sans leading-relaxed">{thinking}</p>
+                      )}
+                      <p className="font-body text-sm leading-relaxed whitespace-pre-wrap">{response}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
 
               {isChatLoading && messages[messages.length - 1]?.role === 'user' && (
                 <div className="flex justify-start">

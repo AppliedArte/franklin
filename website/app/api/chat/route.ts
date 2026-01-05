@@ -62,11 +62,14 @@ export async function POST(req: Request) {
         try {
           const parsed = JSON.parse(data)
           const delta = parsed.choices?.[0]?.delta
-          // Z.AI glm-4.5-flash returns reasoning_content (internal thinking) and content (actual response)
-          // Only stream the content, ignore reasoning_content
-          const text = delta?.content
-          if (text) {
-            const escaped = JSON.stringify(text)
+          // Z.AI glm-4.5-flash streams reasoning_content first, then content
+          // Mark reasoning with special tags so frontend can style differently
+          if (delta?.reasoning_content) {
+            const escaped = JSON.stringify(`⟨thinking⟩${delta.reasoning_content}⟨/thinking⟩`)
+            controller.enqueue(encoder.encode(`0:${escaped}\n`))
+          }
+          if (delta?.content) {
+            const escaped = JSON.stringify(delta.content)
             controller.enqueue(encoder.encode(`0:${escaped}\n`))
           }
         } catch {

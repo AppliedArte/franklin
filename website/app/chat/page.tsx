@@ -5,6 +5,7 @@ import { TextStreamChatTransport } from 'ai'
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { Send, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 
 const DEMO_MESSAGE_LIMIT = 5
@@ -18,6 +19,7 @@ const getMessageContent = (message: { parts?: Array<{ type: string; text?: strin
 
 export default function ChatPage() {
   const { user, loading } = useAuth()
+  const router = useRouter()
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
   const [messageCount, setMessageCount] = useState(0)
   const [input, setInput] = useState('')
@@ -26,6 +28,11 @@ export default function ChatPage() {
   const transport = useMemo(() => new TextStreamChatTransport({ api: '/api/chat' }), [])
   const { messages, sendMessage, status } = useChat({ transport })
   const isChatLoading = status === 'streaming' || status === 'submitted'
+
+  // Redirect logged-in users to dashboard
+  useEffect(() => {
+    if (!loading && user) router.push('/dashboard')
+  }, [user, loading, router])
 
   useEffect(() => {
     const savedCount = localStorage.getItem('franklin_demo_count')

@@ -7,7 +7,6 @@ import { MessageCircle, Settings, LogOut, User, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 
 const NAV_LINKS = [
-  { href: '/chat', label: 'Chat', icon: MessageCircle },
   { href: '/dashboard', label: 'Dashboard', icon: User },
   { href: '/settings/wallet', label: 'Settings', icon: Settings, matchPrefix: '/settings' },
 ]

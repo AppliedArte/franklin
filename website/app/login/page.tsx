@@ -19,7 +19,7 @@ export default function LoginPage() {
     try {
       const { error } = await createClient().auth.signInWithOtp({
         email,
-        options: { emailRedirectTo: 'https://www.askfranklin.xyz/chat' },
+        options: { emailRedirectTo: 'https://www.askfranklin.xyz/dashboard' },
       })
       if (error) setError(error.message)
       else setIsSent(true)
