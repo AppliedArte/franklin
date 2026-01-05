@@ -8,6 +8,13 @@ import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 
 const DEMO_MESSAGE_LIMIT = 5
+const SUGGESTIONS = ['How should I start investing?', 'Help me create a budget', 'What are ETFs?', 'Portfolio advice']
+
+const getMessageContent = (message: { parts?: Array<{ type: string; text?: string }> }) =>
+  (message.parts || [])
+    .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
+    .map(p => p.text)
+    .join('')
 
 export default function ChatPage() {
   const { user, loading } = useAuth()
@@ -17,62 +24,51 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const transport = useMemo(() => new TextStreamChatTransport({ api: '/api/chat' }), [])
-
-  const { messages, sendMessage, status } = useChat({
-    transport,
-  })
-
+  const { messages, sendMessage, status } = useChat({ transport })
   const isChatLoading = status === 'streaming' || status === 'submitted'
 
+  // Load demo message count from localStorage
   useEffect(() => {
-    // Load demo message count from localStorage first
     const savedCount = localStorage.getItem('franklin_demo_count')
-    if (savedCount) {
-      setMessageCount(parseInt(savedCount, 10))
-    }
+    if (savedCount) setMessageCount(parseInt(savedCount, 10))
   }, [])
 
+  // Save demo count to localStorage
   useEffect(() => {
-    // Save demo count to localStorage
-    if (!user) {
-      localStorage.setItem('franklin_demo_count', messageCount.toString())
-    }
+    if (!user) localStorage.setItem('franklin_demo_count', messageCount.toString())
   }, [messageCount, user])
 
+  // Auto-scroll to bottom
   useEffect(() => {
-    // Auto-scroll to bottom
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
   // Track message count when assistant responds
   useEffect(() => {
     const assistantMessages = messages.filter(m => m.role === 'assistant').length
-    if (assistantMessages > messageCount) {
-      setMessageCount(assistantMessages)
-    }
+    if (assistantMessages > messageCount) setMessageCount(assistantMessages)
   }, [messages, messageCount])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim() || isChatLoading) return
 
-    // Check demo limit for anonymous users
     if (!user && messageCount >= DEMO_MESSAGE_LIMIT) {
       setShowLoginPrompt(true)
       return
     }
 
-    const message = input.trim()
+    const trimmedInput = input.trim()
     setInput('')
-    await sendMessage({ text: message })
+    await sendMessage({ text: trimmedInput })
   }
 
-  const handleSuggestionClick = async (suggestion: string) => {
+  const handleSuggestionClick = (suggestion: string) => {
     if (!user && messageCount >= DEMO_MESSAGE_LIMIT) {
       setShowLoginPrompt(true)
       return
     }
-    await sendMessage({ text: suggestion })
+    sendMessage({ text: suggestion })
   }
 
   if (loading) {
@@ -81,16 +77,6 @@ export default function ChatPage() {
         <div className="animate-pulse text-silver-600 font-serif text-xl">Loading...</div>
       </div>
     )
-  }
-
-  // Helper to get message text content
-  const getMessageContent = (message: typeof messages[0]) => {
-    // AI SDK v6 uses parts array
-    const parts = message.parts || []
-    return parts
-      .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
-      .map(p => p.text)
-      .join('')
   }
 
   return (
@@ -121,12 +107,7 @@ export default function ChatPage() {
                 </p>
               </div>
               <div className="flex flex-wrap justify-center gap-3 pt-4">
-                {[
-                  'How should I start investing?',
-                  'Help me create a budget',
-                  'What are ETFs?',
-                  'Portfolio advice',
-                ].map((suggestion) => (
+                {SUGGESTIONS.map((suggestion) => (
                   <button
                     key={suggestion}
                     onClick={() => handleSuggestionClick(suggestion)}

@@ -6,15 +6,21 @@ import { useAuth } from '@/lib/auth-context'
 import { MessageCircle, Settings, LogOut, User, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 
+const NAV_LINKS = [
+  { href: '/chat', label: 'Chat', icon: MessageCircle, matchPrefix: undefined },
+  { href: '/dashboard', label: 'Dashboard', icon: User, matchPrefix: undefined },
+  { href: '/settings/wallet', label: 'Settings', icon: Settings, matchPrefix: '/settings' },
+]
+
 export function Navbar() {
   const { user, loading, signOut } = useAuth()
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  // Don't show navbar on login page
   if (pathname === '/login') return null
 
-  const isActive = (path: string) => pathname === path
+  const isActive = (path: string, matchPrefix?: string) =>
+    matchPrefix ? pathname.startsWith(matchPrefix) : pathname === path
 
   return (
     <header className="border-b border-silver-700/10 bg-ivory-50/80 backdrop-blur-sm sticky top-0 z-50">
@@ -28,37 +34,18 @@ export function Navbar() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-6">
-            {user && (
-              <>
-                <Link
-                  href="/chat"
-                  className={`flex items-center gap-2 text-sm font-sans transition-colors ${
-                    isActive('/chat') ? 'text-gold-600' : 'text-silver-600 hover:text-silver-800'
-                  }`}
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  Chat
-                </Link>
-                <Link
-                  href="/dashboard"
-                  className={`flex items-center gap-2 text-sm font-sans transition-colors ${
-                    isActive('/dashboard') ? 'text-gold-600' : 'text-silver-600 hover:text-silver-800'
-                  }`}
-                >
-                  <User className="w-4 h-4" />
-                  Dashboard
-                </Link>
-                <Link
-                  href="/settings/wallet"
-                  className={`flex items-center gap-2 text-sm font-sans transition-colors ${
-                    pathname.startsWith('/settings') ? 'text-gold-600' : 'text-silver-600 hover:text-silver-800'
-                  }`}
-                >
-                  <Settings className="w-4 h-4" />
-                  Settings
-                </Link>
-              </>
-            )}
+            {user && NAV_LINKS.map(({ href, label, icon: Icon, matchPrefix }) => (
+              <Link
+                key={href}
+                href={href}
+                className={`flex items-center gap-2 text-sm font-sans transition-colors ${
+                  isActive(href, matchPrefix) ? 'text-gold-600' : 'text-silver-600 hover:text-silver-800'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {label}
+              </Link>
+            ))}
           </nav>
 
           {/* Auth Section */}
@@ -111,36 +98,19 @@ export function Navbar() {
         {/* Mobile Menu */}
         {mobileMenuOpen && user && (
           <nav className="md:hidden pt-4 pb-2 border-t border-silver-200 mt-3 space-y-2">
-            <Link
-              href="/chat"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-sans transition-colors ${
-                isActive('/chat') ? 'bg-gold-50 text-gold-600' : 'text-silver-600 hover:bg-silver-50'
-              }`}
-            >
-              <MessageCircle className="w-4 h-4" />
-              Chat with Franklin
-            </Link>
-            <Link
-              href="/dashboard"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-sans transition-colors ${
-                isActive('/dashboard') ? 'bg-gold-50 text-gold-600' : 'text-silver-600 hover:bg-silver-50'
-              }`}
-            >
-              <User className="w-4 h-4" />
-              Dashboard
-            </Link>
-            <Link
-              href="/settings/wallet"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-sans transition-colors ${
-                pathname.startsWith('/settings') ? 'bg-gold-50 text-gold-600' : 'text-silver-600 hover:bg-silver-50'
-              }`}
-            >
-              <Settings className="w-4 h-4" />
-              Settings
-            </Link>
+            {NAV_LINKS.map(({ href, label, icon: Icon, matchPrefix }) => (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-sans transition-colors ${
+                  isActive(href, matchPrefix) ? 'bg-gold-50 text-gold-600' : 'text-silver-600 hover:bg-silver-50'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {label === 'Chat' ? 'Chat with Franklin' : label}
+              </Link>
+            ))}
           </nav>
         )}
       </div>

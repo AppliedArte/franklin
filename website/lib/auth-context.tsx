@@ -28,9 +28,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabase = createClient()
 
     // Check current user
-    supabase.auth.getUser().then((result: { data: { user: { id: string; email?: string } | null } }) => {
-      if (result.data?.user) {
-        setUser({ id: result.data.user.id, email: result.data.user.email || '' })
+    supabase.auth.getUser().then(({ data }: { data: { user: { id: string; email?: string } | null } }) => {
+      if (data?.user) {
+        setUser({ id: data.user.id, email: data.user.email || '' })
       }
       setLoading(false)
     })
@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (event === 'SIGNED_IN' && session?.user) {
         setUser({ id: session.user.id, email: session.user.email || '' })
         // Clean up URL hash after successful auth
-        if (typeof window !== 'undefined' && window.location.hash) {
+        if (window.location.hash) {
           window.history.replaceState(null, '', window.location.pathname)
         }
       } else if (event === 'SIGNED_OUT') {
@@ -53,8 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signOut = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
+    await createClient().auth.signOut()
     setUser(null)
   }
 
