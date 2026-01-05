@@ -27,22 +27,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const supabase = createClient()
 
-    // Check current user
     supabase.auth.getUser().then(({ data }: { data: { user: { id: string; email?: string } | null } }) => {
-      if (data?.user) {
-        setUser({ id: data.user.id, email: data.user.email || '' })
-      }
+      if (data?.user) setUser({ id: data.user.id, email: data.user.email || '' })
       setLoading(false)
     })
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: { user?: { id: string; email?: string } } | null) => {
       if (event === 'SIGNED_IN' && session?.user) {
         setUser({ id: session.user.id, email: session.user.email || '' })
-        // Clean up URL hash after successful auth
-        if (window.location.hash) {
-          window.history.replaceState(null, '', window.location.pathname)
-        }
+        if (window.location.hash) window.history.replaceState(null, '', window.location.pathname)
       } else if (event === 'SIGNED_OUT') {
         setUser(null)
       }

@@ -43,10 +43,7 @@ export default function ConnectionsPage() {
   const fetchConnections = async () => {
     try {
       const response = await fetch('/api/oauth/google/status')
-      if (response.ok) {
-        const data = await response.json()
-        setConnections(data.connections || {})
-      }
+      if (response.ok) setConnections((await response.json()).connections || {})
     } catch (error) {
       console.error('Failed to fetch connections:', error)
     } finally {
@@ -72,10 +69,9 @@ export default function ConnectionsPage() {
     setDisconnecting(provider)
     try {
       await fetch(`/api/oauth/${provider}/revoke`, { method: 'DELETE' })
-      setConnections(prev => {
-        const updated = { ...prev }
-        delete updated[provider]
-        return updated
+      setConnections((prev) => {
+        const { [provider]: _, ...rest } = prev
+        return rest
       })
     } catch (error) {
       console.error('Failed to disconnect:', error)

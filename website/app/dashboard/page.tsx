@@ -9,12 +9,15 @@ import { TextStreamChatTransport } from 'ai'
 import { Send, Settings, Wallet, Calendar, ArrowRight } from 'lucide-react'
 
 const getMessageContent = (message: { parts?: Array<{ type: string; text?: string }> }) =>
-  (message.parts || [])
-    .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
-    .map(p => p.text)
-    .join('')
+  (message.parts || []).filter((p): p is { type: 'text'; text: string } => p.type === 'text').map(p => p.text).join('')
 
 const SUGGESTIONS = ['How should I start investing?', 'Help me create a budget', 'What are ETFs?']
+
+const QUICK_ACTIONS = [
+  { href: '/settings/wallet', icon: Wallet, title: 'Wallet', desc: 'Manage credits', bg: 'bg-green-100', color: 'text-green-600' },
+  { href: '/settings/connections', icon: Calendar, title: 'Connections', desc: 'Google Calendar & Gmail', bg: 'bg-blue-100', color: 'text-blue-600' },
+  { href: '/settings/wallet', icon: Settings, title: 'Settings', desc: 'Account preferences', bg: 'bg-silver-100', color: 'text-silver-600' },
+]
 
 export default function DashboardPage() {
   const { user, loading } = useAuth()
@@ -28,23 +31,18 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!loading && !user) router.push('/login')
-  }, [user, loading, router])
-
-  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+  }, [user, loading, router, messages])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim() || isChatLoading) return
-    const trimmedInput = input.trim()
+    const text = input.trim()
     setInput('')
-    await sendMessage({ text: trimmedInput })
+    await sendMessage({ text })
   }
 
-  const handleSuggestion = (text: string) => {
-    if (!isChatLoading) sendMessage({ text })
-  }
+  const handleSuggestion = (text: string) => !isChatLoading && sendMessage({ text })
 
   if (loading) {
     return (
@@ -63,53 +61,26 @@ export default function DashboardPage() {
           {/* Left Sidebar - Quick Actions */}
           <div className="space-y-4">
             <div className="mb-4">
-              <h1 className="font-display text-2xl text-silver-800">
-                Welcome, {user.email.split('@')[0]}
-              </h1>
+              <h1 className="font-display text-2xl text-silver-800">Welcome, {user.email.split('@')[0]}</h1>
               <p className="text-silver-500 text-sm font-sans">Your wealth dashboard</p>
             </div>
 
-            <Link
-              href="/settings/wallet"
-              className="flex items-center gap-4 bg-ivory-50 border border-silver-200 rounded-xl p-4 hover:border-gold-400 transition-all group"
-            >
-              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
-                <Wallet className="w-5 h-5 text-green-600" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-sans font-medium text-silver-800">Wallet</h3>
-                <p className="text-silver-500 text-xs">Manage credits</p>
-              </div>
-              <ArrowRight className="w-4 h-4 text-silver-400 group-hover:text-gold-600" />
-            </Link>
-
-            <Link
-              href="/settings/connections"
-              className="flex items-center gap-4 bg-ivory-50 border border-silver-200 rounded-xl p-4 hover:border-gold-400 transition-all group"
-            >
-              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-blue-600" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-sans font-medium text-silver-800">Connections</h3>
-                <p className="text-silver-500 text-xs">Google Calendar & Gmail</p>
-              </div>
-              <ArrowRight className="w-4 h-4 text-silver-400 group-hover:text-gold-600" />
-            </Link>
-
-            <Link
-              href="/settings/wallet"
-              className="flex items-center gap-4 bg-ivory-50 border border-silver-200 rounded-xl p-4 hover:border-gold-400 transition-all group"
-            >
-              <div className="w-10 h-10 rounded-lg bg-silver-100 flex items-center justify-center">
-                <Settings className="w-5 h-5 text-silver-600" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-sans font-medium text-silver-800">Settings</h3>
-                <p className="text-silver-500 text-xs">Account preferences</p>
-              </div>
-              <ArrowRight className="w-4 h-4 text-silver-400 group-hover:text-gold-600" />
-            </Link>
+            {QUICK_ACTIONS.map(({ href, icon: Icon, title, desc, bg, color }) => (
+              <Link
+                key={href}
+                href={href}
+                className="flex items-center gap-4 bg-ivory-50 border border-silver-200 rounded-xl p-4 hover:border-gold-400 transition-all group"
+              >
+                <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center`}>
+                  <Icon className={`w-5 h-5 ${color}`} />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-sans font-medium text-silver-800">{title}</h3>
+                  <p className="text-silver-500 text-xs">{desc}</p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-silver-400 group-hover:text-gold-600" />
+              </Link>
+            ))}
           </div>
 
           {/* Main Chat Area */}
@@ -145,22 +116,18 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {messages.map((message) => (
-                <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              {messages.map((m) => (
+                <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                    message.role === 'user'
-                      ? 'bg-silver-700 text-ivory-100'
-                      : 'bg-white border border-silver-200 text-silver-800'
+                    m.role === 'user' ? 'bg-silver-700 text-ivory-100' : 'bg-white border border-silver-200 text-silver-800'
                   }`}>
-                    {message.role === 'assistant' && (
+                    {m.role === 'assistant' && (
                       <div className="flex items-center gap-2 mb-2 pb-2 border-b border-silver-100">
                         <img src="/franklin.jpg" alt="Franklin" className="w-5 h-5 rounded-full" />
                         <span className="text-xs text-silver-500 font-sans">Franklin</span>
                       </div>
                     )}
-                    <p className="font-body text-sm leading-relaxed whitespace-pre-wrap">
-                      {getMessageContent(message)}
-                    </p>
+                    <p className="font-body text-sm leading-relaxed whitespace-pre-wrap">{getMessageContent(m)}</p>
                   </div>
                 </div>
               ))}

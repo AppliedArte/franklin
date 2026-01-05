@@ -27,47 +27,31 @@ export default function ChatPage() {
   const { messages, sendMessage, status } = useChat({ transport })
   const isChatLoading = status === 'streaming' || status === 'submitted'
 
-  // Load demo message count from localStorage
   useEffect(() => {
     const savedCount = localStorage.getItem('franklin_demo_count')
     if (savedCount) setMessageCount(parseInt(savedCount, 10))
   }, [])
 
-  // Save demo count to localStorage
   useEffect(() => {
     if (!user) localStorage.setItem('franklin_demo_count', messageCount.toString())
-  }, [messageCount, user])
-
-  // Auto-scroll to bottom
-  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
-
-  // Track message count when assistant responds
-  useEffect(() => {
     const assistantMessages = messages.filter(m => m.role === 'assistant').length
     if (assistantMessages > messageCount) setMessageCount(assistantMessages)
-  }, [messages, messageCount])
+  }, [messageCount, user, messages])
+
+  const isLimitReached = !user && messageCount >= DEMO_MESSAGE_LIMIT
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim() || isChatLoading) return
-
-    if (!user && messageCount >= DEMO_MESSAGE_LIMIT) {
-      setShowLoginPrompt(true)
-      return
-    }
-
-    const trimmedInput = input.trim()
+    if (isLimitReached) return setShowLoginPrompt(true)
+    const text = input.trim()
     setInput('')
-    await sendMessage({ text: trimmedInput })
+    await sendMessage({ text })
   }
 
   const handleSuggestionClick = (suggestion: string) => {
-    if (!user && messageCount >= DEMO_MESSAGE_LIMIT) {
-      setShowLoginPrompt(true)
-      return
-    }
+    if (isLimitReached) return setShowLoginPrompt(true)
     sendMessage({ text: suggestion })
   }
 
@@ -123,27 +107,18 @@ export default function ChatPage() {
             </div>
           )}
 
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[80%] rounded-2xl px-5 py-3 ${
-                  message.role === 'user'
-                    ? 'bg-silver-700 text-ivory-100'
-                    : 'bg-ivory-50 border border-silver-200 text-silver-800'
-                }`}
-              >
-                {message.role === 'assistant' && (
+          {messages.map((m) => (
+            <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[80%] rounded-2xl px-5 py-3 ${
+                m.role === 'user' ? 'bg-silver-700 text-ivory-100' : 'bg-ivory-50 border border-silver-200 text-silver-800'
+              }`}>
+                {m.role === 'assistant' && (
                   <div className="flex items-center gap-2 mb-2 pb-2 border-b border-silver-200/50">
                     <img src="/franklin.jpg" alt="Franklin" className="w-6 h-6 rounded-full object-cover" />
                     <span className="text-xs text-silver-500 font-sans">Franklin</span>
                   </div>
                 )}
-                <p className="font-body text-[15px] leading-relaxed whitespace-pre-wrap">
-                  {getMessageContent(message)}
-                </p>
+                <p className="font-body text-[15px] leading-relaxed whitespace-pre-wrap">{getMessageContent(m)}</p>
               </div>
             </div>
           ))}

@@ -38,16 +38,13 @@ interface Purchase {
   amount: number
   merchant: string
   category: string
-  status: 'pending' | 'approved' | 'completed' | 'failed'
+  status: string
   createdAt: string
-  description?: string
 }
 
 interface SpendingRule {
-  category: string | null
   autoApproveUpTo: number
   requireConfirmationAbove: number
-  monthlyLimit: number | null
 }
 
 function AddCardForm({ onSuccess, onCancel }: { onSuccess: () => void; onCancel: () => void }) {
@@ -142,7 +139,6 @@ export default function WalletPage() {
   const [rules, setRules] = useState<SpendingRule[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddCard, setShowAddCard] = useState(false)
-  const [editingRules, setEditingRules] = useState(false)
 
   useEffect(() => {
     fetchData()
@@ -158,18 +154,9 @@ export default function WalletPage() {
       ])
 
       if (walletRes.ok) setWallet(await walletRes.json())
-      if (methodsRes.ok) {
-        const data = await methodsRes.json()
-        setPaymentMethods(data.methods || [])
-      }
-      if (purchasesRes.ok) {
-        const data = await purchasesRes.json()
-        setPurchases(data.purchases || [])
-      }
-      if (rulesRes.ok) {
-        const data = await rulesRes.json()
-        setRules(data.rules || [])
-      }
+      if (methodsRes.ok) setPaymentMethods((await methodsRes.json()).methods || [])
+      if (purchasesRes.ok) setPurchases((await purchasesRes.json()).purchases || [])
+      if (rulesRes.ok) setRules((await rulesRes.json()).rules || [])
     } catch (error) {
       console.error('Failed to fetch wallet data:', error)
     } finally {
@@ -177,20 +164,15 @@ export default function WalletPage() {
     }
   }
 
-  const statusIcons = {
-    completed: <Check className="w-4 h-4 text-green-600" />,
-    pending: <Clock className="w-4 h-4 text-gold-600" />,
-    failed: <XCircle className="w-4 h-4 text-red-600" />,
+  const statusConfig = {
+    completed: { icon: <Check className="w-4 h-4 text-green-600" />, color: 'bg-green-100 text-green-700' },
+    pending: { icon: <Clock className="w-4 h-4 text-gold-600" />, color: 'bg-gold-100 text-gold-700' },
+    failed: { icon: <XCircle className="w-4 h-4 text-red-600" />, color: 'bg-red-100 text-red-700' },
   }
 
-  const statusColors = {
-    completed: 'bg-green-100 text-green-700',
-    pending: 'bg-gold-100 text-gold-700',
-    failed: 'bg-red-100 text-red-700',
-  }
-
-  const getStatusIcon = (status: string) => statusIcons[status as keyof typeof statusIcons] || <AlertCircle className="w-4 h-4 text-silver-400" />
-  const getStatusColor = (status: string) => statusColors[status as keyof typeof statusColors] || 'bg-silver-100 text-silver-600'
+  const getStatus = (status: string) =>
+    statusConfig[status as keyof typeof statusConfig] ||
+    { icon: <AlertCircle className="w-4 h-4 text-silver-400" />, color: 'bg-silver-100 text-silver-600' }
 
   if (loading) {
     return (
@@ -369,8 +351,8 @@ export default function WalletPage() {
                 </div>
                 <div className="text-right">
                   <p className="font-display text-silver-800">${purchase.amount.toFixed(2)}</p>
-                  <span className={`inline-flex items-center gap-1 text-xs font-sans px-2 py-0.5 rounded-full ${getStatusColor(purchase.status)}`}>
-                    {getStatusIcon(purchase.status)}
+                  <span className={`inline-flex items-center gap-1 text-xs font-sans px-2 py-0.5 rounded-full ${getStatus(purchase.status).color}`}>
+                    {getStatus(purchase.status).icon}
                     {purchase.status.charAt(0).toUpperCase() + purchase.status.slice(1)}
                   </span>
                 </div>

@@ -17,20 +17,12 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      const supabase = createClient()
-      const { error } = await supabase.auth.signInWithOtp({
+      const { error } = await createClient().auth.signInWithOtp({
         email,
-        options: {
-          // With implicit flow, redirect directly to chat - Supabase SDK handles tokens in hash
-          emailRedirectTo: 'https://www.askfranklin.xyz/chat',
-        },
+        options: { emailRedirectTo: 'https://www.askfranklin.xyz/chat' },
       })
-
-      if (error) {
-        setError(error.message)
-      } else {
-        setIsSent(true)
-      }
+      if (error) setError(error.message)
+      else setIsSent(true)
     } catch {
       setError('Something went wrong. Please try again.')
     } finally {
@@ -149,13 +141,10 @@ export default function LoginPage() {
               { label: 'Save history', icon: '📝' },
               { label: 'Personal insights', icon: '🎯' },
               { label: 'Priority access', icon: '🚀' },
-            ].map((benefit) => (
-              <div
-                key={benefit.label}
-                className="flex items-center gap-2 text-silver-600 text-sm font-sans"
-              >
-                <span>{benefit.icon}</span>
-                {benefit.label}
+            ].map(({ label, icon }) => (
+              <div key={label} className="flex items-center gap-2 text-silver-600 text-sm font-sans">
+                <span>{icon}</span>
+                {label}
               </div>
             ))}
           </div>

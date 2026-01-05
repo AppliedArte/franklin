@@ -7,8 +7,8 @@ import { MessageCircle, Settings, LogOut, User, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 
 const NAV_LINKS = [
-  { href: '/chat', label: 'Chat', icon: MessageCircle, matchPrefix: undefined },
-  { href: '/dashboard', label: 'Dashboard', icon: User, matchPrefix: undefined },
+  { href: '/chat', label: 'Chat', icon: MessageCircle },
+  { href: '/dashboard', label: 'Dashboard', icon: User },
   { href: '/settings/wallet', label: 'Settings', icon: Settings, matchPrefix: '/settings' },
 ]
 
@@ -19,8 +19,7 @@ export function Navbar() {
 
   if (pathname === '/login') return null
 
-  const isActive = (path: string, matchPrefix?: string) =>
-    matchPrefix ? pathname.startsWith(matchPrefix) : pathname === path
+  const isActive = (path: string, matchPrefix?: string) => (matchPrefix ? pathname.startsWith(matchPrefix) : pathname === path)
 
   return (
     <header className="border-b border-silver-700/10 bg-ivory-50/80 backdrop-blur-sm sticky top-0 z-50">
@@ -58,28 +57,16 @@ export function Navbar() {
                   <div className="w-2 h-2 rounded-full bg-green-500" />
                   {user.email.split('@')[0]}
                 </div>
-                <button
-                  onClick={signOut}
-                  className="text-silver-500 hover:text-silver-700 transition-colors p-2"
-                  title="Sign out"
-                >
+                <button onClick={signOut} className="text-silver-500 hover:text-silver-700 transition-colors p-2" title="Sign out">
                   <LogOut className="w-4 h-4" />
                 </button>
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <Link
-                  href="/chat"
-                  className="text-sm font-sans text-silver-600 hover:text-silver-800 transition-colors hidden sm:block"
-                >
+                <Link href="/chat" className="text-sm font-sans text-silver-600 hover:text-silver-800 transition-colors hidden sm:block">
                   Try Demo
                 </Link>
-                <Link
-                  href="/login"
-                  className="btn-primary text-sm px-4 py-2"
-                >
-                  Sign In
-                </Link>
+                <Link href="/login" className="btn-primary text-sm px-4 py-2">Sign In</Link>
               </div>
             )}
 
