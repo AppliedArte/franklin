@@ -16,5 +16,9 @@ export function createClient(): any {
     }
   }
 
-  return createBrowserClient(url, key)
+  return createBrowserClient(url, key, {
+    auth: {
+      flowType: 'implicit',
+    },
+  })
 }

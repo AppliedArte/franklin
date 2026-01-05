@@ -33,12 +33,29 @@ export default function ChatPage() {
     }
 
     const supabase = createClient()
+
+    // Check current user
     supabase.auth.getUser().then((result: { data: { user: { id: string; email?: string } | null } }) => {
       if (result.data?.user) {
         setUser({ id: result.data.user.id, email: result.data.user.email || '' })
       }
       setHasMounted(true)
     })
+
+    // Listen for auth changes (handles implicit flow tokens in URL hash)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: { user?: { id: string; email?: string } } | null) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        setUser({ id: session.user.id, email: session.user.email || '' })
+        // Clean up URL hash after successful auth
+        if (window.location.hash) {
+          window.history.replaceState(null, '', window.location.pathname)
+        }
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null)
+      }
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   useEffect(() => {
