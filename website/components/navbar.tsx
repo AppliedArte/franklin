@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
-import { MessageCircle, Settings, LogOut, User, Menu, X } from 'lucide-react'
+import { Settings, LogOut, User, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 
 const NAV_LINKS = [
@@ -16,9 +16,10 @@ export function Navbar() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  if (pathname === '/login') return null
+  const isActive = (path: string, matchPrefix?: string) =>
+    matchPrefix ? pathname.startsWith(matchPrefix) : pathname === path
 
-  const isActive = (path: string, matchPrefix?: string) => (matchPrefix ? pathname.startsWith(matchPrefix) : pathname === path)
+  if (pathname === '/login') return null
 
   return (
     <header className="border-b border-silver-700/10 bg-ivory-50/80 backdrop-blur-sm sticky top-0 z-50">
@@ -51,7 +52,7 @@ export function Navbar() {
             {loading ? (
               <div className="w-20 h-8 bg-silver-200 rounded animate-pulse" />
             ) : user ? (
-              <div className="flex items-center gap-3">
+              <>
                 <div className="hidden sm:flex items-center gap-2 text-silver-600 text-sm font-sans">
                   <div className="w-2 h-2 rounded-full bg-green-500" />
                   {user.email.split('@')[0]}
@@ -59,14 +60,14 @@ export function Navbar() {
                 <button onClick={signOut} className="text-silver-500 hover:text-silver-700 transition-colors p-2" title="Sign out">
                   <LogOut className="w-4 h-4" />
                 </button>
-              </div>
+              </>
             ) : (
-              <div className="flex items-center gap-3">
+              <>
                 <Link href="/chat" className="text-sm font-sans text-silver-600 hover:text-silver-800 transition-colors hidden sm:block">
                   Try Demo
                 </Link>
                 <Link href="/login" className="btn-primary text-sm px-4 py-2">Sign In</Link>
-              </div>
+              </>
             )}
 
             {/* Mobile Menu Button */}

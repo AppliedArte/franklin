@@ -4,25 +4,18 @@ export const runtime = 'edge'
 
 export async function POST(req: Request) {
   const { messages } = await req.json()
-
-  // Get the last user message to classify intent
   const lastMessage = messages[messages.length - 1]?.content || ''
   const agentType = classifyIntent(lastMessage)
 
-  // Build messages with system prompt
   const apiMessages = [
     { role: 'system', content: AGENT_PROMPTS[agentType] },
-    ...messages.map((m: { role: string; content: string }) => ({
-      role: m.role,
-      content: m.content,
-    })),
+    ...messages,
   ]
 
-  // Call Z.AI with streaming
   const response = await fetch('https://api.z.ai/api/paas/v4/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${process.env.ZAI_API_KEY}`,
+      Authorization: `Bearer ${process.env.ZAI_API_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -35,15 +28,13 @@ export async function POST(req: Request) {
   })
 
   if (!response.ok) {
-    const error = await response.text()
-    console.error('Z.AI error:', error)
+    console.error('Z.AI error:', await response.text())
     return new Response(JSON.stringify({ error: 'Failed to get response' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     })
   }
 
-  // Transform Z.AI SSE stream to AI SDK compatible format
   const encoder = new TextEncoder()
   const decoder = new TextDecoder()
 
@@ -62,15 +53,11 @@ export async function POST(req: Request) {
         try {
           const parsed = JSON.parse(data)
           const delta = parsed.choices?.[0]?.delta
-          // Z.AI glm-4.5-flash streams reasoning_content first, then content
-          // Mark reasoning with special tags so frontend can style differently
           if (delta?.reasoning_content) {
-            const escaped = JSON.stringify(`⟨thinking⟩${delta.reasoning_content}⟨/thinking⟩`)
-            controller.enqueue(encoder.encode(`0:${escaped}\n`))
+            controller.enqueue(encoder.encode(`0:${JSON.stringify(`⟨thinking⟩${delta.reasoning_content}⟨/thinking⟩`)}\n`))
           }
           if (delta?.content) {
-            const escaped = JSON.stringify(delta.content)
-            controller.enqueue(encoder.encode(`0:${escaped}\n`))
+            controller.enqueue(encoder.encode(`0:${JSON.stringify(delta.content)}\n`))
           }
         } catch {
           // Skip malformed JSON

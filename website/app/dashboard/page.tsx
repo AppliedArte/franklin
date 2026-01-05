@@ -11,14 +11,12 @@ import { Send, Settings, Wallet, Calendar, ArrowRight } from 'lucide-react'
 const getMessageContent = (message: { parts?: Array<{ type: string; text?: string }> }) =>
   (message.parts || []).filter((p): p is { type: 'text'; text: string } => p.type === 'text').map(p => p.text).join('')
 
-// Parse message to separate reasoning (thinking) from response
 const parseMessage = (text: string) => {
   const thinkingRegex = /⟨thinking⟩([\s\S]*?)⟨\/thinking⟩/g
   let thinking = ''
   let response = text
 
-  const matches = text.matchAll(thinkingRegex)
-  for (const match of matches) {
+  for (const match of text.matchAll(thinkingRegex)) {
     thinking += match[1]
     response = response.replace(match[0], '')
   }
@@ -31,7 +29,7 @@ const SUGGESTIONS = ['How should I start investing?', 'Help me create a budget',
 const QUICK_ACTIONS = [
   { href: '/settings/wallet', icon: Wallet, title: 'Wallet', desc: 'Manage credits', bg: 'bg-green-100', color: 'text-green-600' },
   { href: '/settings/connections', icon: Calendar, title: 'Connections', desc: 'Google Calendar & Gmail', bg: 'bg-blue-100', color: 'text-blue-600' },
-  { href: '/settings/wallet', icon: Settings, title: 'Settings', desc: 'Account preferences', bg: 'bg-silver-100', color: 'text-silver-600' },
+  { href: '/settings', icon: Settings, title: 'Settings', desc: 'Account preferences', bg: 'bg-silver-100', color: 'text-silver-600' },
 ]
 
 export default function DashboardPage() {
@@ -46,8 +44,11 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!loading && !user) router.push('/login')
+  }, [user, loading, router])
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [user, loading, router, messages])
+  }, [messages])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

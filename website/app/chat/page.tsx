@@ -12,10 +12,7 @@ const DEMO_MESSAGE_LIMIT = 5
 const SUGGESTIONS = ['How should I start investing?', 'Help me create a budget', 'What are ETFs?', 'Portfolio advice']
 
 const getMessageContent = (message: { parts?: Array<{ type: string; text?: string }> }) =>
-  (message.parts || [])
-    .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
-    .map(p => p.text)
-    .join('')
+  (message.parts || []).filter((p): p is { type: 'text'; text: string } => p.type === 'text').map(p => p.text).join('')
 
 export default function ChatPage() {
   const { user, loading } = useAuth()
@@ -29,7 +26,6 @@ export default function ChatPage() {
   const { messages, sendMessage, status } = useChat({ transport })
   const isChatLoading = status === 'streaming' || status === 'submitted'
 
-  // Redirect logged-in users to dashboard
   useEffect(() => {
     if (!loading && user) router.push('/dashboard')
   }, [user, loading, router])
@@ -40,11 +36,13 @@ export default function ChatPage() {
   }, [])
 
   useEffect(() => {
-    if (!user) localStorage.setItem('franklin_demo_count', messageCount.toString())
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     const assistantMessages = messages.filter(m => m.role === 'assistant').length
-    if (assistantMessages > messageCount) setMessageCount(assistantMessages)
-  }, [messageCount, user, messages])
+    if (assistantMessages > messageCount) {
+      setMessageCount(assistantMessages)
+      if (!user) localStorage.setItem('franklin_demo_count', assistantMessages.toString())
+    }
+  }, [messages, messageCount, user])
 
   const isLimitReached = !user && messageCount >= DEMO_MESSAGE_LIMIT
 
@@ -58,8 +56,11 @@ export default function ChatPage() {
   }
 
   const handleSuggestionClick = (suggestion: string) => {
-    if (isLimitReached) return setShowLoginPrompt(true)
-    sendMessage({ text: suggestion })
+    if (isLimitReached) {
+      setShowLoginPrompt(true)
+    } else {
+      sendMessage({ text: suggestion })
+    }
   }
 
   if (loading) {

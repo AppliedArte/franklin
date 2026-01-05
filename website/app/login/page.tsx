@@ -21,8 +21,11 @@ export default function LoginPage() {
         email,
         options: { emailRedirectTo: 'https://www.askfranklin.xyz/dashboard' },
       })
-      if (error) setError(error.message)
-      else setIsSent(true)
+      if (error) {
+        setError(error.message)
+      } else {
+        setIsSent(true)
+      }
     } catch {
       setError('Something went wrong. Please try again.')
     } finally {
@@ -135,18 +138,19 @@ export default function LoginPage() {
           </div>
 
           {/* Benefits */}
-          <div className="mt-8 grid grid-cols-2 gap-4">
-            {[
-              { label: 'Unlimited chats', icon: '✨' },
-              { label: 'Save history', icon: '📝' },
-              { label: 'Personal insights', icon: '🎯' },
-              { label: 'Priority access', icon: '🚀' },
-            ].map(({ label, icon }) => (
-              <div key={label} className="flex items-center gap-2 text-silver-600 text-sm font-sans">
-                <span>{icon}</span>
-                {label}
-              </div>
-            ))}
+          <div className="mt-8 grid grid-cols-2 gap-4 text-silver-600 text-sm font-sans">
+            <div className="flex items-center gap-2">
+              <span>✨</span>Unlimited chats
+            </div>
+            <div className="flex items-center gap-2">
+              <span>📝</span>Save history
+            </div>
+            <div className="flex items-center gap-2">
+              <span>🎯</span>Personal insights
+            </div>
+            <div className="flex items-center gap-2">
+              <span>🚀</span>Priority access
+            </div>
           </div>
         </div>
       </main>

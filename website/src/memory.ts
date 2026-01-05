@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { buildSemanticContext, extractMemoriesFromConversation } from './semantic-memory'
 
 let supabaseInstance: SupabaseClient | null = null
 
@@ -179,3 +180,41 @@ export function buildContextPrompt(
 
   return context
 }
+
+// Build context with semantic memory search
+export async function buildContextPromptWithSemanticMemory(
+  userContext: UserContext,
+  history: Message[],
+  currentQuery: string
+): Promise<string> {
+  let context = buildContextPrompt(userContext, history)
+
+  // Add semantically relevant memories
+  const semanticContext = await buildSemanticContext(
+    userContext.userId,
+    userContext.channel,
+    currentQuery
+  )
+  context += semanticContext
+
+  return context
+}
+
+// Process conversation and extract memories (call after each exchange)
+export async function processConversationMemory(
+  userId: string,
+  channel: string,
+  userMessage: string,
+  assistantResponse: string
+): Promise<void> {
+  await extractMemoriesFromConversation(userId, channel, userMessage, assistantResponse)
+}
+
+// Re-export semantic memory functions for convenience
+export {
+  storeMemory,
+  searchMemories,
+  getAllMemories,
+  deleteMemory,
+  decayMemories,
+} from './semantic-memory'
