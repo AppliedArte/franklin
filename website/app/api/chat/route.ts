@@ -61,10 +61,12 @@ export async function POST(req: Request) {
 
         try {
           const parsed = JSON.parse(data)
-          const content = parsed.choices?.[0]?.delta?.content
-          if (content) {
-            // AI SDK text stream format: 0:"text content"
-            const escaped = JSON.stringify(content)
+          const delta = parsed.choices?.[0]?.delta
+          // Z.AI glm-4.5-flash returns reasoning_content (internal thinking) and content (actual response)
+          // Only stream the content, ignore reasoning_content
+          const text = delta?.content
+          if (text) {
+            const escaped = JSON.stringify(text)
             controller.enqueue(encoder.encode(`0:${escaped}\n`))
           }
         } catch {
