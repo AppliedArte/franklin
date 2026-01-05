@@ -3,15 +3,14 @@
 import { useChat } from '@ai-sdk/react'
 import { TextStreamChatTransport } from 'ai'
 import { useState, useRef, useEffect, useMemo } from 'react'
-import { Send, ArrowLeft, MessageCircle, Lock } from 'lucide-react'
+import { Send, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
+import { useAuth } from '@/lib/auth-context'
 
 const DEMO_MESSAGE_LIMIT = 5
 
 export default function ChatPage() {
-  const [user, setUser] = useState<{ id: string; email: string } | null>(null)
-  const [hasMounted, setHasMounted] = useState(false)
+  const { user, loading } = useAuth()
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
   const [messageCount, setMessageCount] = useState(0)
   const [input, setInput] = useState('')
@@ -31,31 +30,6 @@ export default function ChatPage() {
     if (savedCount) {
       setMessageCount(parseInt(savedCount, 10))
     }
-
-    const supabase = createClient()
-
-    // Check current user
-    supabase.auth.getUser().then((result: { data: { user: { id: string; email?: string } | null } }) => {
-      if (result.data?.user) {
-        setUser({ id: result.data.user.id, email: result.data.user.email || '' })
-      }
-      setHasMounted(true)
-    })
-
-    // Listen for auth changes (handles implicit flow tokens in URL hash)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: { user?: { id: string; email?: string } } | null) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        setUser({ id: session.user.id, email: session.user.email || '' })
-        // Clean up URL hash after successful auth
-        if (window.location.hash) {
-          window.history.replaceState(null, '', window.location.pathname)
-        }
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null)
-      }
-    })
-
-    return () => subscription.unsubscribe()
   }, [])
 
   useEffect(() => {
@@ -101,7 +75,7 @@ export default function ChatPage() {
     await sendMessage({ text: suggestion })
   }
 
-  if (!hasMounted) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-ivory-100 flex items-center justify-center">
         <div className="animate-pulse text-silver-600 font-serif text-xl">Loading...</div>
@@ -121,42 +95,6 @@ export default function ChatPage() {
 
   return (
     <div className="min-h-screen bg-ivory-100 flex flex-col">
-      {/* Header */}
-      <header className="border-b border-silver-700/10 bg-ivory-50/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-silver-600 hover:text-silver-800 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="font-sans text-sm">Back</span>
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <img src="/franklin.jpg" alt="Franklin" className="w-10 h-10 rounded-full object-cover shadow-lg" />
-            <div>
-              <h1 className="font-display text-lg text-silver-800">Franklin</h1>
-              <p className="text-xs text-silver-500 font-sans">AI Private Banker</p>
-            </div>
-          </div>
-
-          {user ? (
-            <div className="flex items-center gap-2 text-silver-500 text-sm font-sans">
-              <div className="w-2 h-2 rounded-full bg-green-500"></div>
-              {user.email.split('@')[0]}
-            </div>
-          ) : (
-            <Link
-              href="/login"
-              className="text-sm font-sans text-gold-600 hover:text-gold-700 transition-colors flex items-center gap-1"
-            >
-              <Lock className="w-3 h-3" />
-              Sign in
-            </Link>
-          )}
-        </div>
-      </header>
-
       {/* Demo Banner */}
       {!user && (
         <div className="bg-gold-50 border-b border-gold-200 px-4 py-2">

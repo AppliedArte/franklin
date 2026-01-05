@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 import "./globals.css"
+import { AuthProvider } from "@/lib/auth-context"
+import { Navbar } from "@/components/navbar"
 
 export const metadata: Metadata = {
   title: "Franklin | Your AI Private Banker",
@@ -30,7 +32,10 @@ export default function RootLayout({
         {/* Subtle noise overlay for texture */}
         <div className="noise-overlay" aria-hidden="true" />
 
-        {children}
+        <AuthProvider>
+          <Navbar />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )
