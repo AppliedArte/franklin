@@ -5,8 +5,8 @@ import { Navbar } from "@/components/navbar"
 
 export const metadata: Metadata = {
   title: "Franklin | AI That Fundraises For You",
-  description: "From pitch deck to term sheet. Franklin handles your entire raise — understanding your startup, creating decks, reaching out to VCs, and closing your round.",
-  keywords: ["fundraising", "AI fundraising", "pitch deck", "VC outreach", "SAFE", "startup fundraising", "raise capital", "investor matching"],
+  description: "From pitch deck to term sheet. Franklin handles your entire raise — understanding your startup, creating decks, applying to accelerators, reaching out to VCs, and closing your round.",
+  keywords: ["fundraising", "AI fundraising", "pitch deck", "VC outreach", "SAFE", "startup fundraising", "raise capital", "investor matching", "accelerator application", "YC application"],
   openGraph: {
     title: "Franklin | AI That Fundraises For You",
     description: "From pitch deck to term sheet. Franklin handles your entire raise.",

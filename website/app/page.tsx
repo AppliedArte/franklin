@@ -43,9 +43,9 @@ function GeometricButton({ href, children, className = '' }: { href: string; chi
       } ${className}`}>
       {children}
       <CornerDots visible={hovered} />
-      {lines.map((style, i) => (
-        <div key={i} className={`absolute bg-silver-300 ${style.expanding ? 'transition-all duration-700' : 'transition-colors duration-700'}`}
-          style={{ ...style, ...baseStyle, expanding: undefined }} />
+      {lines.map(({ expanding, ...lineStyle }, i) => (
+        <div key={i} className={`absolute bg-silver-300 ${expanding ? 'transition-all duration-700' : 'transition-colors duration-700'}`}
+          style={{ ...lineStyle, ...baseStyle }} />
       ))}
     </a>
   )
@@ -637,7 +637,7 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <div>
               <h2 className="font-display font-bold text-[28px] sm:text-[36px] text-silver-900 tracking-tight leading-[1.15] mb-6">
-                Five steps from zero to funded
+                Six steps from zero to funded
               </h2>
               <p className="font-body text-[20px] text-silver-500 leading-[1.6] mb-6">
                 Franklin&apos;s pipeline takes you from the first conversation about your startup all the way through to a closed round. Every step tracked, every interaction logged, every document prepared.
