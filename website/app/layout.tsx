@@ -4,20 +4,20 @@ import { AuthProvider } from "@/lib/auth-context"
 import { Navbar } from "@/components/navbar"
 
 export const metadata: Metadata = {
-  title: "Franklin | Your AI Private Banker",
-  description: "Your AI Private Banker. Grow your wealth with the sophistication of a family office and the network of a top-tier investment bank.",
-  keywords: ["private banker", "wealth advisor", "AI advisor", "hedge funds", "private equity", "alternative investments", "crypto", "DeFi"],
+  title: "Franklin | AI That Fundraises For You",
+  description: "From pitch deck to term sheet. Franklin handles your entire raise — understanding your startup, creating decks, reaching out to VCs, and closing your round.",
+  keywords: ["fundraising", "AI fundraising", "pitch deck", "VC outreach", "SAFE", "startup fundraising", "raise capital", "investor matching"],
   openGraph: {
-    title: "Franklin | Your AI Private Banker",
-    description: "Your AI Private Banker. Grow your wealth with the sophistication of a family office and the network of a top-tier investment bank.",
+    title: "Franklin | AI That Fundraises For You",
+    description: "From pitch deck to term sheet. Franklin handles your entire raise.",
     url: "https://askfranklin.xyz",
     siteName: "Ask Franklin",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Franklin | Your AI Private Banker",
-    description: "Your AI Private Banker. Grow your wealth with the sophistication of a family office.",
+    title: "Franklin | AI That Fundraises For You",
+    description: "From pitch deck to term sheet. Franklin handles your entire raise.",
   },
 }
 

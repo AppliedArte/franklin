@@ -19,7 +19,7 @@ export function Navbar() {
   const isActive = (path: string, matchPrefix?: string) =>
     matchPrefix ? pathname.startsWith(matchPrefix) : pathname === path
 
-  if (pathname === '/login') return null
+  if (pathname === '/' || pathname === '/login') return null
 
   return (
     <header className="border-b border-silver-700/10 bg-ivory-50/80 backdrop-blur-sm sticky top-0 z-50">
