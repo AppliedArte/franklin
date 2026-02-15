@@ -4,17 +4,20 @@ import { useState } from "react"
 import Link from "next/link"
 import { CheckCircle, MessageCircle, FileText, Send, Scale, Users, Bot, Smartphone, Zap, BarChart3, Globe, Shield, Mail, TrendingUp, Clock } from "lucide-react"
 
-/* ─── Corner Dots Component ─── */
-const CornerDots = ({ size = '0.25rem', offset = '-0.15625rem', visible }: { size?: string; offset?: string; visible: boolean }) => (
+/* ─── Corner Crosses Component (Arclin-style + SVG at each corner) ─── */
+const CornerCrosses = ({ className = 'text-silver-300', hoverClassName = '' }: { className?: string; hoverClassName?: string }) => (
   <>
     {[
-      { top: offset, left: offset },
-      { top: offset, right: offset },
-      { bottom: offset, right: offset },
-      { bottom: offset, left: offset },
+      '-top-3 -left-3',
+      '-top-3 -right-3',
+      '-bottom-3 -right-3',
+      '-bottom-3 -left-3',
     ].map((pos, i) => (
-      <div key={i} className="absolute z-10 bg-gold-400 transition-opacity"
-        style={{ height: size, width: size, opacity: visible ? 1 : 0, ...pos }} />
+      <div key={i} className={`absolute w-6 h-6 z-20 pointer-events-none ${pos} ${className} ${hoverClassName}`}>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" fill="none">
+          <path fillRule="evenodd" clipRule="evenodd" d="M13.333 11.576V0.076h-1v11.5H0.833v1h11.5v11.5h1v-11.5h11.5v-1h-11.5Z" fill="currentColor"/>
+        </svg>
+      </div>
     ))}
   </>
 )
@@ -38,13 +41,13 @@ function GeometricButton({ href, children, className = '' }: { href: string; chi
 
   return (
     <a href={href} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      className={`relative inline-flex items-center justify-center px-8 py-4 text-lg backdrop-blur-sm bg-silver-900/10 font-semibold uppercase font-sans tracking-wider leading-none select-none whitespace-nowrap cursor-pointer transition ${
-        hovered ? 'text-white' : 'text-silver-300'
+      className={`relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold uppercase font-sans tracking-wider leading-none select-none whitespace-nowrap cursor-pointer transition-all duration-300 border-2 border-silver-500 ${
+        hovered ? 'bg-[#32373c] text-white' : 'text-silver-800'
       } ${className}`}>
       {children}
-      <CornerDots visible={hovered} />
+      <CornerCrosses className={hovered ? 'text-silver-600' : 'text-silver-400'} />
       {lines.map(({ expanding, ...lineStyle }, i) => (
-        <div key={i} className={`absolute bg-silver-300 ${expanding ? 'transition-all duration-700' : 'transition-colors duration-700'}`}
+        <div key={i} className={`absolute bg-silver-500 ${expanding ? 'transition-all duration-700' : 'transition-colors duration-700'}`}
           style={{ ...lineStyle, ...baseStyle }} />
       ))}
     </a>
@@ -60,7 +63,7 @@ function NavGeometricButton({ href, children }: { href: string; children: React.
         hovered ? 'bg-silver-700 text-white' : 'text-silver-700'
       }`}>
       {children}
-      <CornerDots visible={hovered} />
+      <CornerCrosses className={hovered ? 'text-silver-600' : 'text-silver-400'} />
     </a>
   )
 }
@@ -212,17 +215,20 @@ function SignupForm() {
           </div>
         )}
 
-        <button onClick={handleSubmit} disabled={isSubmitting}
-          className={`w-full py-4 font-sans font-semibold text-lg uppercase tracking-wider transition-all flex items-center justify-center gap-2 border-2 ${
-            formError ? 'bg-red-500 text-white border-red-500' : 'bg-silver-700 text-white border-silver-700 hover:bg-silver-900 hover:border-silver-900'
-          } disabled:opacity-50 disabled:cursor-not-allowed`}
-        >
-          {isSubmitting ? (
-            <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Submitting...</>
-          ) : formError ? 'Please fill in all required fields' : (
-            'Get Started'
-          )}
-        </button>
+        <div className="relative">
+          <CornerCrosses className={formError ? 'text-red-300' : 'text-silver-400'} />
+          <button onClick={handleSubmit} disabled={isSubmitting}
+            className={`relative w-full py-4 font-sans font-semibold text-lg uppercase tracking-wider transition-all flex items-center justify-center gap-2 border-2 ${
+              formError ? 'bg-red-500 text-white border-red-500' : 'bg-[#32373c] text-white border-silver-500 hover:bg-silver-900'
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            {isSubmitting ? (
+              <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Submitting...</>
+            ) : formError ? 'Please fill in all required fields' : (
+              'Get Started'
+            )}
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -237,8 +243,13 @@ function PipelineVisual() {
   }
 
   return (
-    <div className="bg-[#32373c] rounded-2xl p-8 md:p-10">
-      <div className="space-y-4">
+    <div className="group relative overflow-hidden cursor-pointer">
+      <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+        <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-[#3a3f44] transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+      </div>
+      <div className="relative z-10 bg-[#32373c] p-8 md:p-10">
+        <CornerCrosses className="text-white/20 transition-colors group-hover:text-white/40" />
+        <div className="space-y-4">
         {[
           { label: "Understand your startup", status: "done" as const, icon: MessageCircle },
           { label: "Generate pitch deck", status: "done" as const, icon: FileText },
@@ -265,6 +276,7 @@ function PipelineVisual() {
         <span className="text-xs text-white/30 font-sans">12 responses received</span>
         <span className="text-xs text-green-400 font-sans font-medium">3 term sheets</span>
       </div>
+      </div>
     </div>
   )
 }
@@ -280,24 +292,30 @@ function CRMPreview() {
     { name: "Index Ventures", partner: "Mark Goldberg", status: "In Queue", color: "bg-silver-200" },
   ]
   return (
-    <div className="bg-[#32373c] rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-white/10">
-        <div className="flex items-center justify-between">
-          <span className="text-white/60 font-sans text-xs font-medium tracking-wider uppercase">Investor Pipeline</span>
-          <span className="text-green-400 font-sans text-xs font-medium">47 active</span>
-        </div>
+    <div className="group relative overflow-hidden cursor-pointer">
+      <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+        <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-[#3a3f44] transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
       </div>
-      <div className="divide-y divide-white/[0.06]">
-        {investors.map((inv, i) => (
-          <div key={i} className="px-6 py-3.5 flex items-center gap-3">
-            <div className={`w-2 h-2 rounded-full shrink-0 ${inv.color}`} />
-            <div className="min-w-0 flex-1">
-              <div className="text-white/80 font-sans text-[13px] font-medium truncate">{inv.name}</div>
-              <div className="text-white/30 font-sans text-[11px] truncate">{inv.partner}</div>
-            </div>
-            <span className="text-white/40 font-sans text-[11px] shrink-0">{inv.status}</span>
+      <div className="relative z-10 bg-[#32373c] overflow-hidden">
+        <CornerCrosses className="text-white/20 transition-colors group-hover:text-white/40" />
+        <div className="px-6 py-4 border-b border-white/10">
+          <div className="flex items-center justify-between">
+            <span className="text-white/60 font-sans text-xs font-medium tracking-wider uppercase">Investor Pipeline</span>
+            <span className="text-green-400 font-sans text-xs font-medium">47 active</span>
           </div>
-        ))}
+        </div>
+        <div className="divide-y divide-white/[0.06]">
+          {investors.map((inv, i) => (
+            <div key={i} className="px-6 py-3.5 flex items-center gap-3">
+              <div className={`w-2 h-2 rounded-full shrink-0 ${inv.color}`} />
+              <div className="min-w-0 flex-1">
+                <div className="text-white/80 font-sans text-[13px] font-medium truncate">{inv.name}</div>
+                <div className="text-white/30 font-sans text-[11px] truncate">{inv.partner}</div>
+              </div>
+              <span className="text-white/40 font-sans text-[11px] shrink-0">{inv.status}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
@@ -313,28 +331,34 @@ function AgentPreview() {
   ]
 
   return (
-    <div className="bg-[#32373c] rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-white/10">
-        <span className="text-white/60 font-sans text-xs font-medium tracking-wider uppercase">Agent-to-Agent</span>
+    <div className="group relative overflow-hidden cursor-pointer">
+      <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+        <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-[#3a3f44] transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
       </div>
-      <div className="p-6 space-y-4">
-        {messages.map((msg, i) => (
-          <div key={i} className={`flex gap-3 ${msg.left ? '' : 'justify-end'}`}>
-            {msg.left && (
-              <div className="w-7 h-7 rounded-full bg-gold-400/20 flex items-center justify-center shrink-0">
-                <Bot className="w-3.5 h-3.5 text-gold-400" />
+      <div className="relative z-10 bg-[#32373c] overflow-hidden">
+        <CornerCrosses className="text-white/20 transition-colors group-hover:text-white/40" />
+        <div className="px-6 py-4 border-b border-white/10">
+          <span className="text-white/60 font-sans text-xs font-medium tracking-wider uppercase">Agent-to-Agent</span>
+        </div>
+        <div className="p-6 space-y-4">
+          {messages.map((msg, i) => (
+            <div key={i} className={`flex gap-3 ${msg.left ? '' : 'justify-end'}`}>
+              {msg.left && (
+                <div className="w-7 h-7 rounded-full bg-gold-400/20 flex items-center justify-center shrink-0">
+                  <Bot className="w-3.5 h-3.5 text-gold-400" />
+                </div>
+              )}
+              <div className={`px-4 py-2.5 ${msg.left ? 'bg-white/[0.06]' : 'bg-gold-400/10'}`}>
+                <p className={`font-sans text-[12px] leading-relaxed ${msg.left ? 'text-white/70' : 'text-gold-400/80'}`}>{msg.text}</p>
               </div>
-            )}
-            <div className={`px-4 py-2.5 rounded-xl ${msg.left ? 'bg-white/[0.06] rounded-tl-sm' : 'bg-gold-400/10 rounded-tr-sm'}`}>
-              <p className={`font-sans text-[12px] leading-relaxed ${msg.left ? 'text-white/70' : 'text-gold-400/80'}`}>{msg.text}</p>
+              {!msg.left && (
+                <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                  <Zap className="w-3.5 h-3.5 text-white/50" />
+                </div>
+              )}
             </div>
-            {!msg.left && (
-              <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                <Zap className="w-3.5 h-3.5 text-white/50" />
-              </div>
-            )}
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   )
@@ -351,21 +375,27 @@ function ChannelPreview() {
   ]
 
   return (
-    <div className="bg-[#32373c] rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-white/10">
-        <span className="text-white/60 font-sans text-xs font-medium tracking-wider uppercase">Channels</span>
+    <div className="group relative overflow-hidden cursor-pointer">
+      <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+        <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-[#3a3f44] transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
       </div>
-      <div className="p-6 space-y-3">
-        {channels.map((ch, i) => (
-          <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-white/[0.04]">
-            <ch.icon className={`w-4 h-4 shrink-0 ${ch.active ? 'text-green-400' : 'text-white/20'}`} />
-            <div className="flex-1 min-w-0">
-              <div className="text-white/70 font-sans text-[13px] font-medium">{ch.label}</div>
-              <div className="text-white/30 font-sans text-[11px]">{ch.detail}</div>
+      <div className="relative z-10 bg-[#32373c] overflow-hidden">
+        <CornerCrosses className="text-white/20 transition-colors group-hover:text-white/40" />
+        <div className="px-6 py-4 border-b border-white/10">
+          <span className="text-white/60 font-sans text-xs font-medium tracking-wider uppercase">Channels</span>
+        </div>
+        <div className="p-6 space-y-3">
+          {channels.map((ch, i) => (
+            <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-white/[0.04]">
+              <ch.icon className={`w-4 h-4 shrink-0 ${ch.active ? 'text-green-400' : 'text-white/20'}`} />
+              <div className="flex-1 min-w-0">
+                <div className="text-white/70 font-sans text-[13px] font-medium">{ch.label}</div>
+                <div className="text-white/30 font-sans text-[11px]">{ch.detail}</div>
+              </div>
+              <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${ch.active ? 'bg-green-400' : 'bg-white/10'}`} />
             </div>
-            <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${ch.active ? 'bg-green-400' : 'bg-white/10'}`} />
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   )
@@ -379,8 +409,7 @@ export default function LandingPage() {
       {/* ═══ NAVIGATION — Arclin layout ═══ */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md">
         <div className="flex justify-between items-center p-4 sm:px-8 gap-14 lg:gap-10 xl:gap-28">
-          <a href="/" className="flex items-center gap-2.5 shrink-0">
-            <img src="/franklin.jpg" alt="Franklin" className="w-8 h-8 rounded-full object-cover" />
+          <a href="/" className="shrink-0">
             <span className="font-display text-xl text-silver-900 tracking-tight">Franklin</span>
           </a>
 
@@ -406,12 +435,12 @@ export default function LandingPage() {
       <section className="relative flex" style={{ minHeight: 'calc(100vh - 72px)', paddingTop: '72px' }}>
         <div className="max-w-[1200px] mx-auto px-6 lg:px-8 w-full flex flex-col justify-between py-16">
           <h1 className="font-display font-normal text-[56px] md:text-[72px] lg:text-[96px] xl:text-[124px] text-silver-900 leading-none tracking-[-0.175rem] sm:tracking-[-0.31rem] text-balance">
-            AI that fundraises for you
+            Ask Franklin to help you fundraise
           </h1>
 
           <div>
-            <p className="text-xl lg:text-2xl leading-[1.6] tracking-[-0.025rem] text-silver-500 font-normal mt-6 max-w-2xl font-body">
-              From pitch deck to term sheet. Franklin handles your entire raise — understanding your startup, reaching out to VCs, and closing your round.
+            <p className="text-xl lg:text-2xl leading-[1.6] tracking-[-0.025rem] text-silver-700 font-normal mt-6 max-w-2xl font-body">
+              Tell Franklin about your startup. It builds your deck, finds the right VCs, runs your outreach, and closes your round.
             </p>
 
             <div className="flex flex-wrap items-center gap-8 mt-8">
@@ -426,7 +455,12 @@ export default function LandingPage() {
       {/* ═══ HERO IMAGE — large visual below hero text like Arclin's hero imagery ═══ */}
       <section className="pb-20 md:pb-28">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-8">
-          <div className="relative rounded-2xl overflow-hidden bg-[#32373c] shadow-[6px_6px_9px_rgba(0,0,0,0.2)]">
+          <div className="group relative overflow-hidden cursor-pointer">
+            <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+              <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-[#3a3f44] transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+            </div>
+            <div className="relative z-10 bg-[#32373c] overflow-hidden shadow-[6px_6px_9px_rgba(0,0,0,0.2)]">
+            <CornerCrosses className="text-white/20 transition-colors group-hover:text-white/40" />
             <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/[0.06]">
               {/* Pipeline snapshot */}
               <div className="p-8">
@@ -492,6 +526,7 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
+            </div>
           </div>
         </div>
       </section>
@@ -502,7 +537,7 @@ export default function LandingPage() {
           <h2 className="font-display font-bold text-[32px] sm:text-[42px] text-silver-900 tracking-tight leading-[1.15] mb-8">
             Your entire raise, handled
           </h2>
-          <div className="space-y-5 font-body text-[20px] text-silver-500 leading-[1.6]">
+          <div className="space-y-5 font-body text-[20px] text-silver-600 leading-[1.6]">
             <p>
               Fundraising is a full-time job. You should be building your company, not spending months cold-emailing investors, formatting pitch decks, and negotiating term sheets.
             </p>
@@ -510,9 +545,11 @@ export default function LandingPage() {
               Franklin is an AI agent that handles every step of your raise — from understanding your startup through conversation to closing your round with signed documents. No templates. No guesswork. Just results.
             </p>
           </div>
-          <a href="#how-it-works" className="inline-flex items-center mt-8 px-8 py-4 text-lg font-semibold font-sans uppercase tracking-wider leading-none border-2 border-silver-500 text-silver-700 hover:bg-silver-700 hover:text-white transition-all">
-            See how it works
-          </a>
+          <div className="mt-8">
+            <GeometricButton href="#how-it-works">
+              See how it works
+            </GeometricButton>
+          </div>
         </div>
       </section>
 
@@ -522,7 +559,7 @@ export default function LandingPage() {
           <h2 className="font-display font-bold text-[28px] sm:text-[36px] text-silver-900 tracking-tight leading-[1.15] mb-4">
             Everything you need to raise
           </h2>
-          <p className="font-body text-[20px] text-silver-500 leading-[1.6] mb-14 max-w-[600px]">
+          <p className="font-body text-[20px] text-silver-600 leading-[1.6] mb-14 max-w-[600px]">
             Franklin covers the full fundraising stack — tailored to your stage, your needs, and your goals.
           </p>
           <div className="grid lg:grid-cols-[2fr_1fr] gap-12 lg:gap-16">
@@ -544,88 +581,108 @@ export default function LandingPage() {
                   items: ["First Check", "Lead Investor", "Full Round", "Bridge"]
                 }
               ].map((cat, i) => (
-                <div key={i}>
-                  <h3 className="font-display font-semibold text-[22px] text-silver-900 mb-3">{cat.title}</h3>
-                  <p className="font-body text-[15px] text-silver-500 leading-[1.6] mb-4">{cat.desc}</p>
-                  <ul className="space-y-2">
-                    {cat.items.map((item, j) => (
-                      <li key={j} className="flex items-center gap-2.5 text-[14px] font-sans text-silver-400">
-                        <span className="w-1 h-1 rounded-full bg-gold-400 shrink-0" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+                <div key={i} className="group relative overflow-hidden cursor-pointer p-5 -m-5">
+                  <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+                    <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-white/60 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+                  </div>
+                  <div className="relative z-10">
+                    <CornerCrosses className="text-silver-300 transition-colors group-hover:text-silver-500" />
+                    <h3 className="font-display font-semibold text-[22px] text-silver-900 mb-3">{cat.title}</h3>
+                    <p className="font-body text-[15px] text-silver-600 leading-[1.6] mb-4">{cat.desc}</p>
+                    <ul className="space-y-2">
+                      {cat.items.map((item, j) => (
+                        <li key={j} className="flex items-center gap-2.5 text-[14px] font-sans text-silver-600">
+                          <span className="w-1 h-1 rounded-full bg-gold-400 shrink-0" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               ))}
             </div>
             {/* Companion visual — tall portrait like Arclin's Rectangle-665.jpg */}
             <div className="hidden lg:block">
-              <div className="bg-[#32373c] rounded-2xl overflow-hidden shadow-[6px_6px_9px_rgba(0,0,0,0.2)] h-full min-h-[400px]">
-                <div className="px-6 py-4 border-b border-white/10">
-                  <span className="text-white/40 font-sans text-[10px] tracking-wider uppercase">Raise Summary</span>
+              <div className="group relative overflow-hidden cursor-pointer h-full min-h-[400px]">
+                <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+                  <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-[#3a3f44] transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
                 </div>
-                <div className="p-6 space-y-6">
-                  <div>
-                    <div className="text-white/30 font-sans text-[11px] uppercase tracking-wider mb-2">Target</div>
-                    <div className="font-display text-[28px] text-white leading-none">$2.5M</div>
-                    <div className="text-white/40 font-sans text-[12px] mt-1">Seed Round · SaaS</div>
+                <div className="relative z-10 bg-[#32373c] overflow-hidden h-full">
+                  <CornerCrosses className="text-white/20 transition-colors group-hover:text-white/40" />
+                  <div className="px-6 py-4 border-b border-white/10">
+                    <span className="text-white/40 font-sans text-[10px] tracking-wider uppercase">Raise Summary</span>
                   </div>
-                  <div className="h-px bg-white/10" />
-                  <div className="space-y-3">
-                    {[
-                      { label: "Committed", value: "$1.8M", pct: "72%", style: 'bg-green-500/20 text-green-400' },
-                      { label: "In Pipeline", value: "$400K", pct: "16%", style: 'bg-gold-400/20 text-gold-400' },
-                      { label: "Remaining", value: "$300K", pct: "12%", style: 'bg-white/[0.06] text-white/30' },
-                    ].map((row, i) => (
-                      <div key={i} className="flex items-center justify-between">
-                        <span className="text-white/40 font-sans text-[12px]">{row.label}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-white/60 font-sans text-[12px]">{row.value}</span>
-                          <span className={`font-sans text-[10px] font-medium px-1.5 py-0.5 rounded ${row.style}`}>{row.pct}</span>
+                  <div className="p-6 space-y-6">
+                    <div>
+                      <div className="text-white/30 font-sans text-[11px] uppercase tracking-wider mb-2">Target</div>
+                      <div className="font-display text-[28px] text-white leading-none">$2.5M</div>
+                      <div className="text-white/40 font-sans text-[12px] mt-1">Seed Round · SaaS</div>
+                    </div>
+                    <div className="h-px bg-white/10" />
+                    <div className="space-y-3">
+                      {[
+                        { label: "Committed", value: "$1.8M", pct: "72%", style: 'bg-green-500/20 text-green-400' },
+                        { label: "In Pipeline", value: "$400K", pct: "16%", style: 'bg-gold-400/20 text-gold-400' },
+                        { label: "Remaining", value: "$300K", pct: "12%", style: 'bg-white/[0.06] text-white/30' },
+                      ].map((row, i) => (
+                        <div key={i} className="flex items-center justify-between">
+                          <span className="text-white/40 font-sans text-[12px]">{row.label}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-white/60 font-sans text-[12px]">{row.value}</span>
+                            <span className={`font-sans text-[10px] font-medium px-1.5 py-0.5 ${row.style}`}>{row.pct}</span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="h-px bg-white/10" />
-                  <div className="space-y-2">
-                    <div className="text-white/30 font-sans text-[11px] uppercase tracking-wider">Recent</div>
-                    {[
-                      { text: "Sequoia signed term sheet", color: 'bg-green-400' },
-                      { text: "a16z meeting confirmed", color: 'bg-gold-400' },
-                      { text: "Deck v3 generated", color: 'bg-blue-400' },
-                    ].map((item, i) => (
-                      <div key={i} className="text-white/50 font-sans text-[11px] flex items-center gap-2">
-                        <div className={`w-1 h-1 rounded-full ${item.color}`} />
-                        {item.text}
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                    <div className="h-px bg-white/10" />
+                    <div className="space-y-2">
+                      <div className="text-white/30 font-sans text-[11px] uppercase tracking-wider">Recent</div>
+                      {[
+                        { text: "Sequoia signed term sheet", color: 'bg-green-400' },
+                        { text: "a16z meeting confirmed", color: 'bg-gold-400' },
+                        { text: "Deck v3 generated", color: 'bg-blue-400' },
+                      ].map((item, i) => (
+                        <div key={i} className="text-white/50 font-sans text-[11px] flex items-center gap-2">
+                          <div className={`w-1 h-1 rounded-full ${item.color}`} />
+                          {item.text}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <a href="#get-started" className="inline-flex items-center mt-12 px-8 py-4 text-lg font-semibold font-sans uppercase tracking-wider leading-none border-2 border-silver-500 text-silver-700 hover:bg-silver-700 hover:text-white transition-all">
-            Explore all capabilities
-          </a>
+          <div className="mt-12">
+            <GeometricButton href="#get-started">
+              Explore all capabilities
+            </GeometricButton>
+          </div>
         </div>
       </section>
 
       {/* ═══ FEATURED VISUAL — full-width stats divider like Arclin's featured image ═══ */}
       <section className="py-10 md:py-14">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-8">
-          <div className="bg-[#32373c] rounded-2xl overflow-hidden shadow-[6px_6px_9px_rgba(0,0,0,0.2)] p-8 md:p-12">
-            <div className="grid md:grid-cols-4 gap-8 md:gap-12 text-center">
-              {[
-                { value: "6", label: "Pipeline stages" },
-                { value: "1,200+", label: "VCs in database" },
-                { value: "<2min", label: "To get started" },
-                { value: "24/7", label: "Always running" },
-              ].map((stat, i) => (
-                <div key={i}>
-                  <div className="font-display text-[36px] md:text-[42px] text-white leading-none mb-2">{stat.value}</div>
-                  <div className="font-sans text-[13px] text-white/40 tracking-wider uppercase">{stat.label}</div>
-                </div>
-              ))}
+          <div className="group relative overflow-hidden cursor-pointer">
+            <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+              <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-[#3a3f44] transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+            </div>
+            <div className="relative z-10 bg-[#32373c] overflow-hidden p-8 md:p-12">
+              <CornerCrosses className="text-white/20 transition-colors group-hover:text-white/40" />
+              <div className="grid md:grid-cols-4 gap-8 md:gap-12 text-center">
+                {[
+                  { value: "6", label: "Pipeline stages" },
+                  { value: "1,200+", label: "VCs in database" },
+                  { value: "<2min", label: "To get started" },
+                  { value: "24/7", label: "Always running" },
+                ].map((stat, i) => (
+                  <div key={i}>
+                    <div className="font-display text-[36px] md:text-[42px] text-white leading-none mb-2">{stat.value}</div>
+                    <div className="font-sans text-[13px] text-white/40 tracking-wider uppercase">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -639,12 +696,12 @@ export default function LandingPage() {
               <h2 className="font-display font-bold text-[28px] sm:text-[36px] text-silver-900 tracking-tight leading-[1.15] mb-6">
                 Six steps from zero to funded
               </h2>
-              <p className="font-body text-[20px] text-silver-500 leading-[1.6] mb-6">
+              <p className="font-body text-[20px] text-silver-600 leading-[1.6] mb-6">
                 Franklin&apos;s pipeline takes you from the first conversation about your startup all the way through to a closed round. Every step tracked, every interaction logged, every document prepared.
               </p>
-              <a href="#get-started" className="inline-flex items-center px-8 py-4 text-lg font-semibold font-sans uppercase tracking-wider leading-none border-2 border-silver-500 text-silver-700 hover:bg-silver-700 hover:text-white transition-all">
+              <GeometricButton href="#get-started">
                 Start your raise
-              </a>
+              </GeometricButton>
             </div>
             <PipelineVisual />
           </div>
@@ -660,15 +717,15 @@ export default function LandingPage() {
               <h2 className="font-display font-bold text-[28px] sm:text-[36px] text-silver-900 tracking-tight leading-[1.15] mb-6">
                 Investor intelligence built in
               </h2>
-              <p className="font-body text-[20px] text-silver-500 leading-[1.6] mb-5">
+              <p className="font-body text-[20px] text-silver-600 leading-[1.6] mb-5">
                 Franklin knows what thousands of VCs are looking for — stage, sector, check size, portfolio preferences. Instead of spray-and-pray, you get targeted outreach to investors who actually want to hear from you.
               </p>
-              <p className="font-body text-[20px] text-silver-500 leading-[1.6] mb-6">
+              <p className="font-body text-[20px] text-silver-600 leading-[1.6] mb-6">
                 Every interaction is tracked. Every response logged. You always know exactly where each investor relationship stands.
               </p>
-              <a href="#get-started" className="inline-flex items-center px-8 py-4 text-lg font-semibold font-sans uppercase tracking-wider leading-none border-2 border-silver-500 text-silver-700 hover:bg-silver-700 hover:text-white transition-all">
+              <GeometricButton href="#get-started">
                 Explore our database
-              </a>
+              </GeometricButton>
             </div>
           </div>
         </div>
@@ -681,40 +738,56 @@ export default function LandingPage() {
             Tools that work while you build
           </h2>
           <div className="grid md:grid-cols-3 gap-10 lg:gap-14">
-            {/* Column 1: CRM — with tall mock UI */}
-            <div>
-              <div className="bg-[#32373c] rounded-2xl overflow-hidden mb-6">
-                <div className="px-5 py-3 border-b border-white/[0.06]">
-                  <span className="text-white/40 font-sans text-[10px] tracking-wider uppercase">CRM</span>
-                </div>
-                <div className="divide-y divide-white/[0.04]">
-                  {["Sequoia — Term Sheet", "a16z — Meeting Set", "Greylock — Deck Opened", "Accel — Email Sent", "Y Combinator — Researching", "Lightspeed — Intro Made", "General Catalyst — In Queue"].map((row, i) => (
-                    <div key={i} className="px-5 py-2.5 flex items-center gap-2">
-                      <div className={`w-1.5 h-1.5 rounded-full ${i < 1 ? 'bg-green-400' : i < 2 ? 'bg-gold-400' : i < 3 ? 'bg-blue-400' : 'bg-white/20'}`} />
-                      <span className="text-white/50 font-sans text-[11px]">{row}</span>
-                    </div>
-                  ))}
-                </div>
+            {/* Column 1: CRM — with expanding hover bg */}
+            <div className="group relative overflow-hidden cursor-pointer p-4 -m-4">
+              <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+                <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-white/60 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
               </div>
-              <h3 className="font-display font-semibold text-[22px] text-silver-900 mb-3">Founder CRM</h3>
-              <p className="font-body text-[17px] text-silver-500 leading-[1.6]">Every investor conversation, email, and meeting in one place. Know exactly where each relationship stands across your entire raise.</p>
-            </div>
-
-            {/* Column 2: Agent — with tall chat mock */}
-            <div>
-              <AgentPreview />
-              <div className="mt-6">
-                <h3 className="font-display font-semibold text-[22px] text-silver-900 mb-3">Agent-to-Agent</h3>
-                <p className="font-body text-[17px] text-silver-500 leading-[1.6]">If you have an AI assistant, Franklin talks directly to it. Your agents coordinate the details so you don&apos;t have to context-switch.</p>
+              <div className="relative z-10">
+                <div className="relative bg-[#32373c] overflow-hidden mb-6">
+                  <CornerCrosses className="text-white/20" />
+                  <div className="px-5 py-3 border-b border-white/[0.06]">
+                    <span className="text-white/40 font-sans text-[10px] tracking-wider uppercase">CRM</span>
+                  </div>
+                  <div className="divide-y divide-white/[0.04]">
+                    {["Sequoia — Term Sheet", "a16z — Meeting Set", "Greylock — Deck Opened", "Accel — Email Sent", "Y Combinator — Researching", "Lightspeed — Intro Made", "General Catalyst — In Queue"].map((row, i) => (
+                      <div key={i} className="px-5 py-2.5 flex items-center gap-2">
+                        <div className={`w-1.5 h-1.5 rounded-full ${i < 1 ? 'bg-green-400' : i < 2 ? 'bg-gold-400' : i < 3 ? 'bg-blue-400' : 'bg-white/20'}`} />
+                        <span className="text-white/50 font-sans text-[11px]">{row}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <h3 className="font-display font-semibold text-[22px] text-silver-900 mb-3">Founder CRM</h3>
+                <p className="font-body text-[17px] text-silver-600 leading-[1.6]">Every investor conversation, email, and meeting in one place. Know exactly where each relationship stands across your entire raise.</p>
               </div>
             </div>
 
-            {/* Column 3: Channels — with tall channel mock */}
-            <div>
-              <ChannelPreview />
-              <div className="mt-6">
-                <h3 className="font-display font-semibold text-[22px] text-silver-900 mb-3">Meet you anywhere</h3>
-                <p className="font-body text-[17px] text-silver-500 leading-[1.6]">WhatsApp, Telegram, email, web — Franklin works wherever you do. No new apps, no new workflows. Just results.</p>
+            {/* Column 2: Agent — with expanding hover bg */}
+            <div className="group relative overflow-hidden cursor-pointer p-4 -m-4">
+              <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+                <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-white/60 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+              </div>
+              <div className="relative z-10">
+                <AgentPreview />
+                <div className="mt-6">
+                  <h3 className="font-display font-semibold text-[22px] text-silver-900 mb-3">Agent-to-Agent</h3>
+                  <p className="font-body text-[17px] text-silver-600 leading-[1.6]">If you have an AI assistant, Franklin talks directly to it. Your agents coordinate the details so you don&apos;t have to context-switch.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Column 3: Channels — with expanding hover bg */}
+            <div className="group relative overflow-hidden cursor-pointer p-4 -m-4">
+              <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+                <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-white/60 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+              </div>
+              <div className="relative z-10">
+                <ChannelPreview />
+                <div className="mt-6">
+                  <h3 className="font-display font-semibold text-[22px] text-silver-900 mb-3">Meet you anywhere</h3>
+                  <p className="font-body text-[17px] text-silver-600 leading-[1.6]">WhatsApp, Telegram, email, web — Franklin works wherever you do. No new apps, no new workflows. Just results.</p>
+                </div>
               </div>
             </div>
           </div>
@@ -729,12 +802,12 @@ export default function LandingPage() {
               <h2 className="font-display font-bold text-[28px] sm:text-[36px] text-silver-900 tracking-tight leading-[1.15] mb-6">
                 Built for every kind of raise
               </h2>
-              <p className="font-body text-[20px] text-silver-500 leading-[1.6] mb-6">
+              <p className="font-body text-[20px] text-silver-600 leading-[1.6] mb-6">
                 From solo founders to teams of ten, pre-revenue to post-product-market-fit — Franklin adapts to your stage and your story.
               </p>
-              <a href="#get-started" className="inline-flex items-center px-8 py-4 text-lg font-semibold font-sans uppercase tracking-wider leading-none border-2 border-silver-500 text-silver-700 hover:bg-silver-700 hover:text-white transition-all">
+              <GeometricButton href="#get-started">
                 Learn how
-              </a>
+              </GeometricButton>
             </div>
 
             {/* Grid of tiles — like Arclin's 274x274 community images (3x3) */}
@@ -750,9 +823,15 @@ export default function LandingPage() {
                 { icon: Globe, label: "Consumer", bg: "bg-emerald-50" },
                 { icon: Scale, label: "Fintech", bg: "bg-teal-50" },
               ].map((item, i) => (
-                <div key={i} className={`aspect-square ${item.bg} flex flex-col items-center justify-center gap-2.5 text-center p-4`}>
-                  <item.icon className="w-7 h-7 text-silver-500" strokeWidth={1.5} />
-                  <span className="text-[13px] font-sans text-silver-600 font-medium">{item.label}</span>
+                <div key={i} className="group relative aspect-square overflow-hidden cursor-pointer">
+                  <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+                    <div className={`w-[calc(100%-1rem)] h-[calc(100%-1rem)] ${item.bg} transition-all duration-500 ease-out group-hover:w-full group-hover:h-full`} />
+                  </div>
+                  <div className="relative z-10 w-full h-full flex flex-col items-center justify-center gap-2.5 text-center p-4">
+                    <CornerCrosses className="text-silver-300 transition-colors group-hover:text-silver-500" />
+                    <item.icon className="w-7 h-7 text-silver-500" strokeWidth={1.5} />
+                    <span className="text-[13px] font-sans text-silver-600 font-medium">{item.label}</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -767,12 +846,12 @@ export default function LandingPage() {
             <h2 className="font-display font-bold text-[28px] sm:text-[36px] text-silver-900 tracking-tight leading-[1.15] mb-4">
               Start your raise
             </h2>
-            <p className="font-body text-[20px] text-silver-500 leading-[1.6] max-w-[600px] mx-auto">
+            <p className="font-body text-[20px] text-silver-600 leading-[1.6] max-w-[600px] mx-auto">
               Tell Franklin about your startup and let AI handle the rest — from deck creation to investor outreach to closing your round.
             </p>
           </div>
           <SignupForm />
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-8 text-silver-400 font-sans text-[13px] sm:text-[14px]">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-8 text-silver-600 font-sans text-[13px] sm:text-[14px]">
             {[
               { icon: CheckCircle, text: "Free to start", color: "text-green-500" },
               { icon: Shield, text: "Data encrypted", color: "text-gold-400" },
@@ -788,62 +867,94 @@ export default function LandingPage() {
 
       </main>
 
-      {/* ═══ FOOTER ═══ */}
-      <footer className="bg-[#32373c] text-white pt-16 pb-8">
+      {/* ═══ FOOTER — Arclin style: light bg, multi-column links, monospace headings ═══ */}
+      <footer className="relative z-[1] w-full py-4 md:py-10 bg-silver-200">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-14">
-            <div className="col-span-2 md:col-span-1">
-              <div className="flex items-center gap-2.5 mb-4">
-                <img src="/franklin.jpg" alt="Franklin" className="w-7 h-7 rounded-full object-cover" />
-                <span className="font-display text-lg">Franklin</span>
+          {/* Top: Logo left / Logo right */}
+          <div className="w-full flex justify-between items-center">
+            <a href="/" className="shrink-0">
+              <span className="font-display text-xl text-silver-900 tracking-tight">Franklin</span>
+            </a>
+            <span className="font-sans text-sm text-silver-500">AI Fundraising</span>
+          </div>
+
+          {/* Links grid */}
+          <div className="mt-12 md:mt-16 flex gap-8 flex-col md:flex-row justify-between items-start">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-10 flex-1">
+              {/* Column: Product */}
+              <div className="flex flex-col gap-4">
+                <a href="#how-it-works" className="w-fit">
+                  <span className="font-sans text-base uppercase font-normal tracking-[0.08rem] text-silver-500 hover:text-silver-900 transition-colors duration-500">
+                    Product
+                  </span>
+                </a>
+                <div className="flex flex-col gap-1">
+                  {[
+                    { label: "How It Works", href: "#how-it-works" },
+                    { label: "Features", href: "#features" },
+                    { label: "Pitch Decks", href: "#how-it-works" },
+                    { label: "VC Outreach", href: "#how-it-works" },
+                    { label: "SAFE Documents", href: "#how-it-works" },
+                    { label: "Cap Table", href: "#how-it-works" },
+                  ].map((link, i) => (
+                    <a key={i} href={link.href} className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
               </div>
-              <p className="font-sans text-[13px] text-white/50 leading-relaxed max-w-[200px]">
-                AI that fundraises for you. From pitch deck to term sheet.
-              </p>
+
+              {/* Column: Company */}
+              <div className="flex flex-col gap-4">
+                <span className="font-sans text-base uppercase font-normal tracking-[0.08rem] text-silver-500">
+                  Company
+                </span>
+                <div className="flex flex-col gap-1">
+                  <Link href="/privacy-policy" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                    Privacy Policy
+                  </Link>
+                  <a href="mailto:hello@askfranklin.xyz" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                    Contact
+                  </a>
+                </div>
+              </div>
+
+              {/* Column: Connect */}
+              <div className="flex flex-col gap-4">
+                <span className="font-sans text-base uppercase font-normal tracking-[0.08rem] text-silver-500">
+                  Connect
+                </span>
+                <div className="flex flex-col gap-1">
+                  <a href="https://t.me/askfranklin_bot" target="_blank" rel="noopener noreferrer" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                    Telegram
+                  </a>
+                  <a href="https://twitter.com/askfranklin" target="_blank" rel="noopener noreferrer" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                    Twitter
+                  </a>
+                  <a href="mailto:hello@askfranklin.xyz" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                    Email
+                  </a>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <h4 className="font-sans text-[13px] font-semibold tracking-wider uppercase text-white/30 mb-4">Product</h4>
-              <ul className="space-y-2.5 font-sans text-[13px] text-white/50">
-                <li><a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a></li>
-                <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#get-started" className="hover:text-white transition-colors">Get Started</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-sans text-[13px] font-semibold tracking-wider uppercase text-white/30 mb-4">Capabilities</h4>
-              <ul className="space-y-2.5 font-sans text-[13px] text-white/50">
-                <li><a href="#how-it-works" className="hover:text-white transition-colors">Pitch Decks</a></li>
-                <li><a href="#how-it-works" className="hover:text-white transition-colors">VC Outreach</a></li>
-                <li><a href="#how-it-works" className="hover:text-white transition-colors">SAFE Documents</a></li>
-                <li><a href="#how-it-works" className="hover:text-white transition-colors">Cap Table</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-sans text-[13px] font-semibold tracking-wider uppercase text-white/30 mb-4">Company</h4>
-              <ul className="space-y-2.5 font-sans text-[13px] text-white/50">
-                <li><Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-                <li><a href="mailto:hello@askfranklin.xyz" className="hover:text-white transition-colors">Contact</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-sans text-[13px] font-semibold tracking-wider uppercase text-white/30 mb-4">Connect</h4>
-              <ul className="space-y-2.5 font-sans text-[13px] text-white/50">
-                <li><a href="https://t.me/askfranklin_bot" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Telegram</a></li>
-                <li><a href="https://twitter.com/askfranklin" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Twitter</a></li>
-                <li><a href="mailto:hello@askfranklin.xyz" className="hover:text-white transition-colors">Email</a></li>
-              </ul>
+            {/* Right: CTA buttons (Arclin geometric style) */}
+            <div className="hidden sm:flex flex-col gap-2 shrink-0">
+              <NavGeometricButton href="#how-it-works">
+                Explore Product
+              </NavGeometricButton>
+              <NavGeometricButton href="#get-started">
+                Get Started
+              </NavGeometricButton>
             </div>
           </div>
 
-          <div className="pt-5 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-3">
-            <p className="font-sans text-[13px] text-white/30">
+          {/* Bottom bar */}
+          <div className="mt-12 pt-5 border-t border-silver-300 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <p className="font-sans text-[13px] text-silver-500">
               &copy; {new Date().getFullYear()} Ask Franklin. All rights reserved.
             </p>
-            <Link href="/privacy-policy" className="font-sans text-[13px] text-white/30 hover:text-white transition-colors">
+            <Link href="/privacy-policy" className="font-sans text-[13px] text-silver-500 hover:text-silver-900 transition-colors">
               Privacy Policy
             </Link>
           </div>
