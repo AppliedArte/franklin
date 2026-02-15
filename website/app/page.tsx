@@ -237,18 +237,18 @@ function SignupForm() {
 /* ─── Mock UI: Pipeline Card ─── */
 function PipelineVisual() {
   const statusColors = {
-    done: { bg: 'bg-green-500/20', text: 'text-green-400' },
-    active: { bg: 'bg-gold-400/20', text: 'text-gold-400 font-medium' },
-    pending: { bg: 'bg-white/[0.06]', text: 'text-white/30' },
+    done: { bg: 'bg-green-500/10', text: 'text-green-600' },
+    active: { bg: 'bg-gold-400/10', text: 'text-gold-600 font-medium' },
+    pending: { bg: 'bg-silver-100', text: 'text-silver-400' },
   }
 
   return (
     <div className="group relative overflow-hidden cursor-pointer">
       <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-        <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-[#3a3f44] transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+        <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-silver-100 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
       </div>
-      <div className="relative z-10 bg-[#32373c] p-8 md:p-10">
-        <CornerCrosses className="text-white/20 transition-colors group-hover:text-white/40" />
+      <div className="relative z-10 bg-white border border-silver-200 shadow-sm p-8 md:p-10">
+        <CornerCrosses className="text-silver-300 transition-colors group-hover:text-silver-500" />
         <div className="space-y-4">
         {[
           { label: "Understand your startup", status: "done" as const, icon: MessageCircle },
@@ -266,15 +266,15 @@ function PipelineVisual() {
               </div>
               <span className={`font-sans text-[14px] ${colors.text}`}>{item.label}</span>
               {item.status === 'active' && (
-                <span className="ml-auto text-xs text-gold-400/60 font-sans animate-pulse">in progress</span>
+                <span className="ml-auto text-xs text-gold-500/60 font-sans animate-pulse">in progress</span>
               )}
             </div>
           )
         })}
       </div>
-      <div className="mt-5 pt-5 border-t border-white/10 flex items-center justify-between">
-        <span className="text-xs text-white/30 font-sans">12 responses received</span>
-        <span className="text-xs text-green-400 font-sans font-medium">3 term sheets</span>
+      <div className="mt-5 pt-5 border-t border-silver-200 flex items-center justify-between">
+        <span className="text-xs text-silver-400 font-sans">12 responses received</span>
+        <span className="text-xs text-green-600 font-sans font-medium">3 term sheets</span>
       </div>
       </div>
     </div>
@@ -294,25 +294,25 @@ function CRMPreview() {
   return (
     <div className="group relative overflow-hidden cursor-pointer">
       <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-        <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-[#3a3f44] transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+        <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-silver-100 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
       </div>
-      <div className="relative z-10 bg-[#32373c] overflow-hidden">
-        <CornerCrosses className="text-white/20 transition-colors group-hover:text-white/40" />
-        <div className="px-6 py-4 border-b border-white/10">
+      <div className="relative z-10 bg-white border border-silver-200 shadow-sm overflow-hidden">
+        <CornerCrosses className="text-silver-300 transition-colors group-hover:text-silver-500" />
+        <div className="px-6 py-4 border-b border-silver-200">
           <div className="flex items-center justify-between">
-            <span className="text-white/60 font-sans text-xs font-medium tracking-wider uppercase">Investor Pipeline</span>
-            <span className="text-green-400 font-sans text-xs font-medium">47 active</span>
+            <span className="text-silver-500 font-sans text-xs font-medium tracking-wider uppercase">Investor Pipeline</span>
+            <span className="text-green-600 font-sans text-xs font-medium">47 active</span>
           </div>
         </div>
-        <div className="divide-y divide-white/[0.06]">
+        <div className="divide-y divide-silver-100">
           {investors.map((inv, i) => (
             <div key={i} className="px-6 py-3.5 flex items-center gap-3">
               <div className={`w-2 h-2 rounded-full shrink-0 ${inv.color}`} />
               <div className="min-w-0 flex-1">
-                <div className="text-white/80 font-sans text-[13px] font-medium truncate">{inv.name}</div>
-                <div className="text-white/30 font-sans text-[11px] truncate">{inv.partner}</div>
+                <div className="text-silver-800 font-sans text-[13px] font-medium truncate">{inv.name}</div>
+                <div className="text-silver-400 font-sans text-[11px] truncate">{inv.partner}</div>
               </div>
-              <span className="text-white/40 font-sans text-[11px] shrink-0">{inv.status}</span>
+              <span className="text-silver-500 font-sans text-[11px] shrink-0">{inv.status}</span>
             </div>
           ))}
         </div>
@@ -333,27 +333,27 @@ function AgentPreview() {
   return (
     <div className="group relative overflow-hidden cursor-pointer">
       <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-        <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-[#3a3f44] transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+        <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-silver-100 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
       </div>
-      <div className="relative z-10 bg-[#32373c] overflow-hidden">
-        <CornerCrosses className="text-white/20 transition-colors group-hover:text-white/40" />
-        <div className="px-6 py-4 border-b border-white/10">
-          <span className="text-white/60 font-sans text-xs font-medium tracking-wider uppercase">Agent-to-Agent</span>
+      <div className="relative z-10 bg-white border border-silver-200 shadow-sm overflow-hidden">
+        <CornerCrosses className="text-silver-300 transition-colors group-hover:text-silver-500" />
+        <div className="px-6 py-4 border-b border-silver-200">
+          <span className="text-silver-500 font-sans text-xs font-medium tracking-wider uppercase">Agent-to-Agent</span>
         </div>
         <div className="p-6 space-y-4">
           {messages.map((msg, i) => (
             <div key={i} className={`flex gap-3 ${msg.left ? '' : 'justify-end'}`}>
               {msg.left && (
-                <div className="w-7 h-7 rounded-full bg-gold-400/20 flex items-center justify-center shrink-0">
-                  <Bot className="w-3.5 h-3.5 text-gold-400" />
+                <div className="w-7 h-7 rounded-full bg-gold-400/10 flex items-center justify-center shrink-0">
+                  <Bot className="w-3.5 h-3.5 text-gold-600" />
                 </div>
               )}
-              <div className={`px-4 py-2.5 ${msg.left ? 'bg-white/[0.06]' : 'bg-gold-400/10'}`}>
-                <p className={`font-sans text-[12px] leading-relaxed ${msg.left ? 'text-white/70' : 'text-gold-400/80'}`}>{msg.text}</p>
+              <div className={`px-4 py-2.5 ${msg.left ? 'bg-silver-100' : 'bg-gold-400/10'}`}>
+                <p className={`font-sans text-[12px] leading-relaxed ${msg.left ? 'text-silver-700' : 'text-gold-700'}`}>{msg.text}</p>
               </div>
               {!msg.left && (
-                <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                  <Zap className="w-3.5 h-3.5 text-white/50" />
+                <div className="w-7 h-7 rounded-full bg-silver-100 flex items-center justify-center shrink-0">
+                  <Zap className="w-3.5 h-3.5 text-silver-500" />
                 </div>
               )}
             </div>
@@ -377,22 +377,22 @@ function ChannelPreview() {
   return (
     <div className="group relative overflow-hidden cursor-pointer">
       <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-        <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-[#3a3f44] transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+        <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-silver-100 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
       </div>
-      <div className="relative z-10 bg-[#32373c] overflow-hidden">
-        <CornerCrosses className="text-white/20 transition-colors group-hover:text-white/40" />
-        <div className="px-6 py-4 border-b border-white/10">
-          <span className="text-white/60 font-sans text-xs font-medium tracking-wider uppercase">Channels</span>
+      <div className="relative z-10 bg-white border border-silver-200 shadow-sm overflow-hidden">
+        <CornerCrosses className="text-silver-300 transition-colors group-hover:text-silver-500" />
+        <div className="px-6 py-4 border-b border-silver-200">
+          <span className="text-silver-500 font-sans text-xs font-medium tracking-wider uppercase">Channels</span>
         </div>
         <div className="p-6 space-y-3">
           {channels.map((ch, i) => (
-            <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-white/[0.04]">
-              <ch.icon className={`w-4 h-4 shrink-0 ${ch.active ? 'text-green-400' : 'text-white/20'}`} />
+            <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-silver-50">
+              <ch.icon className={`w-4 h-4 shrink-0 ${ch.active ? 'text-green-600' : 'text-silver-300'}`} />
               <div className="flex-1 min-w-0">
-                <div className="text-white/70 font-sans text-[13px] font-medium">{ch.label}</div>
-                <div className="text-white/30 font-sans text-[11px]">{ch.detail}</div>
+                <div className="text-silver-800 font-sans text-[13px] font-medium">{ch.label}</div>
+                <div className="text-silver-400 font-sans text-[11px]">{ch.detail}</div>
               </div>
-              <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${ch.active ? 'bg-green-400' : 'bg-white/10'}`} />
+              <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${ch.active ? 'bg-green-500' : 'bg-silver-200'}`} />
             </div>
           ))}
         </div>
@@ -457,14 +457,14 @@ export default function LandingPage() {
         <div className="max-w-[1200px] mx-auto px-6 lg:px-8">
           <div className="group relative overflow-hidden cursor-pointer">
             <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-              <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-[#3a3f44] transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+              <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-silver-100 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
             </div>
-            <div className="relative z-10 bg-[#32373c] overflow-hidden shadow-[6px_6px_9px_rgba(0,0,0,0.2)]">
-            <CornerCrosses className="text-white/20 transition-colors group-hover:text-white/40" />
-            <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/[0.06]">
+            <div className="relative z-10 bg-white border border-silver-200 shadow-sm overflow-hidden">
+            <CornerCrosses className="text-silver-300 transition-colors group-hover:text-silver-500" />
+            <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-silver-200">
               {/* Pipeline snapshot */}
               <div className="p-8">
-                <div className="text-white/40 font-sans text-[11px] tracking-wider uppercase mb-5">Pipeline</div>
+                <div className="text-silver-400 font-sans text-[11px] tracking-wider uppercase mb-5">Pipeline</div>
                 <div className="space-y-3">
                   {[
                     { label: "Understand", done: true },
@@ -475,8 +475,8 @@ export default function LandingPage() {
                     { label: "Close Round" },
                   ].map((s, i) => {
                     const isDone = s.done, isActive = s.active
-                    const colors = isDone ? 'bg-green-500/20 text-green-400' : isActive ? 'bg-gold-400/20 text-gold-400' : 'bg-white/[0.06] text-white/20'
-                    const textColor = isDone ? 'text-green-400/80' : isActive ? 'text-gold-400' : 'text-white/20'
+                    const colors = isDone ? 'bg-green-500/10 text-green-600' : isActive ? 'bg-gold-400/10 text-gold-600' : 'bg-silver-100 text-silver-400'
+                    const textColor = isDone ? 'text-green-600' : isActive ? 'text-gold-600' : 'text-silver-400'
                     return (
                       <div key={i} className="flex items-center gap-3">
                         <div className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-sans font-bold ${colors}`}>
@@ -490,7 +490,7 @@ export default function LandingPage() {
               </div>
               {/* Stats snapshot */}
               <div className="p-8">
-                <div className="text-white/40 font-sans text-[11px] tracking-wider uppercase mb-5">This Round</div>
+                <div className="text-silver-400 font-sans text-[11px] tracking-wider uppercase mb-5">This Round</div>
                 <div className="space-y-5">
                   {[
                     { label: "VCs Contacted", value: "47" },
@@ -499,27 +499,27 @@ export default function LandingPage() {
                     { label: "Term Sheets", value: "3" },
                   ].map((s, i) => (
                     <div key={i} className="flex items-center justify-between">
-                      <span className="text-white/40 font-sans text-[13px]">{s.label}</span>
-                      <span className="text-white font-display text-[20px]">{s.value}</span>
+                      <span className="text-silver-500 font-sans text-[13px]">{s.label}</span>
+                      <span className="text-silver-900 font-display text-[20px]">{s.value}</span>
                     </div>
                   ))}
                 </div>
               </div>
               {/* Recent activity */}
               <div className="p-8">
-                <div className="text-white/40 font-sans text-[11px] tracking-wider uppercase mb-5">Activity</div>
+                <div className="text-silver-400 font-sans text-[11px] tracking-wider uppercase mb-5">Activity</div>
                 <div className="space-y-3.5">
                   {[
-                    { icon: Mail, text: "Sequoia opened your deck", time: "2m ago", color: "text-green-400" },
-                    { icon: TrendingUp, text: "Term sheet from Greylock", time: "1h ago", color: "text-gold-400" },
-                    { icon: FileText, text: "SAFE docs generated", time: "3h ago", color: "text-blue-400" },
-                    { icon: Clock, text: "Follow-up sent to a16z", time: "5h ago", color: "text-white/40" },
+                    { icon: Mail, text: "Sequoia opened your deck", time: "2m ago", color: "text-green-600" },
+                    { icon: TrendingUp, text: "Term sheet from Greylock", time: "1h ago", color: "text-gold-600" },
+                    { icon: FileText, text: "SAFE docs generated", time: "3h ago", color: "text-blue-500" },
+                    { icon: Clock, text: "Follow-up sent to a16z", time: "5h ago", color: "text-silver-400" },
                   ].map((a, i) => (
                     <div key={i} className="flex items-start gap-3">
                       <a.icon className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${a.color}`} />
                       <div className="min-w-0">
-                        <div className="text-white/70 font-sans text-[12px] leading-snug">{a.text}</div>
-                        <div className="text-white/25 font-sans text-[11px]">{a.time}</div>
+                        <div className="text-silver-700 font-sans text-[12px] leading-snug">{a.text}</div>
+                        <div className="text-silver-400 font-sans text-[11px]">{a.time}</div>
                       </div>
                     </div>
                   ))}
@@ -605,44 +605,44 @@ export default function LandingPage() {
             <div className="hidden lg:block">
               <div className="group relative overflow-hidden cursor-pointer h-full min-h-[400px]">
                 <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-                  <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-[#3a3f44] transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+                  <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-silver-100 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
                 </div>
-                <div className="relative z-10 bg-[#32373c] overflow-hidden h-full">
-                  <CornerCrosses className="text-white/20 transition-colors group-hover:text-white/40" />
-                  <div className="px-6 py-4 border-b border-white/10">
-                    <span className="text-white/40 font-sans text-[10px] tracking-wider uppercase">Raise Summary</span>
+                <div className="relative z-10 bg-white border border-silver-200 shadow-sm overflow-hidden h-full">
+                  <CornerCrosses className="text-silver-300 transition-colors group-hover:text-silver-500" />
+                  <div className="px-6 py-4 border-b border-silver-200">
+                    <span className="text-silver-400 font-sans text-[10px] tracking-wider uppercase">Raise Summary</span>
                   </div>
                   <div className="p-6 space-y-6">
                     <div>
-                      <div className="text-white/30 font-sans text-[11px] uppercase tracking-wider mb-2">Target</div>
-                      <div className="font-display text-[28px] text-white leading-none">$2.5M</div>
-                      <div className="text-white/40 font-sans text-[12px] mt-1">Seed Round · SaaS</div>
+                      <div className="text-silver-400 font-sans text-[11px] uppercase tracking-wider mb-2">Target</div>
+                      <div className="font-display text-[28px] text-silver-900 leading-none">$2.5M</div>
+                      <div className="text-silver-500 font-sans text-[12px] mt-1">Seed Round · SaaS</div>
                     </div>
-                    <div className="h-px bg-white/10" />
+                    <div className="h-px bg-silver-200" />
                     <div className="space-y-3">
                       {[
-                        { label: "Committed", value: "$1.8M", pct: "72%", style: 'bg-green-500/20 text-green-400' },
-                        { label: "In Pipeline", value: "$400K", pct: "16%", style: 'bg-gold-400/20 text-gold-400' },
-                        { label: "Remaining", value: "$300K", pct: "12%", style: 'bg-white/[0.06] text-white/30' },
+                        { label: "Committed", value: "$1.8M", pct: "72%", style: 'bg-green-500/10 text-green-600' },
+                        { label: "In Pipeline", value: "$400K", pct: "16%", style: 'bg-gold-400/10 text-gold-600' },
+                        { label: "Remaining", value: "$300K", pct: "12%", style: 'bg-silver-100 text-silver-400' },
                       ].map((row, i) => (
                         <div key={i} className="flex items-center justify-between">
-                          <span className="text-white/40 font-sans text-[12px]">{row.label}</span>
+                          <span className="text-silver-500 font-sans text-[12px]">{row.label}</span>
                           <div className="flex items-center gap-2">
-                            <span className="text-white/60 font-sans text-[12px]">{row.value}</span>
+                            <span className="text-silver-700 font-sans text-[12px]">{row.value}</span>
                             <span className={`font-sans text-[10px] font-medium px-1.5 py-0.5 ${row.style}`}>{row.pct}</span>
                           </div>
                         </div>
                       ))}
                     </div>
-                    <div className="h-px bg-white/10" />
+                    <div className="h-px bg-silver-200" />
                     <div className="space-y-2">
-                      <div className="text-white/30 font-sans text-[11px] uppercase tracking-wider">Recent</div>
+                      <div className="text-silver-400 font-sans text-[11px] uppercase tracking-wider">Recent</div>
                       {[
-                        { text: "Sequoia signed term sheet", color: 'bg-green-400' },
+                        { text: "Sequoia signed term sheet", color: 'bg-green-500' },
                         { text: "a16z meeting confirmed", color: 'bg-gold-400' },
                         { text: "Deck v3 generated", color: 'bg-blue-400' },
                       ].map((item, i) => (
-                        <div key={i} className="text-white/50 font-sans text-[11px] flex items-center gap-2">
+                        <div key={i} className="text-silver-600 font-sans text-[11px] flex items-center gap-2">
                           <div className={`w-1 h-1 rounded-full ${item.color}`} />
                           {item.text}
                         </div>
@@ -666,10 +666,10 @@ export default function LandingPage() {
         <div className="max-w-[1200px] mx-auto px-6 lg:px-8">
           <div className="group relative overflow-hidden cursor-pointer">
             <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-              <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-[#3a3f44] transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+              <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-silver-100 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
             </div>
-            <div className="relative z-10 bg-[#32373c] overflow-hidden p-8 md:p-12">
-              <CornerCrosses className="text-white/20 transition-colors group-hover:text-white/40" />
+            <div className="relative z-10 bg-white border border-silver-200 shadow-sm overflow-hidden p-8 md:p-12">
+              <CornerCrosses className="text-silver-300 transition-colors group-hover:text-silver-500" />
               <div className="grid md:grid-cols-4 gap-8 md:gap-12 text-center">
                 {[
                   { value: "6", label: "Pipeline stages" },
@@ -678,8 +678,8 @@ export default function LandingPage() {
                   { value: "24/7", label: "Always running" },
                 ].map((stat, i) => (
                   <div key={i}>
-                    <div className="font-display text-[36px] md:text-[42px] text-white leading-none mb-2">{stat.value}</div>
-                    <div className="font-sans text-[13px] text-white/40 tracking-wider uppercase">{stat.label}</div>
+                    <div className="font-display text-[36px] md:text-[42px] text-silver-900 leading-none mb-2">{stat.value}</div>
+                    <div className="font-sans text-[13px] text-silver-400 tracking-wider uppercase">{stat.label}</div>
                   </div>
                 ))}
               </div>
@@ -744,16 +744,16 @@ export default function LandingPage() {
                 <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-white/60 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
               </div>
               <div className="relative z-10">
-                <div className="relative bg-[#32373c] overflow-hidden mb-6">
-                  <CornerCrosses className="text-white/20" />
-                  <div className="px-5 py-3 border-b border-white/[0.06]">
-                    <span className="text-white/40 font-sans text-[10px] tracking-wider uppercase">CRM</span>
+                <div className="relative bg-white border border-silver-200 shadow-sm overflow-hidden mb-6">
+                  <CornerCrosses className="text-silver-300" />
+                  <div className="px-5 py-3 border-b border-silver-200">
+                    <span className="text-silver-400 font-sans text-[10px] tracking-wider uppercase">CRM</span>
                   </div>
-                  <div className="divide-y divide-white/[0.04]">
+                  <div className="divide-y divide-silver-100">
                     {["Sequoia — Term Sheet", "a16z — Meeting Set", "Greylock — Deck Opened", "Accel — Email Sent", "Y Combinator — Researching", "Lightspeed — Intro Made", "General Catalyst — In Queue"].map((row, i) => (
                       <div key={i} className="px-5 py-2.5 flex items-center gap-2">
-                        <div className={`w-1.5 h-1.5 rounded-full ${i < 1 ? 'bg-green-400' : i < 2 ? 'bg-gold-400' : i < 3 ? 'bg-blue-400' : 'bg-white/20'}`} />
-                        <span className="text-white/50 font-sans text-[11px]">{row}</span>
+                        <div className={`w-1.5 h-1.5 rounded-full ${i < 1 ? 'bg-green-500' : i < 2 ? 'bg-gold-400' : i < 3 ? 'bg-blue-400' : 'bg-silver-300'}`} />
+                        <span className="text-silver-600 font-sans text-[11px]">{row}</span>
                       </div>
                     ))}
                   </div>
