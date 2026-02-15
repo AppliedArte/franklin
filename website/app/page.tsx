@@ -23,7 +23,7 @@ const CornerCrosses = ({ className = 'text-silver-300', hoverClassName = '' }: {
 )
 
 /* ─── Geometric Button (Arclin-style corner dots + expanding border lines) ─── */
-function GeometricButton({ href, children, className = '' }: { href: string; children: React.ReactNode; className?: string }) {
+function GeometricButton({ href, onClick, children, className = '' }: { href?: string; onClick?: () => void; children: React.ReactNode; className?: string }) {
   const [hovered, setHovered] = useState(false)
   const dim = { thickness: '0.0625rem', offset: '-0.53125rem', rest: '1rem', full: 'calc(100% + 0.0625rem)' }
   const baseStyle = { backgroundColor: hovered ? 'rgb(255 255 255)' : undefined }
@@ -39,37 +39,56 @@ function GeometricButton({ href, children, className = '' }: { href: string; chi
     { right: '100%', width: dim.thickness, bottom: dim.offset, height: hovered ? dim.full : dim.rest, expanding: true },
   ]
 
-  return (
-    <a href={href} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      className={`relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold uppercase font-sans tracking-wider leading-none select-none whitespace-nowrap cursor-pointer transition-all duration-300 border-2 border-silver-500 ${
-        hovered ? 'bg-[#32373c] text-white' : 'text-silver-800'
-      } ${className}`}>
+  const sharedClass = `relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold uppercase font-sans tracking-wider leading-none select-none whitespace-nowrap cursor-pointer transition-all duration-300 border-2 border-silver-500 ${
+    hovered ? 'bg-[#32373c] text-white' : 'text-silver-800'
+  } ${className}`
+  const sharedContent = (
+    <>
       {children}
       <CornerCrosses className={hovered ? 'text-silver-600' : 'text-silver-400'} />
       {lines.map(({ expanding, ...lineStyle }, i) => (
         <div key={i} className={`absolute bg-silver-500 ${expanding ? 'transition-all duration-700' : 'transition-colors duration-700'}`}
           style={{ ...lineStyle, ...baseStyle }} />
       ))}
+    </>
+  )
+
+  return href ? (
+    <a href={href} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} className={sharedClass}>
+      {sharedContent}
     </a>
+  ) : (
+    <button type="button" onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} className={sharedClass}>
+      {sharedContent}
+    </button>
   )
 }
 
 /* ─── Nav Geometric Button (smaller version for navbar) ─── */
-function NavGeometricButton({ href, children }: { href: string; children: React.ReactNode }) {
+function NavGeometricButton({ href, onClick, children }: { href?: string; onClick?: () => void; children: React.ReactNode }) {
   const [hovered, setHovered] = useState(false)
-  return (
-    <a href={href} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      className={`relative inline-flex items-center justify-center px-4 py-3 text-sm xl:text-base font-semibold font-sans uppercase tracking-wide leading-none select-none cursor-pointer transition border-2 border-silver-500 ${
-        hovered ? 'bg-silver-700 text-white' : 'text-silver-700'
-      }`}>
+  const sharedClass = `relative inline-flex items-center justify-center px-4 py-3 text-sm xl:text-base font-semibold font-sans uppercase tracking-wide leading-none select-none cursor-pointer transition border-2 border-silver-500 ${
+    hovered ? 'bg-silver-700 text-white' : 'text-silver-700'
+  }`
+  const sharedContent = (
+    <>
       {children}
       <CornerCrosses className={hovered ? 'text-silver-600' : 'text-silver-400'} />
+    </>
+  )
+  return href ? (
+    <a href={href} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} className={sharedClass}>
+      {sharedContent}
     </a>
+  ) : (
+    <button type="button" onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} className={sharedClass}>
+      {sharedContent}
+    </button>
   )
 }
 
-/* ─── Signup Form ─── */
-function SignupForm() {
+/* ─── Waitlist Modal ─── */
+function WaitlistModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [formError, setFormError] = useState(false)
@@ -80,7 +99,8 @@ function SignupForm() {
   })
   const [formData, setFormData] = useState({
     name: '', email: '', company_name: '', one_liner: '',
-    stage: '', raising: '', linkedin: '', telegram: ''
+    stage: '', raising: '', linkedin: '', telegram: '',
+    fundraising_for: ''
   })
 
   const handleSubmit = async () => {
@@ -149,85 +169,112 @@ function SignupForm() {
     )
   }
 
-  if (isSubmitted) {
-    return (
-      <div className="max-w-md mx-auto text-center py-8">
-        <div className="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-5">
-          <CheckCircle className="w-7 h-7 text-green-600" />
-        </div>
-        <h3 className="font-display text-2xl text-silver-800 mb-2">
-          Let&apos;s get you funded, {formData.name.split(' ')[0]}.
-        </h3>
-        <p className="font-sans text-silver-500 text-[15px] leading-relaxed">
-          {formData.telegram
-            ? "We'll message you on Telegram to start building your raise strategy."
-            : "Check your inbox — we've sent you next steps to kick off your raise."}
-        </p>
-      </div>
-    )
-  }
+  if (!isOpen) return null
 
   return (
-    <div className="max-w-xl mx-auto text-left">
-      <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <FormField label="Your name" field="name" placeholder="Jane Doe" />
-          <FormField label="Email" field="email" type="email" placeholder="jane@startup.com" />
-        </div>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+      <div className="relative bg-white border border-silver-200 shadow-xl max-w-xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <CornerCrosses className="text-silver-300" />
+        <div className="p-8">
+          {isSubmitted ? (
+            <div className="text-center py-8">
+              <div className="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-5">
+                <CheckCircle className="w-7 h-7 text-green-600" />
+              </div>
+              <h3 className="font-display text-2xl text-silver-800 mb-2">
+                You&apos;re on the list, {formData.name.split(' ')[0]}.
+              </h3>
+              <p className="font-sans text-silver-500 text-[15px] leading-relaxed mb-6">
+                {formData.telegram
+                  ? "We'll message you on Telegram when it's your turn."
+                  : "Check your inbox — we'll reach out when it's time to start your raise."}
+              </p>
+              <button onClick={onClose}
+                className="font-sans text-sm font-semibold uppercase tracking-wider text-silver-500 hover:text-silver-800 transition-colors">
+                Close
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-display text-2xl text-silver-900">Join the Waitlist</h3>
+                <button onClick={onClose} className="text-silver-400 hover:text-silver-700 transition-colors text-xl leading-none p-1">
+                  &times;
+                </button>
+              </div>
 
-        <FormField label="Company name" field="company_name" placeholder="Acme Inc." />
-        <FormField label="One-liner" field="one_liner" placeholder="We help X do Y with Z" />
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField label="Your name" field="name" placeholder="Jane Doe" />
+                  <FormField label="Email" field="email" type="email" placeholder="jane@startup.com" />
+                </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <FormField label="Stage" field="stage" options={[
-            { value: '', label: 'Select...' },
-            { value: 'pre-seed', label: 'Pre-Seed' },
-            { value: 'seed', label: 'Seed' },
-            { value: 'series-a', label: 'Series A' },
-            { value: 'series-b+', label: 'Series B+' },
-          ]} />
-          <FormField label="Raising" field="raising" options={[
-            { value: '', label: 'Select...' },
-            { value: '<500k', label: 'Under $500K' },
-            { value: '500k-1m', label: '$500K – $1M' },
-            { value: '1m-3m', label: '$1M – $3M' },
-            { value: '3m-10m', label: '$3M – $10M' },
-            { value: '10m+', label: '$10M+' },
-          ]} />
-        </div>
+                <FormField label="Company name" field="company_name" placeholder="Acme Inc." />
+                <FormField label="One-liner" field="one_liner" placeholder="We help X do Y with Z" />
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-sans font-medium mb-1.5 text-silver-400">LinkedIn <span className="text-silver-300">(optional)</span></label>
-            <input type="text" value={formData.linkedin} onChange={e => updateField('linkedin')(e.target.value)}
-              placeholder="linkedin.com/in/jane" className={inputClass(false)} />
-          </div>
-          <div>
-            <label className="block text-xs font-sans font-medium mb-1.5 text-silver-400">Telegram <span className="text-silver-300">(optional)</span></label>
-            <input type="text" value={formData.telegram} onChange={e => updateField('telegram')(e.target.value)}
-              placeholder="@username" className={inputClass(false)} />
-          </div>
-        </div>
+                <div>
+                  <label className="block text-xs font-sans font-medium mb-1.5 text-silver-500">What are you fundraising for?</label>
+                  <textarea value={formData.fundraising_for} onChange={e => updateField('fundraising_for')(e.target.value)}
+                    placeholder="e.g. Building out our engineering team and scaling go-to-market"
+                    rows={2}
+                    className={inputClass(false) + ' resize-none'} />
+                </div>
 
-        {apiError && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-700 text-sm font-sans">{apiError}</p>
-          </div>
-        )}
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField label="Stage" field="stage" options={[
+                    { value: '', label: 'Select...' },
+                    { value: 'pre-seed', label: 'Pre-Seed' },
+                    { value: 'seed', label: 'Seed' },
+                    { value: 'series-a', label: 'Series A' },
+                    { value: 'series-b+', label: 'Series B+' },
+                  ]} />
+                  <FormField label="Raising" field="raising" options={[
+                    { value: '', label: 'Select...' },
+                    { value: '<500k', label: 'Under $500K' },
+                    { value: '500k-1m', label: '$500K – $1M' },
+                    { value: '1m-3m', label: '$1M – $3M' },
+                    { value: '3m-10m', label: '$3M – $10M' },
+                    { value: '10m+', label: '$10M+' },
+                  ]} />
+                </div>
 
-        <div className="relative">
-          <CornerCrosses className={formError ? 'text-red-300' : 'text-silver-400'} />
-          <button onClick={handleSubmit} disabled={isSubmitting}
-            className={`relative w-full py-4 font-sans font-semibold text-lg uppercase tracking-wider transition-all flex items-center justify-center gap-2 border-2 ${
-              formError ? 'bg-red-500 text-white border-red-500' : 'bg-[#32373c] text-white border-silver-500 hover:bg-silver-900'
-            } disabled:opacity-50 disabled:cursor-not-allowed`}
-          >
-            {isSubmitting ? (
-              <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Submitting...</>
-            ) : formError ? 'Please fill in all required fields' : (
-              'Get Started'
-            )}
-          </button>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-sans font-medium mb-1.5 text-silver-400">LinkedIn <span className="text-silver-300">(optional)</span></label>
+                    <input type="text" value={formData.linkedin} onChange={e => updateField('linkedin')(e.target.value)}
+                      placeholder="linkedin.com/in/jane" className={inputClass(false)} />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-sans font-medium mb-1.5 text-silver-400">Telegram <span className="text-silver-300">(optional)</span></label>
+                    <input type="text" value={formData.telegram} onChange={e => updateField('telegram')(e.target.value)}
+                      placeholder="@username" className={inputClass(false)} />
+                  </div>
+                </div>
+
+                {apiError && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-700 text-sm font-sans">{apiError}</p>
+                  </div>
+                )}
+
+                <div className="relative">
+                  <CornerCrosses className={formError ? 'text-red-300' : 'text-silver-400'} />
+                  <button onClick={handleSubmit} disabled={isSubmitting}
+                    className={`relative w-full py-4 font-sans font-semibold text-lg uppercase tracking-wider transition-all flex items-center justify-center gap-2 border-2 ${
+                      formError ? 'bg-red-500 text-white border-red-500' : 'bg-[#32373c] text-white border-silver-500 hover:bg-silver-900'
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    {isSubmitting ? (
+                      <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Submitting...</>
+                    ) : formError ? 'Please fill in all required fields' : (
+                      'Join Waitlist'
+                    )}
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -403,8 +450,12 @@ function ChannelPreview() {
 
 /* ─── Landing Page ─── */
 export default function LandingPage() {
+  const [showWaitlist, setShowWaitlist] = useState(false)
+  const openWaitlist = () => setShowWaitlist(true)
+
   return (
     <div className="bg-white text-silver-900">
+      <WaitlistModal isOpen={showWaitlist} onClose={() => setShowWaitlist(false)} />
 
       {/* ═══ NAVIGATION — Arclin layout ═══ */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md">
@@ -420,11 +471,8 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-5 shrink-0">
-            <Link href="/login" className="hidden sm:block text-sm xl:text-base font-semibold font-sans uppercase leading-none text-silver-700 hover:text-silver-900 transition-colors tracking-wide">
-              Sign In
-            </Link>
-            <NavGeometricButton href="#get-started">
-              Get Started
+            <NavGeometricButton onClick={openWaitlist}>
+              Join Waitlist
             </NavGeometricButton>
           </div>
         </div>
@@ -444,8 +492,8 @@ export default function LandingPage() {
             </p>
 
             <div className="flex flex-wrap items-center gap-8 mt-8">
-              <GeometricButton href="#get-started">
-                Get Started
+              <GeometricButton onClick={openWaitlist}>
+                Join Waitlist
               </GeometricButton>
             </div>
           </div>
@@ -654,8 +702,8 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="mt-12">
-            <GeometricButton href="#get-started">
-              Explore all capabilities
+            <GeometricButton onClick={openWaitlist}>
+              Join Waitlist
             </GeometricButton>
           </div>
         </div>
@@ -699,8 +747,8 @@ export default function LandingPage() {
               <p className="font-body text-[20px] text-silver-600 leading-[1.6] mb-6">
                 Franklin&apos;s pipeline takes you from the first conversation about your startup all the way through to a closed round. Every step tracked, every interaction logged, every document prepared.
               </p>
-              <GeometricButton href="#get-started">
-                Start your raise
+              <GeometricButton onClick={openWaitlist}>
+                Join Waitlist
               </GeometricButton>
             </div>
             <PipelineVisual />
@@ -723,8 +771,8 @@ export default function LandingPage() {
               <p className="font-body text-[20px] text-silver-600 leading-[1.6] mb-6">
                 Every interaction is tracked. Every response logged. You always know exactly where each investor relationship stands.
               </p>
-              <GeometricButton href="#get-started">
-                Explore our database
+              <GeometricButton onClick={openWaitlist}>
+                Join Waitlist
               </GeometricButton>
             </div>
           </div>
@@ -805,8 +853,8 @@ export default function LandingPage() {
               <p className="font-body text-[20px] text-silver-600 leading-[1.6] mb-6">
                 From solo founders to teams of ten, pre-revenue to post-product-market-fit — Franklin adapts to your stage and your story.
               </p>
-              <GeometricButton href="#get-started">
-                Learn how
+              <GeometricButton onClick={openWaitlist}>
+                Join Waitlist
               </GeometricButton>
             </div>
 
@@ -839,29 +887,18 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══ CTA — "Bring your project to life" (centered like Arclin) ═══ */}
-      <section id="get-started" className="py-20 md:py-28 bg-[#f9f9f7]">
-        <div className="max-w-[1200px] mx-auto px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="font-display font-bold text-[28px] sm:text-[36px] text-silver-900 tracking-tight leading-[1.15] mb-4">
-              Start your raise
-            </h2>
-            <p className="font-body text-[20px] text-silver-600 leading-[1.6] max-w-[600px] mx-auto">
-              Tell Franklin about your startup and let AI handle the rest — from deck creation to investor outreach to closing your round.
-            </p>
-          </div>
-          <SignupForm />
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-8 text-silver-600 font-sans text-[13px] sm:text-[14px]">
-            {[
-              { icon: CheckCircle, text: "Free to start", color: "text-green-500" },
-              { icon: Shield, text: "Data encrypted", color: "text-gold-400" },
-              { icon: Clock, text: "2 min setup", color: "text-blue-400" },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <item.icon className={`w-4 h-4 ${item.color}`} /> {item.text}
-              </div>
-            ))}
-          </div>
+      {/* ═══ CTA — centered like Arclin ═══ */}
+      <section className="py-20 md:py-28 bg-[#f9f9f7]">
+        <div className="max-w-[720px] mx-auto px-6 text-center">
+          <h2 className="font-display font-bold text-[28px] sm:text-[36px] text-silver-900 tracking-tight leading-[1.15] mb-4">
+            Start your raise
+          </h2>
+          <p className="font-body text-[20px] text-silver-600 leading-[1.6] max-w-[600px] mx-auto mb-8">
+            Tell Franklin about your startup and let AI handle the rest — from deck creation to investor outreach to closing your round.
+          </p>
+          <GeometricButton onClick={openWaitlist}>
+            Join Waitlist
+          </GeometricButton>
         </div>
       </section>
 
@@ -943,8 +980,8 @@ export default function LandingPage() {
               <NavGeometricButton href="#how-it-works">
                 Explore Product
               </NavGeometricButton>
-              <NavGeometricButton href="#get-started">
-                Get Started
+              <NavGeometricButton onClick={openWaitlist}>
+                Join Waitlist
               </NavGeometricButton>
             </div>
           </div>
