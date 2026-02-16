@@ -160,7 +160,7 @@ function WaitlistModal({ isOpen, onClose, initialType = 'founder' }: { isOpen: b
       fund_name: userType === 'investor' ? formData.fund_name : formData.company_name,
       user_type: userType
     }
-    console.log('[Franklin] Submitting lead:', { ...payload, email: payload.email ? '***' : '' })
+    console.log('[Franklin] Submitting lead:', { ...payload, email: formData.email ? '***' : '' })
 
     try {
       const controller = new AbortController()
