@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { CheckCircle, MessageCircle, FileText, Send, Scale, Users, Bot, Smartphone, Zap, BarChart3, Globe, Shield, Mail, TrendingUp, Clock, Search, Filter, Target } from "lucide-react"
+import { CheckCircle, MessageCircle, FileText, Send, Scale, Users, Bot, Smartphone, Zap, BarChart3, Globe, Shield, Mail, TrendingUp, Clock, Search, Filter, Target, CalendarCheck } from "lucide-react"
 
 /* ─── Corner Crosses Component (Arclin-style + SVG at each corner) ─── */
 const CornerCrosses = ({ className = 'text-silver-300', hoverClassName = '' }: { className?: string; hoverClassName?: string }) => (
@@ -130,8 +130,9 @@ function WaitlistModal({ isOpen, onClose, initialType = 'founder' }: { isOpen: b
   })
 
   // Sync initialType when modal opens
-  const prevOpen = useState(isOpen)[0]
-  if (isOpen && !prevOpen) setUserType(initialType)
+  useEffect(() => {
+    if (isOpen) setUserType(initialType)
+  }, [isOpen, initialType])
 
   const requiredFields = userType === 'founder'
     ? ['name', 'email', 'company_name', 'one_liner', 'stage', 'raising']
@@ -355,6 +356,7 @@ function PipelineVisual() {
           { label: "Generate pitch deck", status: "done" as const, icon: FileText },
           { label: "Apply to accelerators", status: "done" as const, icon: Zap },
           { label: "Send to 47 matching VCs", status: "active" as const, icon: Send },
+          { label: "Schedule investor meetings", status: "pending" as const, icon: CalendarCheck },
           { label: "Prepare SAFE documents", status: "pending" as const, icon: Scale },
           { label: "Close your round", status: "pending" as const, icon: CheckCircle },
         ].map((item, i) => {
@@ -555,7 +557,9 @@ export default function LandingPage() {
             </h1>
 
             <p className="text-xl lg:text-2xl leading-[1.6] tracking-[-0.025rem] text-silver-700 font-normal mt-6 max-w-2xl font-body">
-              Your AI fundraising expert with an agentic CRM. It builds your deck, finds the right VCs, runs your outreach, and closes your round.
+              Your AI fundraising expert with an agentic CRM. 
+              <br /><br />
+              Franklin builds your deck, finds the right VCs, runs your outreach, and closes your round.
             </p>
 
             <div className="flex flex-wrap items-center gap-8 mt-8">
@@ -568,13 +572,23 @@ export default function LandingPage() {
           {/* Hero video */}
           <div className="group relative overflow-hidden cursor-pointer">
             <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-              <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-silver-100 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+           
+            <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-silver-100 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
             </div>
             <div className="relative z-10 border border-silver-200 shadow-sm overflow-hidden">
               <CornerCrosses className="text-silver-300 transition-colors group-hover:text-silver-500" />
-              <video autoPlay loop muted playsInline className="w-full h-auto block">
+              <video autoPlay loop muted playsInline poster="/franklin.jpg" className="w-full h-auto block">
                 <source src="/franklin.webm" type="video/webm" />
               </video>
+            </div>
+
+            <div className="absolute bottom-0 left-0 right-0 p-6">
+            
+            <p className="text-xl lg:text-2xl leading-[1.6] tracking-[-0.025rem] text-silver-700 font-normal mt-6 max-w-2xl font-body">
+              
+              <br /><br />
+              Franklin builds your deck, finds the right VCs, runs your outreach, and closes your round.
+            </p>
             </div>
           </div>
         </div>
@@ -599,6 +613,7 @@ export default function LandingPage() {
                     { label: "Pitch Deck", done: true },
                     { label: "Accelerators", done: true },
                     { label: "VC Outreach", active: true },
+                    { label: "Schedule Meetings" },
                     { label: "Legal Prep" },
                     { label: "Close Round" },
                   ].map((s, i) => {
@@ -1163,9 +1178,20 @@ export default function LandingPage() {
             <p className="font-sans text-[13px] text-silver-500">
               &copy; {new Date().getFullYear()} Ask Franklin. All rights reserved.
             </p>
-            <Link href="/privacy-policy" className="font-sans text-[13px] text-silver-500 hover:text-silver-900 transition-colors">
-              Privacy Policy
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link href="/privacy-policy" className="font-sans text-[13px] text-silver-500 hover:text-silver-900 transition-colors">
+                Privacy Policy
+              </Link>
+              <a href="https://aarte.co" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-silver-400 hover:text-silver-700 transition-colors">
+                <span className="font-sans text-[13px]">Created by</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333 109" fill="none" className="h-4 w-auto" aria-label="AARTE">
+                  <path d="M0 109V0H5.54237V109H0ZM11.0847 109V0H16.6271V109H11.0847ZM22.1695 109V0H38.7966V109H22.1695ZM44.339 109V0H60.9661V109H44.339ZM77.5932 109V0H83.1356V109H77.5932Z" fill="currentColor" />
+                  <path d="M83.2222 109V0H99.8493V109H83.2222ZM105.392 109V0H110.934V109H105.392ZM116.476 109V0H122.019V109H116.476ZM138.646 109V0H155.273V109H138.646ZM160.815 109V0H166.358V109H160.815Z" fill="currentColor" />
+                  <path d="M166.444 109V0H183.072V109H166.444ZM188.614 109V0H194.156V109H188.614ZM199.699 109V0H216.326V109H199.699ZM232.953 109V0H238.495V109H232.953ZM244.038 109V0H249.58V109H244.038Z" fill="currentColor" />
+                  <path d="M249.667 109V0H255.209V109H249.667ZM271.836 109V0H288.463V109H271.836ZM294.006 109V0H299.548V109H294.006ZM305.09 109V0H321.717V109H305.09ZM327.26 109V0H332.802V109H327.26Z" fill="currentColor" />
+                </svg>
+              </a>
+            </div>
           </div>
         </div>
       </footer>

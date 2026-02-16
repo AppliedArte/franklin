@@ -4,20 +4,38 @@ import { AuthProvider } from "@/lib/auth-context"
 import { Navbar } from "@/components/navbar"
 
 export const metadata: Metadata = {
-  title: "Franklin | AI That Fundraises For You",
-  description: "From pitch deck to term sheet. Franklin handles your entire raise — understanding your startup, creating decks, applying to accelerators, reaching out to VCs, and closing your round.",
-  keywords: ["fundraising", "AI fundraising", "pitch deck", "VC outreach", "SAFE", "startup fundraising", "raise capital", "investor matching", "accelerator application", "YC application"],
+  metadataBase: new URL("https://askfranklin.xyz"),
+  title: {
+    default: "Franklin | AI That Fundraises For You",
+    template: "%s | Franklin",
+  },
+  description: "From pitch deck to term sheet. Franklin handles your entire raise — understanding your startup, creating decks, applying to accelerators, matching you with VCs, scheduling investor meetings, and closing your round.",
+  keywords: ["fundraising", "AI fundraising", "pitch deck", "VC outreach", "SAFE", "startup fundraising", "raise capital", "investor matching", "accelerator application", "YC application", "agentic CRM", "schedule investor meetings", "AI fundraising agent"],
+  authors: [{ name: "Ask Franklin" }],
+  creator: "AARTE",
   openGraph: {
     title: "Franklin | AI That Fundraises For You",
-    description: "From pitch deck to term sheet. Franklin handles your entire raise.",
+    description: "From pitch deck to term sheet. Franklin handles your entire raise with an agentic CRM that finds VCs, sends outreach, schedules meetings, and closes your round.",
     url: "https://askfranklin.xyz",
     siteName: "Ask Franklin",
     type: "website",
+    locale: "en_US",
+    images: [{ url: "/franklin.jpg", width: 1200, height: 630, alt: "Franklin — AI Fundraising Agent" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Franklin | AI That Fundraises For You",
     description: "From pitch deck to term sheet. Franklin handles your entire raise.",
+    creator: "@askfranklin",
+    images: ["/franklin.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+  alternates: {
+    canonical: "https://askfranklin.xyz",
   },
 }
 

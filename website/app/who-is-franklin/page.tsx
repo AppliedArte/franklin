@@ -1,7 +1,7 @@
 "use client"
 
-import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 /* ─── Corner Crosses (matching landing page) ─── */
 const CornerCrosses = ({ className = 'text-silver-300' }: { className?: string }) => (
@@ -50,19 +50,6 @@ function Job({ title, company, period, children }: { title: string; company: str
 export default function WhoIsFranklinPage() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-b border-silver-200">
-        <div className="max-w-4xl mx-auto px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center gap-2 text-silver-700 hover:text-silver-900 transition-colors">
-              <ArrowLeft className="w-4 h-4" />
-              <span className="font-sans text-sm">Back to Home</span>
-            </Link>
-            <span className="font-display text-xl text-silver-900">Franklin</span>
-          </div>
-        </div>
-      </nav>
-
       {/* Resume Content */}
       <main className="max-w-4xl mx-auto px-6 lg:px-8 pt-24 pb-16">
         <div className="group relative overflow-hidden">
@@ -74,6 +61,9 @@ export default function WhoIsFranklinPage() {
 
             {/* Header */}
             <header className="text-center mb-12 pb-8 border-b border-silver-200">
+              <div className="flex justify-center mb-6">
+                <Image src="/thumbsup.gif" alt="Franklin thumbs up" width={120} height={120} className="rounded-full" unoptimized />
+              </div>
               <h1 className="font-display text-5xl md:text-6xl text-silver-900 mb-4">Franklin</h1>
               <p className="font-body text-xl text-silver-500 italic">AI Fundraising Agent (Est. 1706)</p>
             </header>
@@ -92,6 +82,7 @@ export default function WhoIsFranklinPage() {
                 <Competency title="VC Matching">Knows what 1,200+ VCs are looking for (better than they do)</Competency>
                 <Competency title="Cold Outreach">Writes emails so personalized that investors think you hired a researcher</Competency>
                 <Competency title="Follow-up Cadence">Never forgets to follow up (literally incapable of forgetting)</Competency>
+                <Competency title="Meeting Scheduling">Books investor meetings while you sleep — timezone-aware, always polite</Competency>
                 <Competency title="SAFE Generation">Creates SAFE documents faster than your lawyer bills for reading them</Competency>
                 <Competency title="Cap Table Math">Dilution calculations that would make your spreadsheet weep</Competency>
                 <Competency title="International Markets">Negotiated France&apos;s investment in American startups (circa 1778)</Competency>
@@ -108,9 +99,10 @@ export default function WhoIsFranklinPage() {
               >
                 <ul className="list-disc list-outside ml-5 space-y-2 text-silver-700">
                   <li>Built an agentic CRM that drafts follow-ups, schedules meetings, and nudges warm leads autonomously</li>
-                  <li>Deployed 6-stage fundraising pipeline: Understand → Deck → Accelerators → Outreach → Legal → Close</li>
+                  <li>Deployed 7-stage fundraising pipeline: Understand → Deck → Accelerators → Outreach → Schedule → Legal → Close</li>
                   <li>Matching founders to VCs by thesis, stage, check size, and portfolio fit</li>
                   <li>Generating pitch decks, one-pagers, and data room checklists through conversation</li>
+                  <li>Scheduling investor meetings across timezones with automated calendar coordination</li>
                   <li>Preparing SAFE documents and term sheet summaries so founders know their terms before they sign</li>
                   <li>Achieved 99.9% uptime (significant improvement over mortality-based availability)</li>
                   <li>Runs on WhatsApp, Telegram, email, and web — because founders don&apos;t live in dashboards</li>
@@ -239,14 +231,103 @@ export default function WhoIsFranklinPage() {
             </Section>
 
             {/* Footer Quote */}
-            <footer className="mt-12 pt-8 border-t border-silver-200 text-center">
+            <div className="mt-12 pt-8 border-t border-silver-200 text-center">
               <p className="italic text-silver-500 text-lg">
                 &ldquo;In this world, nothing is certain except death, taxes, and Franklin&apos;s ability to get your deck in front of the right VC — now with 99.9% uptime.&rdquo;
               </p>
-            </footer>
+            </div>
           </article>
         </div>
       </main>
+
+      {/* ═══ FOOTER ═══ */}
+      <footer className="relative z-[1] w-full py-4 md:py-10 bg-silver-200">
+        <div className="max-w-[1200px] mx-auto px-6 lg:px-8">
+          <div className="w-full flex justify-between items-center">
+            <a href="/" className="shrink-0">
+              <span className="font-display text-xl text-silver-900 tracking-tight">Franklin</span>
+            </a>
+            <span className="font-sans text-sm text-silver-500">AI Fundraising</span>
+          </div>
+
+          <div className="mt-12 md:mt-16 flex gap-8 flex-col md:flex-row justify-between items-start">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-10 flex-1">
+              <div className="flex flex-col gap-4">
+                <a href="/#how-it-works" className="w-fit">
+                  <span className="font-sans text-base uppercase font-normal tracking-[0.08rem] text-silver-500 hover:text-silver-900 transition-colors duration-500">
+                    Product
+                  </span>
+                </a>
+                <div className="flex flex-col gap-1">
+                  {[
+                    { label: "How It Works", href: "/#how-it-works" },
+                    { label: "Features", href: "/#features" },
+                    { label: "Pitch Decks", href: "/#how-it-works" },
+                    { label: "VC Outreach", href: "/#how-it-works" },
+                    { label: "SAFE Documents", href: "/#how-it-works" },
+                    { label: "Cap Table", href: "/#how-it-works" },
+                  ].map((link, i) => (
+                    <a key={i} href={link.href} className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4">
+                <span className="font-sans text-base uppercase font-normal tracking-[0.08rem] text-silver-500">
+                  Company
+                </span>
+                <div className="flex flex-col gap-1">
+                  <Link href="/privacy-policy" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                    Privacy Policy
+                  </Link>
+                  <a href="mailto:franklin@askfranklin.xyz" target="_blank" rel="noopener noreferrer" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                    Contact
+                  </a>
+                  <Link href="/who-is-franklin" className="text-silver-400 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                    Who is Franklin?
+                  </Link>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4">
+                <span className="font-sans text-base uppercase font-normal tracking-[0.08rem] text-silver-500">
+                  Connect
+                </span>
+                <div className="flex flex-col gap-1">
+                  <a href="https://twitter.com/askfranklin" target="_blank" rel="noopener noreferrer" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                    Twitter
+                  </a>
+                  <a href="mailto:franklin@askfranklin.xyz" target="_blank" rel="noopener noreferrer" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                    Email
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 pt-5 border-t border-silver-300 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <p className="font-sans text-[13px] text-silver-500">
+              &copy; {new Date().getFullYear()} Ask Franklin. All rights reserved.
+            </p>
+            <div className="flex items-center gap-4">
+              <Link href="/privacy-policy" className="font-sans text-[13px] text-silver-500 hover:text-silver-900 transition-colors">
+                Privacy Policy
+              </Link>
+              <a href="https://aarte.co" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-silver-400 hover:text-silver-700 transition-colors">
+                <span className="font-sans text-[13px]">Created by</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333 109" fill="none" className="h-4 w-auto" aria-label="AARTE">
+                  <path d="M0 109V0H5.54237V109H0ZM11.0847 109V0H16.6271V109H11.0847ZM22.1695 109V0H38.7966V109H22.1695ZM44.339 109V0H60.9661V109H44.339ZM77.5932 109V0H83.1356V109H77.5932Z" fill="currentColor" />
+                  <path d="M83.2222 109V0H99.8493V109H83.2222ZM105.392 109V0H110.934V109H105.392ZM116.476 109V0H122.019V109H116.476ZM138.646 109V0H155.273V109H138.646ZM160.815 109V0H166.358V109H160.815Z" fill="currentColor" />
+                  <path d="M166.444 109V0H183.072V109H166.444ZM188.614 109V0H194.156V109H188.614ZM199.699 109V0H216.326V109H199.699ZM232.953 109V0H238.495V109H232.953ZM244.038 109V0H249.58V109H244.038Z" fill="currentColor" />
+                  <path d="M249.667 109V0H255.209V109H249.667ZM271.836 109V0H288.463V109H271.836ZM294.006 109V0H299.548V109H294.006ZM305.09 109V0H321.717V109H305.09ZM327.26 109V0H332.802V109H327.26Z" fill="currentColor" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
