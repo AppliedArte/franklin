@@ -264,7 +264,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    const { name, email, fund_name, company_name, linkedin, telegram, user_type } = body
+    const { name, email, phone, fund_name, company_name, linkedin, telegram, user_type } = body
 
     // Validate required fields
     if (!name || !email || !user_type) {
@@ -282,7 +282,7 @@ export async function POST(request: NextRequest) {
       .insert([
         {
           name,
-          phone: '',
+          phone: phone || '',
           email,
           fund_name: fund_name || company_name || '',
           linkedin: linkedin || null,

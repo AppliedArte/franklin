@@ -124,9 +124,10 @@ function WaitlistModal({ isOpen, onClose, initialType = 'founder' }: { isOpen: b
   const [apiError, setApiError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({})
   const [formData, setFormData] = useState<Record<string, string>>({
-    name: '', email: '', company_name: '', one_liner: '',
+    name: '', email: '', phone: '', company_name: '', one_liner: '',
     stage: '', raising: '', linkedin: '', telegram: '',
-    fundraising_for: '', fund_name: '', thesis: '', check_size: '', sectors: ''
+    fundraising_for: '', fund_name: '', thesis: '', check_size: '', sectors: '',
+    comments: ''
   })
 
   // Sync initialType when modal opens
@@ -295,15 +296,28 @@ function WaitlistModal({ isOpen, onClose, initialType = 'founder' }: { isOpen: b
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
+                    <label className="block text-xs font-sans font-medium mb-1.5 text-silver-400">Phone <span className="text-silver-300">(optional)</span></label>
+                    <input type="tel" value={formData.phone} onChange={e => updateField('phone')(e.target.value)}
+                      placeholder="+1 (555) 000-0000" className={inputClass(false)} />
+                  </div>
+                  <div>
                     <label className="block text-xs font-sans font-medium mb-1.5 text-silver-400">LinkedIn <span className="text-silver-300">(optional)</span></label>
                     <input type="text" value={formData.linkedin} onChange={e => updateField('linkedin')(e.target.value)}
                       placeholder="linkedin.com/in/jane" className={inputClass(false)} />
                   </div>
-                  <div>
-                    <label className="block text-xs font-sans font-medium mb-1.5 text-silver-400">Telegram <span className="text-silver-300">(optional)</span></label>
-                    <input type="text" value={formData.telegram} onChange={e => updateField('telegram')(e.target.value)}
-                      placeholder="@username" className={inputClass(false)} />
-                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-sans font-medium mb-1.5 text-silver-400">Telegram <span className="text-silver-300">(optional)</span></label>
+                  <input type="text" value={formData.telegram} onChange={e => updateField('telegram')(e.target.value)}
+                    placeholder="@username" className={inputClass(false)} />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-sans font-medium mb-1.5 text-silver-400">Any comments or inquiries? <span className="text-silver-300">(optional)</span></label>
+                  <textarea value={formData.comments} onChange={e => updateField('comments')(e.target.value)}
+                    placeholder="Tell us anything else you'd like Franklin to know..."
+                    rows={3} className={inputClass(false) + ' resize-none'} />
                 </div>
 
                 {apiError && (
