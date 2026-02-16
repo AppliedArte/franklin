@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { CheckCircle, MessageCircle, FileText, Send, Scale, Users, Bot, Smartphone, Zap, BarChart3, Globe, Shield, Mail, TrendingUp, Clock } from "lucide-react"
+import { CheckCircle, MessageCircle, FileText, Send, Scale, Users, Bot, Smartphone, Zap, BarChart3, Globe, Shield, Mail, TrendingUp, Clock, Search, Filter, Target } from "lucide-react"
 
 /* ─── Corner Crosses Component (Arclin-style + SVG at each corner) ─── */
 const CornerCrosses = ({ className = 'text-silver-300', hoverClassName = '' }: { className?: string; hoverClassName?: string }) => (
@@ -479,22 +479,35 @@ export default function LandingPage() {
       </nav>
 
       <main>
-      {/* ═══ HERO — full viewport, left-aligned like Arclin ═══ */}
+      {/* ═══ HERO — 2-column: text 7 / video 5 ═══ */}
       <section className="relative flex" style={{ minHeight: 'calc(100vh - 72px)', paddingTop: '72px' }}>
-        <div className="max-w-[1200px] mx-auto px-6 lg:px-8 w-full flex flex-col justify-between py-16">
-          <h1 className="font-display font-normal text-[56px] md:text-[72px] lg:text-[96px] xl:text-[124px] text-silver-900 leading-none tracking-[-0.175rem] sm:tracking-[-0.31rem] text-balance">
-            Ask Franklin to help you fundraise
-          </h1>
+        <div className="max-w-[1200px] mx-auto px-6 lg:px-8 w-full grid lg:grid-cols-[7fr_5fr] gap-10 lg:gap-14 items-center py-16">
+          <div className="flex flex-col justify-center">
+            <h1 className="font-display font-normal text-[56px] md:text-[72px] lg:text-[80px] xl:text-[96px] text-silver-900 leading-none tracking-[-0.175rem] sm:tracking-[-0.31rem] text-balance">
+              Ask Franklin to help you fundraise
+            </h1>
 
-          <div>
             <p className="text-xl lg:text-2xl leading-[1.6] tracking-[-0.025rem] text-silver-700 font-normal mt-6 max-w-2xl font-body">
-              Tell Franklin about your startup. It builds your deck, finds the right VCs, runs your outreach, and closes your round.
+              Your AI fundraising expert. It builds your deck, finds the right VCs, runs your outreach, and closes your round.
             </p>
 
             <div className="flex flex-wrap items-center gap-8 mt-8">
               <GeometricButton onClick={openWaitlist}>
                 Join Waitlist
               </GeometricButton>
+            </div>
+          </div>
+
+          {/* Hero video */}
+          <div className="group relative overflow-hidden cursor-pointer">
+            <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+              <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-silver-100 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+            </div>
+            <div className="relative z-10 border border-silver-200 shadow-sm overflow-hidden">
+              <CornerCrosses className="text-silver-300 transition-colors group-hover:text-silver-500" />
+              <video autoPlay loop muted playsInline className="w-full h-auto block">
+                <source src="/franklin.webm" type="video/webm" />
+              </video>
             </div>
           </div>
         </div>
@@ -837,6 +850,85 @@ export default function LandingPage() {
                   <p className="font-body text-[17px] text-silver-600 leading-[1.6]">WhatsApp, Telegram, email, web — Franklin works wherever you do. No new apps, no new workflows. Just results.</p>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ INVESTORS / VCs / ACCELERATORS — screening deal flow ═══ */}
+      <section className="py-20 md:py-28">
+        <div className="max-w-[1200px] mx-auto px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Mock UI: Deal screening dashboard */}
+            <div className="group relative overflow-hidden cursor-pointer">
+              <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+                <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-silver-100 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+              </div>
+              <div className="relative z-10 bg-white border border-silver-200 shadow-sm overflow-hidden">
+                <CornerCrosses className="text-silver-300 transition-colors group-hover:text-silver-500" />
+                <div className="px-6 py-4 border-b border-silver-200 flex items-center justify-between">
+                  <span className="text-silver-700 font-sans text-xs font-medium tracking-wider uppercase">Deal Screening</span>
+                  <span className="text-silver-500 font-sans text-xs">142 startups this week</span>
+                </div>
+                <div className="divide-y divide-silver-100">
+                  {[
+                    { name: "NovaPay", sector: "Fintech · Seed", score: "94", signal: "Strong", color: "bg-green-500", scoreColor: "text-green-700 bg-green-500/10" },
+                    { name: "Cortex AI", sector: "AI / ML · Series A", score: "91", signal: "Strong", color: "bg-green-500", scoreColor: "text-green-700 bg-green-500/10" },
+                    { name: "Driftwood", sector: "Climate · Pre-Seed", score: "78", signal: "Moderate", color: "bg-gold-400", scoreColor: "text-gold-700 bg-gold-400/10" },
+                    { name: "Stackline", sector: "SaaS · Seed", score: "85", signal: "Strong", color: "bg-green-500", scoreColor: "text-green-700 bg-green-500/10" },
+                    { name: "Lumina Health", sector: "Health · Series A", score: "72", signal: "Moderate", color: "bg-gold-400", scoreColor: "text-gold-700 bg-gold-400/10" },
+                    { name: "Redo Commerce", sector: "Consumer · Seed", score: "45", signal: "Weak", color: "bg-silver-300", scoreColor: "text-silver-600 bg-silver-100" },
+                  ].map((deal, i) => (
+                    <div key={i} className="px-6 py-3.5 flex items-center gap-3">
+                      <div className={`w-2 h-2 rounded-full shrink-0 ${deal.color}`} />
+                      <div className="min-w-0 flex-1">
+                        <div className="text-silver-800 font-sans text-[13px] font-medium">{deal.name}</div>
+                        <div className="text-silver-600 font-sans text-[11px]">{deal.sector}</div>
+                      </div>
+                      <span className={`font-sans text-[11px] font-medium px-2 py-0.5 shrink-0 ${deal.scoreColor}`}>{deal.score}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="px-6 py-3.5 border-t border-silver-200 flex items-center justify-between">
+                  <span className="text-silver-500 font-sans text-[11px]">Filtered by: thesis match, traction, team</span>
+                  <span className="text-green-600 font-sans text-[11px] font-medium">3 flagged for review</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="flex -space-x-1">
+                  <Search className="w-5 h-5 text-gold-600" />
+                  <Filter className="w-5 h-5 text-silver-500" />
+                  <Target className="w-5 h-5 text-silver-500" />
+                </div>
+                <span className="font-sans text-xs font-semibold uppercase tracking-wider text-silver-500">For Investors</span>
+              </div>
+              <h2 className="font-display font-bold text-[28px] sm:text-[36px] text-silver-900 tracking-tight leading-[1.15] mb-6">
+                Screen deal flow at scale
+              </h2>
+              <p className="font-body text-[20px] text-silver-600 leading-[1.6] mb-5">
+                VCs, angels, and accelerators: Franklin works both sides. Founders who raise through Franklin give you structured, standardized data — traction metrics, team background, market sizing — so you can evaluate faster.
+              </p>
+              <p className="font-body text-[20px] text-silver-600 leading-[1.6] mb-6">
+                AI-powered scoring surfaces the strongest matches for your thesis. Less time on cold inbounds, more time on companies that matter.
+              </p>
+              <div className="space-y-3 mb-8">
+                {[
+                  { icon: Search, text: "Structured data on every founder — no more digging through decks" },
+                  { icon: Filter, text: "Filter by stage, sector, traction, geography, and custom criteria" },
+                  { icon: Target, text: "Thesis-matched scoring ranks startups by fit to your portfolio" },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <item.icon className="w-4 h-4 mt-1 text-gold-600 shrink-0" />
+                    <span className="font-sans text-[15px] text-silver-700 leading-relaxed">{item.text}</span>
+                  </div>
+                ))}
+              </div>
+              <GeometricButton href="mailto:hello@askfranklin.xyz">
+                Partner With Us
+              </GeometricButton>
             </div>
           </div>
         </div>
