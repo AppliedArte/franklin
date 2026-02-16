@@ -6,7 +6,7 @@ import { Navbar } from "@/components/navbar"
 export const metadata: Metadata = {
   metadataBase: new URL("https://askfranklin.xyz"),
   title: {
-    default: "Franklin | AI That Fundraises For You",
+    default: "Franklin | AI Fundraiser",
     template: "%s | Franklin",
   },
   description: "From pitch deck to term sheet. Franklin handles your entire raise — understanding your startup, creating decks, applying to accelerators, matching you with VCs, scheduling investor meetings, and closing your round.",
@@ -14,17 +14,17 @@ export const metadata: Metadata = {
   authors: [{ name: "Ask Franklin" }],
   creator: "AARTE",
   openGraph: {
-    title: "Franklin | AI That Fundraises For You",
+    title: "Franklin | AI Fundraiser",
     description: "From pitch deck to term sheet. Franklin handles your entire raise with an agentic CRM that finds VCs, sends outreach, schedules meetings, and closes your round.",
     url: "https://askfranklin.xyz",
     siteName: "Ask Franklin",
     type: "website",
     locale: "en_US",
-    images: [{ url: "/franklin.jpg", width: 1200, height: 630, alt: "Franklin — AI Fundraising Agent" }],
+    images: [{ url: "/franklin.jpg", width: 1200, height: 630, alt: "Franklin — AI Fundraiser" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Franklin | AI That Fundraises For You",
+    title: "Franklin | AI Fundraiser",
     description: "From pitch deck to term sheet. Franklin handles your entire raise.",
     creator: "@askfranklin",
     images: ["/franklin.jpg"],
