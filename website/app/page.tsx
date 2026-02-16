@@ -550,7 +550,7 @@ export default function LandingPage() {
       <main>
       {/* ═══ HERO — 2-column: text 7 / video 5 ═══ */}
       <section className="relative flex" style={{ minHeight: 'calc(100vh - 72px)', paddingTop: '72px' }}>
-        <div className="max-w-[1200px] mx-auto px-6 lg:px-8 w-full grid lg:grid-cols-[7fr_5fr] gap-10 lg:gap-14 items-center py-16">
+        <div className="max-w-[1200px] mx-auto px-6 lg:px-8 w-full grid lg:grid-cols-[7fr_5fr] gap-10 lg:gap-14 items-start py-16">
           <div className="flex flex-col justify-center">
             <h1 className="font-display font-normal text-[56px] md:text-[72px] lg:text-[80px] xl:text-[96px] text-silver-900 leading-none tracking-[-0.175rem] sm:tracking-[-0.31rem] text-balance">
               Ask Franklin to help you fundraise
