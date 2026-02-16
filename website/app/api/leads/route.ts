@@ -264,10 +264,10 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    const { name, phone, email, fund_name, linkedin, twitter, telegram, user_type } = body
+    const { name, email, fund_name, company_name, linkedin, telegram, user_type } = body
 
     // Validate required fields
-    if (!name || !phone || !email || !fund_name || !linkedin || !user_type) {
+    if (!name || !email || !user_type) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -282,11 +282,10 @@ export async function POST(request: NextRequest) {
       .insert([
         {
           name,
-          phone,
+          phone: '',
           email,
-          fund_name,
-          linkedin,
-          twitter: twitter || null,
+          fund_name: fund_name || company_name || '',
+          linkedin: linkedin || null,
           telegram: telegram || null,
           user_type,
         }
@@ -302,9 +301,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const resolvedFundName = fund_name || company_name || ''
+
     // If telegram provided, log for follow-up (bot will message when user starts chat)
     if (telegram) {
-      sendTelegramMessage(telegram, name, user_type, fund_name)
+      sendTelegramMessage(telegram, name, user_type, resolvedFundName)
         .then((result) => {
           console.log('Telegram user registered for follow-up:', result)
         })
@@ -313,7 +314,7 @@ export async function POST(request: NextRequest) {
         })
     } else {
       // No Telegram - send email to schedule a call instead of cold calling
-      sendSchedulingEmail(email, name, user_type, fund_name)
+      sendSchedulingEmail(email, name, user_type, resolvedFundName)
         .then((result) => {
           console.log('Scheduling email sent:', result)
         })
