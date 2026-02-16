@@ -1125,6 +1125,9 @@ export default function LandingPage() {
                   <a href="mailto:franklin@askfranklin.xyz" target="_blank" rel="noopener noreferrer" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
                     Contact
                   </a>
+                  <Link href="/who-is-franklin" className="text-silver-400 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                    Who is Franklin?
+                  </Link>
                 </div>
               </div>
 
