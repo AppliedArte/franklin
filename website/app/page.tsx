@@ -525,7 +525,7 @@ export default function LandingPage() {
             <a href="#how-it-works" className="text-sm xl:text-base font-semibold font-sans uppercase leading-none text-silver-700 hover:text-silver-900 transition-colors tracking-wide">How It Works</a>
             <a href="#features" className="text-sm xl:text-base font-semibold font-sans uppercase leading-none text-silver-700 hover:text-silver-900 transition-colors tracking-wide">Features</a>
             <a href="#invest" className="text-sm xl:text-base font-semibold font-sans uppercase leading-none text-silver-700 hover:text-silver-900 transition-colors tracking-wide">Invest</a>
-            <a href="mailto:franklin@askfranklin.xyz" className="text-sm xl:text-base font-semibold font-sans uppercase leading-none text-silver-700 hover:text-silver-900 transition-colors tracking-wide">Contact</a>
+            <a href="mailto:franklin@askfranklin.xyz" target="_blank" rel="noopener noreferrer" className="text-sm xl:text-base font-semibold font-sans uppercase leading-none text-silver-700 hover:text-silver-900 transition-colors tracking-wide">Contact</a>
           </div>
 
           <div className="flex items-center gap-5 shrink-0">
@@ -1100,7 +1100,7 @@ export default function LandingPage() {
                   <Link href="/privacy-policy" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
                     Privacy Policy
                   </Link>
-                  <a href="mailto:franklin@askfranklin.xyz" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                  <a href="mailto:franklin@askfranklin.xyz" target="_blank" rel="noopener noreferrer" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
                     Contact
                   </a>
                 </div>
@@ -1112,13 +1112,10 @@ export default function LandingPage() {
                   Connect
                 </span>
                 <div className="flex flex-col gap-1">
-                  <a href="https://t.me/askfranklin_bot" target="_blank" rel="noopener noreferrer" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
-                    Telegram
-                  </a>
                   <a href="https://twitter.com/askfranklin" target="_blank" rel="noopener noreferrer" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
                     Twitter
                   </a>
-                  <a href="mailto:franklin@askfranklin.xyz" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                  <a href="mailto:franklin@askfranklin.xyz" target="_blank" rel="noopener noreferrer" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
                     Email
                   </a>
                 </div>
