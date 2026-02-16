@@ -147,6 +147,7 @@ function WaitlistModal({ isOpen, onClose, initialType = 'founder' }: { isOpen: b
     if (Object.values(errors).some(Boolean)) {
       setFormError(true)
       setTimeout(() => setFormError(false), 2000)
+      console.log('[Franklin] Validation failed:', errors)
       return
     }
 
@@ -154,25 +155,39 @@ function WaitlistModal({ isOpen, onClose, initialType = 'founder' }: { isOpen: b
     setFormError(false)
     setApiError(null)
 
+    const payload = {
+      ...formData,
+      fund_name: userType === 'investor' ? formData.fund_name : formData.company_name,
+      user_type: userType
+    }
+    console.log('[Franklin] Submitting lead:', { ...payload, email: payload.email ? '***' : '' })
+
     try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 15000)
+
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          fund_name: userType === 'investor' ? formData.fund_name : formData.company_name,
-          user_type: userType
-        })
+        body: JSON.stringify(payload),
+        signal: controller.signal
       })
+
+      clearTimeout(timeout)
+      console.log('[Franklin] Response:', response.status, response.statusText)
+
+      const responseData = await response.json().catch(() => ({}))
+      console.log('[Franklin] Response body:', responseData)
 
       if (response.ok) {
         setIsSubmitted(true)
       } else {
-        const errorData = await response.json().catch(() => ({}))
-        setApiError(errorData.error || `Server error (${response.status})`)
+        setApiError(responseData.error || `Server error (${response.status})`)
       }
-    } catch {
-      setApiError('Network error — please try again')
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      console.error('[Franklin] Fetch error:', msg)
+      setApiError(msg.includes('aborted') ? 'Request timed out — please try again' : `Network error: ${msg}`)
     } finally {
       setIsSubmitting(false)
     }
