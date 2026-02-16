@@ -262,6 +262,20 @@ RULES:
 
 export async function POST(request: NextRequest) {
   try {
+    // Debug: check env vars are present
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('Missing Supabase env vars:', {
+        hasUrl: !!supabaseUrl,
+        urlPrefix: supabaseUrl?.substring(0, 30),
+        hasKey: !!supabaseServiceKey,
+        keyPrefix: supabaseServiceKey?.substring(0, 20),
+      })
+      return NextResponse.json(
+        { error: `Server misconfigured: missing ${!supabaseUrl ? 'SUPABASE_URL' : 'SUPABASE_SERVICE_ROLE_KEY'}` },
+        { status: 500 }
+      )
+    }
+
     const body = await request.json()
 
     const { name, email, phone, fund_name, company_name, linkedin, telegram, user_type } = body
@@ -269,7 +283,7 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (!name || !email || !user_type) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: `Missing required fields: ${[!name && 'name', !email && 'email', !user_type && 'user_type'].filter(Boolean).join(', ')}` },
         { status: 400 }
       )
     }
@@ -277,29 +291,34 @@ export async function POST(request: NextRequest) {
     // Create Supabase client with service role key for server-side operations
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
+    const insertPayload = {
+      name,
+      phone: phone || null,
+      email,
+      fund_name: fund_name || company_name || null,
+      linkedin: linkedin || null,
+      telegram: telegram || null,
+      user_type,
+    }
+
+    console.log('Inserting lead:', { ...insertPayload, email: '***' })
+    console.log('Supabase URL:', supabaseUrl)
+
     const { data, error } = await supabase
       .from('leads')
-      .insert([
-        {
-          name,
-          phone: phone || null,
-          email,
-          fund_name: fund_name || company_name || null,
-          linkedin: linkedin || null,
-          telegram: telegram || null,
-          user_type,
-        }
-      ])
+      .insert([insertPayload])
       .select()
       .single()
 
     if (error) {
-      console.error('Supabase error:', error)
+      console.error('Supabase insert error:', JSON.stringify(error, null, 2))
       return NextResponse.json(
-        { error: `Failed to save lead: ${error.message}` },
+        { error: `Failed to save lead: ${error.message} (code: ${error.code}, details: ${error.details || 'none'})` },
         { status: 500 }
       )
     }
+
+    console.log('Lead saved successfully:', data?.id)
 
     const resolvedFundName = fund_name || company_name || ''
 
@@ -324,10 +343,13 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true, data })
-  } catch (error) {
-    console.error('API error:', error)
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : String(error)
+    const errStack = error instanceof Error ? error.stack : undefined
+    console.error('API error:', errMsg)
+    console.error('Stack:', errStack)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: `Internal server error: ${errMsg}` },
       { status: 500 }
     )
   }
