@@ -577,7 +577,7 @@ export default function LandingPage() {
             </div>
             <div className="relative z-10 border border-silver-200 shadow-sm overflow-hidden">
               <CornerCrosses className="text-silver-300 transition-colors group-hover:text-silver-500" />
-              <video autoPlay loop muted playsInline poster="/franklin.jpg" className="w-full h-auto block">
+              <video autoPlay loop muted playsInline className="w-full h-auto block">
                 <source src="/franklin.webm" type="video/webm" />
               </video>
             </div>
