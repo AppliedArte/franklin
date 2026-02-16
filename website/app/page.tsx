@@ -556,12 +556,6 @@ export default function LandingPage() {
               Ask Franklin to help you fundraise
             </h1>
 
-            <p className="text-xl lg:text-2xl leading-[1.6] tracking-[-0.025rem] text-silver-700 font-normal mt-6 max-w-2xl font-body">
-              Your AI fundraising expert with an agentic CRM. 
-              <br /><br />
-              Franklin builds your deck, finds the right VCs, runs your outreach, and closes your round.
-            </p>
-
             <div className="flex flex-wrap items-center gap-8 mt-8">
               <GeometricButton onClick={() => openWaitlist()}>
                 Join Waitlist
@@ -570,26 +564,23 @@ export default function LandingPage() {
           </div>
 
           {/* Hero video */}
-          <div className="group relative overflow-hidden cursor-pointer">
-            <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-           
-            <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-silver-100 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+          <div>
+            <div className="group relative overflow-hidden cursor-pointer">
+              <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+                <div className="w-[calc(100%-2rem)] h-[calc(100%-2rem)] bg-silver-100 transition-all duration-500 ease-out group-hover:w-full group-hover:h-full" />
+              </div>
+              <div className="relative z-10 border border-silver-200 shadow-sm overflow-hidden">
+                <CornerCrosses className="text-silver-300 transition-colors group-hover:text-silver-500" />
+                <video autoPlay loop muted playsInline className="w-full h-auto block">
+                  <source src="/franklin.webm" type="video/webm" />
+                </video>
+              </div>
             </div>
-            <div className="relative z-10 border border-silver-200 shadow-sm overflow-hidden">
-              <CornerCrosses className="text-silver-300 transition-colors group-hover:text-silver-500" />
-              <video autoPlay loop muted playsInline className="w-full h-auto block">
-                <source src="/franklin.webm" type="video/webm" />
-              </video>
-            </div>
-
-            <div className="absolute bottom-0 left-0 right-0 p-6">
-            
-            <p className="text-xl lg:text-2xl leading-[1.6] tracking-[-0.025rem] text-silver-700 font-normal mt-6 max-w-2xl font-body">
-              
+            <p className="text-lg lg:text-xl leading-[1.6] tracking-[-0.025rem] text-silver-700 font-normal mt-6 font-body">
+              Your AI fundraising expert with an agentic CRM.
               <br /><br />
               Franklin builds your deck, finds the right VCs, runs your outreach, and closes your round.
             </p>
-            </div>
           </div>
         </div>
       </section>
