@@ -381,15 +381,15 @@ function PipelineVisual() {
   )
 }
 
-/* ─── Mock UI: CRM Preview (tall portrait format like Arclin's 768x2156 images) ─── */
+/* ─── Mock UI: Agentic CRM Preview ─── */
 function CRMPreview() {
   const investors = [
-    { name: "Sequoia Capital", partner: "Pat Grady", status: "Term Sheet", color: "bg-green-500" },
-    { name: "a16z", partner: "Kristina Shen", status: "Meeting Scheduled", color: "bg-gold-400" },
-    { name: "Greylock", partner: "Reid Hoffman", status: "Deck Sent", color: "bg-blue-400" },
-    { name: "Accel", partner: "Sonali De Rycker", status: "Email Opened", color: "bg-silver-400" },
-    { name: "Founders Fund", partner: "Keith Rabois", status: "Researching", color: "bg-silver-300" },
-    { name: "Index Ventures", partner: "Mark Goldberg", status: "In Queue", color: "bg-silver-200" },
+    { name: "Sequoia Capital", partner: "Pat Grady", status: "Term Sheet", action: "SAFE draft sent", color: "bg-green-500" },
+    { name: "a16z", partner: "Kristina Shen", status: "Meeting Set", action: "Cal link shared", color: "bg-gold-400" },
+    { name: "Greylock", partner: "Reid Hoffman", status: "Deck Sent", action: "Follow-up in 2d", color: "bg-blue-400" },
+    { name: "Accel", partner: "Sonali De Rycker", status: "Opened", action: "Nudge queued", color: "bg-silver-400" },
+    { name: "Founders Fund", partner: "Keith Rabois", status: "Matched", action: "Intro email drafted", color: "bg-silver-300" },
+    { name: "Index Ventures", partner: "Mark Goldberg", status: "In Queue", action: "Researching fit", color: "bg-silver-200" },
   ]
   return (
     <div className="group relative overflow-hidden cursor-pointer">
@@ -400,8 +400,11 @@ function CRMPreview() {
         <CornerCrosses className="text-silver-300 transition-colors group-hover:text-silver-500" />
         <div className="px-6 py-4 border-b border-silver-200">
           <div className="flex items-center justify-between">
-            <span className="text-silver-700 font-sans text-xs font-medium tracking-wider uppercase">Investor Pipeline</span>
-            <span className="text-green-600 font-sans text-xs font-medium">47 active</span>
+            <span className="text-silver-700 font-sans text-xs font-medium tracking-wider uppercase">Agentic CRM</span>
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-green-600 font-sans text-xs font-medium">Agent active</span>
+            </div>
           </div>
         </div>
         <div className="divide-y divide-silver-100">
@@ -410,11 +413,17 @@ function CRMPreview() {
               <div className={`w-2 h-2 rounded-full shrink-0 ${inv.color}`} />
               <div className="min-w-0 flex-1">
                 <div className="text-silver-800 font-sans text-[13px] font-medium truncate">{inv.name}</div>
-                <div className="text-silver-600 font-sans text-[11px] truncate">{inv.partner}</div>
+                <div className="text-silver-600 font-sans text-[11px] truncate">{inv.partner} · {inv.status}</div>
               </div>
-              <span className="text-silver-700 font-sans text-[11px] shrink-0">{inv.status}</span>
+              <span className="text-gold-600 font-sans text-[10px] shrink-0 bg-gold-400/10 px-1.5 py-0.5">{inv.action}</span>
             </div>
           ))}
+        </div>
+        <div className="px-6 py-3 border-t border-silver-200 bg-silver-50/50">
+          <div className="flex items-center gap-2">
+            <Bot className="w-3 h-3 text-gold-600" />
+            <span className="text-silver-600 font-sans text-[11px]">Franklin sent 3 follow-ups and scheduled 2 meetings today</span>
+          </div>
         </div>
       </div>
     </div>
@@ -546,7 +555,7 @@ export default function LandingPage() {
             </h1>
 
             <p className="text-xl lg:text-2xl leading-[1.6] tracking-[-0.025rem] text-silver-700 font-normal mt-6 max-w-2xl font-body">
-              Your AI fundraising expert. It builds your deck, finds the right VCs, runs your outreach, and closes your round.
+              Your AI fundraising expert with an agentic CRM. It builds your deck, finds the right VCs, runs your outreach, and closes your round.
             </p>
 
             <div className="flex flex-wrap items-center gap-8 mt-8">
@@ -661,7 +670,7 @@ export default function LandingPage() {
               Fundraising is a full-time job. You should be building your company, not spending months cold-emailing investors, formatting pitch decks, and negotiating term sheets.
             </p>
             <p>
-              Franklin is an AI agent that handles every step of your raise — from understanding your startup through conversation to closing your round with signed documents. No templates. No guesswork. Just results.
+              Franklin is an AI agent with a built-in agentic CRM that handles every step of your raise — from understanding your startup through conversation to closing your round with signed documents. It doesn&apos;t just track your pipeline. It runs it.
             </p>
           </div>
           <div className="mt-8">
@@ -816,7 +825,7 @@ export default function LandingPage() {
                 Six steps from zero to funded
               </h2>
               <p className="font-body text-[20px] text-silver-600 leading-[1.6] mb-6">
-                Franklin&apos;s pipeline takes you from the first conversation about your startup all the way through to a closed round. Every step tracked, every interaction logged, every document prepared.
+                Franklin&apos;s pipeline takes you from the first conversation about your startup all the way through to a closed round. Its agentic CRM doesn&apos;t wait for you — it drafts emails, schedules calls, and moves deals forward on its own.
               </p>
               <GeometricButton onClick={() => openWaitlist()}>
                 Join Waitlist
@@ -834,13 +843,13 @@ export default function LandingPage() {
             <CRMPreview />
             <div>
               <h2 className="font-display font-bold text-[28px] sm:text-[36px] text-silver-900 tracking-tight leading-[1.15] mb-6">
-                Investor intelligence built in
+                A CRM that works for you
               </h2>
               <p className="font-body text-[20px] text-silver-600 leading-[1.6] mb-5">
-                Franklin knows what thousands of VCs are looking for — stage, sector, check size, portfolio preferences. Instead of spray-and-pray, you get targeted outreach to investors who actually want to hear from you.
+                Franklin&apos;s agentic CRM doesn&apos;t just track — it acts. It drafts follow-up emails when investors go quiet, schedules meetings when they respond, and nudges warm leads before they go cold. You stay focused on building.
               </p>
               <p className="font-body text-[20px] text-silver-600 leading-[1.6] mb-6">
-                Every interaction is tracked. Every response logged. You always know exactly where each investor relationship stands.
+                Every investor is matched by thesis, stage, and check size. Every interaction is logged. Every next step is handled automatically — or flagged for your review.
               </p>
               <GeometricButton onClick={() => openWaitlist()}>
                 Join Waitlist
@@ -865,20 +874,33 @@ export default function LandingPage() {
               <div className="relative z-10">
                 <div className="relative bg-white border border-silver-200 shadow-sm overflow-hidden mb-6">
                   <CornerCrosses className="text-silver-300" />
-                  <div className="px-5 py-3 border-b border-silver-200">
-                    <span className="text-silver-600 font-sans text-[10px] tracking-wider uppercase font-semibold">CRM</span>
+                  <div className="px-5 py-3 border-b border-silver-200 flex items-center justify-between">
+                    <span className="text-silver-600 font-sans text-[10px] tracking-wider uppercase font-semibold">Agentic CRM</span>
+                    <div className="flex items-center gap-1">
+                      <div className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
+                      <span className="text-green-600 font-sans text-[9px]">Live</span>
+                    </div>
                   </div>
                   <div className="divide-y divide-silver-100">
-                    {["Sequoia — Term Sheet", "a16z — Meeting Set", "Greylock — Deck Opened", "Accel — Email Sent", "Y Combinator — Researching", "Lightspeed — Intro Made", "General Catalyst — In Queue"].map((row, i) => (
+                    {[
+                      { row: "Sequoia — Term Sheet", action: "SAFE sent" },
+                      { row: "a16z — Meeting Set", action: "Cal shared" },
+                      { row: "Greylock — Deck Opened", action: "Follow-up in 2d" },
+                      { row: "Accel — Email Sent", action: "Nudge queued" },
+                      { row: "Y Combinator — Applied", action: "Tracking" },
+                      { row: "Lightspeed — Intro Made", action: "Thank you sent" },
+                      { row: "General Catalyst — In Queue", action: "Researching" },
+                    ].map((item, i) => (
                       <div key={i} className="px-5 py-2.5 flex items-center gap-2">
                         <div className={`w-1.5 h-1.5 rounded-full ${i < 1 ? 'bg-green-500' : i < 2 ? 'bg-gold-400' : i < 3 ? 'bg-blue-400' : 'bg-silver-300'}`} />
-                        <span className="text-silver-800 font-sans text-[11px]">{row}</span>
+                        <span className="text-silver-800 font-sans text-[11px] flex-1">{item.row}</span>
+                        <span className="text-gold-600 font-sans text-[9px] shrink-0">{item.action}</span>
                       </div>
                     ))}
                   </div>
                 </div>
-                <h3 className="font-display font-semibold text-[22px] text-silver-900 mb-3">Founder CRM</h3>
-                <p className="font-body text-[17px] text-silver-600 leading-[1.6]">Every investor conversation, email, and meeting in one place. Know exactly where each relationship stands across your entire raise.</p>
+                <h3 className="font-display font-semibold text-[22px] text-silver-900 mb-3">Agentic CRM</h3>
+                <p className="font-body text-[17px] text-silver-600 leading-[1.6]">Not just a database — an agent that follows up, schedules meetings, sends docs, and moves every deal forward while you build.</p>
               </div>
             </div>
 
