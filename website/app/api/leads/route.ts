@@ -282,9 +282,9 @@ export async function POST(request: NextRequest) {
       .insert([
         {
           name,
-          phone: phone || '',
+          phone: phone || null,
           email,
-          fund_name: fund_name || company_name || '',
+          fund_name: fund_name || company_name || null,
           linkedin: linkedin || null,
           telegram: telegram || null,
           user_type,
@@ -296,7 +296,7 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Supabase error:', error)
       return NextResponse.json(
-        { error: 'Failed to save lead' },
+        { error: `Failed to save lead: ${error.message}` },
         { status: 500 }
       )
     }
