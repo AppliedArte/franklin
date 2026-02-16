@@ -87,25 +87,59 @@ function NavGeometricButton({ href, onClick, children }: { href?: string; onClic
   )
 }
 
-/* ─── Waitlist Modal ─── */
-function WaitlistModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+/* ─── Form field (stable identity — defined outside modal to prevent remount on re-render) ─── */
+const inputClass = (hasError: boolean) =>
+  `w-full px-4 py-3 text-[15px] font-sans rounded-lg border bg-white focus:outline-none focus:ring-2 focus:ring-silver-800/20 transition-all text-silver-800 placeholder:text-silver-300 ${
+    hasError ? 'border-red-400 bg-red-50/50' : 'border-silver-200 hover:border-silver-300'
+  }`
+
+function FormField({ label, field, type = 'text', placeholder, options, value, hasError, onChange }: {
+  label: string; field: string; type?: string; placeholder?: string;
+  options?: { value: string; label: string }[];
+  value: string; hasError: boolean; onChange: (value: string) => void;
+}) {
+  return (
+    <div>
+      <label className={`block text-xs font-sans font-medium mb-1.5 ${hasError ? 'text-red-600' : 'text-silver-500'}`}>
+        {label} {hasError && <span className="text-red-500">*</span>}
+      </label>
+      {options ? (
+        <select value={value} onChange={e => onChange(e.target.value)} className={inputClass(hasError)}>
+          {options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+        </select>
+      ) : (
+        <input type={type} value={value} onChange={e => onChange(e.target.value)}
+          placeholder={placeholder} className={inputClass(hasError)} />
+      )}
+    </div>
+  )
+}
+
+/* ─── Waitlist Modal (2-type: founder / investor) ─── */
+function WaitlistModal({ isOpen, onClose, initialType = 'founder' }: { isOpen: boolean; onClose: () => void; initialType?: 'founder' | 'investor' }) {
+  const [userType, setUserType] = useState<'founder' | 'investor'>(initialType)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [formError, setFormError] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
-  const [fieldErrors, setFieldErrors] = useState({
-    name: false, email: false, company_name: false,
-    one_liner: false, stage: false, raising: false
-  })
-  const [formData, setFormData] = useState({
+  const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({})
+  const [formData, setFormData] = useState<Record<string, string>>({
     name: '', email: '', company_name: '', one_liner: '',
     stage: '', raising: '', linkedin: '', telegram: '',
-    fundraising_for: ''
+    fundraising_for: '', fund_name: '', thesis: '', check_size: '', sectors: ''
   })
 
+  // Sync initialType when modal opens
+  const prevOpen = useState(isOpen)[0]
+  if (isOpen && !prevOpen) setUserType(initialType)
+
+  const requiredFields = userType === 'founder'
+    ? ['name', 'email', 'company_name', 'one_liner', 'stage', 'raising']
+    : ['name', 'email', 'fund_name', 'thesis', 'check_size']
+
   const handleSubmit = async () => {
-    const requiredFields = ['name', 'email', 'company_name', 'one_liner', 'stage', 'raising'] as const
-    const errors = Object.fromEntries(requiredFields.map(f => [f, !formData[f]])) as typeof fieldErrors
+    const errors: Record<string, boolean> = {}
+    requiredFields.forEach(f => { errors[f] = !formData[f] })
     setFieldErrors(errors)
 
     if (Object.values(errors).some(Boolean)) {
@@ -122,7 +156,11 @@ function WaitlistModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, fund_name: formData.company_name, user_type: 'founder' })
+        body: JSON.stringify({
+          ...formData,
+          fund_name: userType === 'investor' ? formData.fund_name : formData.company_name,
+          user_type: userType
+        })
       })
 
       if (response.ok) {
@@ -143,32 +181,6 @@ function WaitlistModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
     setFieldErrors(prev => ({ ...prev, [field]: false }))
   }
 
-  const inputClass = (hasError: boolean) =>
-    `w-full px-4 py-3 text-[15px] font-sans rounded-lg border bg-white focus:outline-none focus:ring-2 focus:ring-silver-800/20 transition-all text-silver-800 placeholder:text-silver-300 ${
-      hasError ? 'border-red-400 bg-red-50/50' : 'border-silver-200 hover:border-silver-300'
-    }`
-
-  const FormField = ({ label, field, type = 'text', placeholder, options }: {
-    label: string; field: keyof typeof formData; type?: string; placeholder?: string; options?: { value: string; label: string }[]
-  }) => {
-    const hasError = fieldErrors[field as keyof typeof fieldErrors]
-    return (
-      <div>
-        <label className={`block text-xs font-sans font-medium mb-1.5 ${hasError ? 'text-red-600' : 'text-silver-500'}`}>
-          {label} {hasError && <span className="text-red-500">*</span>}
-        </label>
-        {options ? (
-          <select value={formData[field]} onChange={e => updateField(field)(e.target.value)} className={inputClass(hasError)}>
-            {options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-          </select>
-        ) : (
-          <input type={type} value={formData[field]} onChange={e => updateField(field)(e.target.value)}
-            placeholder={placeholder} className={inputClass(hasError)} />
-        )}
-      </div>
-    )
-  }
-
   if (!isOpen) return null
 
   return (
@@ -186,9 +198,11 @@ function WaitlistModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 You&apos;re on the list, {formData.name.split(' ')[0]}.
               </h3>
               <p className="font-sans text-silver-500 text-[15px] leading-relaxed mb-6">
-                {formData.telegram
-                  ? "We'll message you on Telegram when it's your turn."
-                  : "Check your inbox — we'll reach out when it's time to start your raise."}
+                {userType === 'investor'
+                  ? "We'll reach out with early access to our deal screening tools."
+                  : formData.telegram
+                    ? "We'll message you on Telegram when it's your turn."
+                    : "Check your inbox — we'll reach out when it's time to start your raise."}
               </p>
               <button onClick={onClose}
                 className="font-sans text-sm font-semibold uppercase tracking-wider text-silver-500 hover:text-silver-800 transition-colors">
@@ -204,40 +218,79 @@ function WaitlistModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 </button>
               </div>
 
+              {/* Type toggle */}
+              <div className="flex mb-6 border border-silver-200 rounded-lg overflow-hidden">
+                {(['founder', 'investor'] as const).map(t => (
+                  <button key={t} onClick={() => setUserType(t)}
+                    className={`flex-1 py-2.5 text-sm font-sans font-semibold uppercase tracking-wider transition-colors ${
+                      userType === t ? 'bg-[#32373c] text-white' : 'bg-white text-silver-500 hover:text-silver-800'
+                    }`}>
+                    {t === 'founder' ? 'Founder' : 'Investor / VC'}
+                  </button>
+                ))}
+              </div>
+
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <FormField label="Your name" field="name" placeholder="Jane Doe" />
-                  <FormField label="Email" field="email" type="email" placeholder="jane@startup.com" />
+                  <FormField label="Your name" field="name" placeholder="Jane Doe"
+                    value={formData.name} hasError={!!fieldErrors.name} onChange={updateField('name')} />
+                  <FormField label="Email" field="email" type="email" placeholder="jane@company.com"
+                    value={formData.email} hasError={!!fieldErrors.email} onChange={updateField('email')} />
                 </div>
 
-                <FormField label="Company name" field="company_name" placeholder="Acme Inc." />
-                <FormField label="One-liner" field="one_liner" placeholder="We help X do Y with Z" />
+                {userType === 'founder' ? (
+                  <>
+                    <FormField label="Company name" field="company_name" placeholder="Acme Inc."
+                      value={formData.company_name} hasError={!!fieldErrors.company_name} onChange={updateField('company_name')} />
+                    <FormField label="One-liner" field="one_liner" placeholder="We help X do Y with Z"
+                      value={formData.one_liner} hasError={!!fieldErrors.one_liner} onChange={updateField('one_liner')} />
 
-                <div>
-                  <label className="block text-xs font-sans font-medium mb-1.5 text-silver-500">What are you fundraising for?</label>
-                  <textarea value={formData.fundraising_for} onChange={e => updateField('fundraising_for')(e.target.value)}
-                    placeholder="e.g. Building out our engineering team and scaling go-to-market"
-                    rows={2}
-                    className={inputClass(false) + ' resize-none'} />
-                </div>
+                    <div>
+                      <label className="block text-xs font-sans font-medium mb-1.5 text-silver-500">What are you fundraising for?</label>
+                      <textarea value={formData.fundraising_for} onChange={e => updateField('fundraising_for')(e.target.value)}
+                        placeholder="e.g. Building out our engineering team and scaling go-to-market"
+                        rows={2} className={inputClass(false) + ' resize-none'} />
+                    </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField label="Stage" field="stage" options={[
-                    { value: '', label: 'Select...' },
-                    { value: 'pre-seed', label: 'Pre-Seed' },
-                    { value: 'seed', label: 'Seed' },
-                    { value: 'series-a', label: 'Series A' },
-                    { value: 'series-b+', label: 'Series B+' },
-                  ]} />
-                  <FormField label="Raising" field="raising" options={[
-                    { value: '', label: 'Select...' },
-                    { value: '<500k', label: 'Under $500K' },
-                    { value: '500k-1m', label: '$500K – $1M' },
-                    { value: '1m-3m', label: '$1M – $3M' },
-                    { value: '3m-10m', label: '$3M – $10M' },
-                    { value: '10m+', label: '$10M+' },
-                  ]} />
-                </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField label="Stage" field="stage" options={[
+                        { value: '', label: 'Select...' },
+                        { value: 'pre-seed', label: 'Pre-Seed' },
+                        { value: 'seed', label: 'Seed' },
+                        { value: 'series-a', label: 'Series A' },
+                        { value: 'series-b+', label: 'Series B+' },
+                      ]} value={formData.stage} hasError={!!fieldErrors.stage} onChange={updateField('stage')} />
+                      <FormField label="Raising" field="raising" options={[
+                        { value: '', label: 'Select...' },
+                        { value: '<500k', label: 'Under $500K' },
+                        { value: '500k-1m', label: '$500K – $1M' },
+                        { value: '1m-3m', label: '$1M – $3M' },
+                        { value: '3m-10m', label: '$3M – $10M' },
+                        { value: '10m+', label: '$10M+' },
+                      ]} value={formData.raising} hasError={!!fieldErrors.raising} onChange={updateField('raising')} />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <FormField label="Fund / firm name" field="fund_name" placeholder="Acme Ventures"
+                      value={formData.fund_name} hasError={!!fieldErrors.fund_name} onChange={updateField('fund_name')} />
+                    <FormField label="Investment thesis" field="thesis" placeholder="We invest in early-stage B2B SaaS"
+                      value={formData.thesis} hasError={!!fieldErrors.thesis} onChange={updateField('thesis')} />
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField label="Typical check size" field="check_size" options={[
+                        { value: '', label: 'Select...' },
+                        { value: '<100k', label: 'Under $100K' },
+                        { value: '100k-500k', label: '$100K – $500K' },
+                        { value: '500k-2m', label: '$500K – $2M' },
+                        { value: '2m-10m', label: '$2M – $10M' },
+                        { value: '10m+', label: '$10M+' },
+                      ]} value={formData.check_size} hasError={!!fieldErrors.check_size} onChange={updateField('check_size')} />
+                      <FormField label="Sectors" field="sectors" placeholder="SaaS, Fintech, AI"
+                        value={formData.sectors} hasError={false} onChange={updateField('sectors')} />
+                    </div>
+                  </>
+                )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -451,11 +504,15 @@ function ChannelPreview() {
 /* ─── Landing Page ─── */
 export default function LandingPage() {
   const [showWaitlist, setShowWaitlist] = useState(false)
-  const openWaitlist = () => setShowWaitlist(true)
+  const [waitlistType, setWaitlistType] = useState<'founder' | 'investor'>('founder')
+  const openWaitlist = (type: 'founder' | 'investor' = 'founder') => {
+    setWaitlistType(type)
+    setShowWaitlist(true)
+  }
 
   return (
     <div className="bg-white text-silver-900">
-      <WaitlistModal isOpen={showWaitlist} onClose={() => setShowWaitlist(false)} />
+      <WaitlistModal isOpen={showWaitlist} onClose={() => setShowWaitlist(false)} initialType={waitlistType} />
 
       {/* ═══ NAVIGATION — Arclin layout ═══ */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md">
@@ -467,11 +524,12 @@ export default function LandingPage() {
           <div className="hidden md:flex items-center gap-8">
             <a href="#how-it-works" className="text-sm xl:text-base font-semibold font-sans uppercase leading-none text-silver-700 hover:text-silver-900 transition-colors tracking-wide">How It Works</a>
             <a href="#features" className="text-sm xl:text-base font-semibold font-sans uppercase leading-none text-silver-700 hover:text-silver-900 transition-colors tracking-wide">Features</a>
-            <a href="mailto:hello@askfranklin.xyz" className="text-sm xl:text-base font-semibold font-sans uppercase leading-none text-silver-700 hover:text-silver-900 transition-colors tracking-wide">Contact</a>
+            <a href="#invest" className="text-sm xl:text-base font-semibold font-sans uppercase leading-none text-silver-700 hover:text-silver-900 transition-colors tracking-wide">Invest</a>
+            <a href="mailto:franklin@askfranklin.xyz" className="text-sm xl:text-base font-semibold font-sans uppercase leading-none text-silver-700 hover:text-silver-900 transition-colors tracking-wide">Contact</a>
           </div>
 
           <div className="flex items-center gap-5 shrink-0">
-            <NavGeometricButton onClick={openWaitlist}>
+            <NavGeometricButton onClick={() => openWaitlist()}>
               Join Waitlist
             </NavGeometricButton>
           </div>
@@ -492,7 +550,7 @@ export default function LandingPage() {
             </p>
 
             <div className="flex flex-wrap items-center gap-8 mt-8">
-              <GeometricButton onClick={openWaitlist}>
+              <GeometricButton onClick={() => openWaitlist()}>
                 Join Waitlist
               </GeometricButton>
             </div>
@@ -715,7 +773,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="mt-12">
-            <GeometricButton onClick={openWaitlist}>
+            <GeometricButton onClick={() => openWaitlist()}>
               Join Waitlist
             </GeometricButton>
           </div>
@@ -760,7 +818,7 @@ export default function LandingPage() {
               <p className="font-body text-[20px] text-silver-600 leading-[1.6] mb-6">
                 Franklin&apos;s pipeline takes you from the first conversation about your startup all the way through to a closed round. Every step tracked, every interaction logged, every document prepared.
               </p>
-              <GeometricButton onClick={openWaitlist}>
+              <GeometricButton onClick={() => openWaitlist()}>
                 Join Waitlist
               </GeometricButton>
             </div>
@@ -784,7 +842,7 @@ export default function LandingPage() {
               <p className="font-body text-[20px] text-silver-600 leading-[1.6] mb-6">
                 Every interaction is tracked. Every response logged. You always know exactly where each investor relationship stands.
               </p>
-              <GeometricButton onClick={openWaitlist}>
+              <GeometricButton onClick={() => openWaitlist()}>
                 Join Waitlist
               </GeometricButton>
             </div>
@@ -856,7 +914,7 @@ export default function LandingPage() {
       </section>
 
       {/* ═══ INVESTORS / VCs / ACCELERATORS — screening deal flow ═══ */}
-      <section className="py-20 md:py-28">
+      <section id="invest" className="py-20 md:py-28">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Mock UI: Deal screening dashboard */}
@@ -926,7 +984,7 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-              <GeometricButton href="mailto:hello@askfranklin.xyz">
+              <GeometricButton onClick={() => openWaitlist('investor')}>
                 Partner With Us
               </GeometricButton>
             </div>
@@ -945,7 +1003,7 @@ export default function LandingPage() {
               <p className="font-body text-[20px] text-silver-600 leading-[1.6] mb-6">
                 From solo founders to teams of ten, pre-revenue to post-product-market-fit — Franklin adapts to your stage and your story.
               </p>
-              <GeometricButton onClick={openWaitlist}>
+              <GeometricButton onClick={() => openWaitlist()}>
                 Join Waitlist
               </GeometricButton>
             </div>
@@ -988,7 +1046,7 @@ export default function LandingPage() {
           <p className="font-body text-[20px] text-silver-600 leading-[1.6] max-w-[600px] mx-auto mb-8">
             Tell Franklin about your startup and let AI handle the rest — from deck creation to investor outreach to closing your round.
           </p>
-          <GeometricButton onClick={openWaitlist}>
+          <GeometricButton onClick={() => openWaitlist()}>
             Join Waitlist
           </GeometricButton>
         </div>
@@ -1042,7 +1100,7 @@ export default function LandingPage() {
                   <Link href="/privacy-policy" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
                     Privacy Policy
                   </Link>
-                  <a href="mailto:hello@askfranklin.xyz" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                  <a href="mailto:franklin@askfranklin.xyz" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
                     Contact
                   </a>
                 </div>
@@ -1060,7 +1118,7 @@ export default function LandingPage() {
                   <a href="https://twitter.com/askfranklin" target="_blank" rel="noopener noreferrer" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
                     Twitter
                   </a>
-                  <a href="mailto:hello@askfranklin.xyz" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
+                  <a href="mailto:franklin@askfranklin.xyz" className="text-silver-700 hover:text-silver-900 text-sm block w-fit transition duration-500">
                     Email
                   </a>
                 </div>
@@ -1072,7 +1130,7 @@ export default function LandingPage() {
               <NavGeometricButton href="#how-it-works">
                 Explore Product
               </NavGeometricButton>
-              <NavGeometricButton onClick={openWaitlist}>
+              <NavGeometricButton onClick={() => openWaitlist()}>
                 Join Waitlist
               </NavGeometricButton>
             </div>
