@@ -6,6 +6,12 @@ export async function middleware(request: NextRequest) {
     request,
   })
 
+  // Skip auth for public pages that don't need Supabase session
+  const { pathname } = request.nextUrl
+  if (pathname === '/' || pathname === '/who-is-franklin' || pathname === '/privacy-policy' || pathname.startsWith('/api/')) {
+    return supabaseResponse
+  }
+
   const supabaseUrl = process.env.SUPABASE_URL
   const supabaseAnonKey = process.env.SUPABASE_ANON_KEY
 
